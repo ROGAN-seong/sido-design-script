@@ -680,6 +680,118 @@ body {
 .design-card.active .design-card-name { opacity: 1; }
 
 /* ══════════════════════════════════════════
+   LOGIN SCREEN
+══════════════════════════════════════════ */
+#loginScreen {
+  position: fixed; inset: 0; z-index: 999;
+  background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+}
+#loginScreen.hidden { display: none; }
+.login-box {
+  width: min(400px, calc(100vw - 40px));
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 48px 40px 40px;
+  box-shadow: var(--shadow-lg);
+  position: relative;
+}
+.login-box::before {
+  content:''; position:absolute; top:0; left:40px; right:40px; height:2px;
+  background:linear-gradient(90deg, transparent, var(--accent), transparent);
+  border-radius:0 0 2px 2px;
+}
+.login-brand { text-align: center; margin-bottom: 32px; }
+.login-brand-title {
+  font-size: 22px; font-weight: 700; color: var(--text);
+  letter-spacing: -.03em;
+}
+.login-brand-title span { color: var(--accent); }
+.login-brand-sub {
+  font-size: 10px; color: var(--text2); letter-spacing: .12em;
+  text-transform: uppercase; margin-top: 6px;
+}
+.login-field { margin-bottom: 14px; }
+.login-field label {
+  display: block; font-size: 12px; font-weight: 600;
+  color: var(--text2); margin-bottom: 6px;
+}
+.login-field input {
+  width: 100%; padding: 12px 16px; font-size: 15px; font-family: inherit;
+  background: var(--surface2); border: 1px solid var(--border2);
+  border-radius: var(--radius-sm); color: var(--text); outline: none;
+  transition: border-color .16s, box-shadow .16s;
+}
+.login-field input:focus {
+  border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-dim);
+}
+.login-field input::placeholder { color: var(--text3); }
+.login-btn {
+  width: 100%; padding: 13px; margin-top: 8px;
+  background: var(--accent); color: #fff; border: none;
+  font-size: 15px; font-weight: 600; font-family: inherit;
+  border-radius: var(--radius-sm); cursor: pointer;
+  transition: all .18s var(--ease-spring);
+  box-shadow: 0 1px 2px rgba(212,88,10,.15), 0 4px 14px rgba(212,88,10,.22);
+}
+.login-btn:hover { background: var(--accent2); transform: translateY(-1px); }
+.login-btn:active { transform: scale(.97); }
+.login-error {
+  text-align: center; color: #FF3B30; font-size: 13px;
+  margin-top: 12px; min-height: 18px;
+}
+/* 사용자 표시 */
+.header-user {
+  display: flex; align-items: center; gap: 8px;
+  margin-left: 12px; padding-left: 12px;
+  border-left: 1px solid var(--border-strong);
+}
+.header-user-name {
+  font-size: 12px; font-weight: 600; color: var(--text);
+}
+.header-user-role {
+  font-size: 9px; padding: 2px 7px; border-radius: 10px;
+  font-weight: 700; text-transform: uppercase;
+}
+.header-user-role.admin { background: var(--accent-dim); color: var(--accent); }
+.header-user-role.user { background: rgba(0,0,0,.05); color: var(--text2); }
+
+/* ══════════════════════════════════════════
+   ADMIN PANEL (in modal)
+══════════════════════════════════════════ */
+.admin-user-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 14px; background: var(--surface2);
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  margin-bottom: 6px;
+}
+.admin-user-info { flex: 1; min-width: 0; }
+.admin-user-name { font-size: 14px; font-weight: 600; color: var(--text); }
+.admin-user-meta { font-size: 11px; color: var(--text2); margin-top: 1px; }
+.admin-user-badge {
+  font-size: 10px; padding: 2px 8px; border-radius: 10px;
+  font-weight: 700;
+}
+.admin-user-badge.admin { background: var(--accent-dim); color: var(--accent); }
+.admin-user-badge.user { background: rgba(0,0,0,.05); color: var(--text2); }
+.admin-user-badge.inactive { background: rgba(255,59,48,.08); color: #FF3B30; }
+.admin-add-form {
+  display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap;
+}
+.admin-add-form input, .admin-add-form select {
+  padding: 8px 12px; font-size: 13px; font-family: inherit;
+  background: var(--surface); border: 1px solid var(--border2);
+  border-radius: 6px; color: var(--text); outline: none;
+}
+.admin-add-form input:focus { border-color: var(--accent); }
+.admin-add-form button {
+  padding: 8px 16px; background: var(--accent); color: #fff;
+  border: none; border-radius: 6px; font-size: 12px; font-weight: 600;
+  font-family: inherit; cursor: pointer;
+}
+
+/* ══════════════════════════════════════════
    ESTIMATE LIST MODAL
 ══════════════════════════════════════════ */
 .modal-overlay {
@@ -823,6 +935,26 @@ body {
 </head>
 <body>
 
+<!-- ══ LOGIN SCREEN ══ -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-brand">
+      <div class="login-brand-title">SIDO <span>DESIGN</span></div>
+      <div class="login-brand-sub">Interior Estimate System</div>
+    </div>
+    <div class="login-field">
+      <label>아이디</label>
+      <input type="text" id="loginId" placeholder="아이디 입력" autocomplete="username">
+    </div>
+    <div class="login-field">
+      <label>비밀번호</label>
+      <input type="password" id="loginPw" placeholder="비밀번호 입력" autocomplete="current-password">
+    </div>
+    <button class="login-btn" onclick="doLogin()">로그인</button>
+    <div class="login-error" id="loginError"></div>
+  </div>
+</div>
+
 <!-- ══ HEADER ══ -->
 <header class="header">
   <div class="header-brand">
@@ -844,6 +976,12 @@ body {
     </span>
     <button class="hbtn hbtn-ghost" onclick="resetAll()">초기화</button>
     <button class="hbtn hbtn-ghost" onclick="exportPDF()">📄 PDF</button>
+    <button class="hbtn hbtn-ghost" id="btnAdmin" onclick="openAdminPanel()" style="display:none">👤 관리</button>
+    <button class="hbtn hbtn-ghost" onclick="doLogout()">로그아웃</button>
+    <div class="header-user" id="headerUser" style="display:none">
+      <span class="header-user-name" id="headerUserName"></span>
+      <span class="header-user-role" id="headerUserRole"></span>
+    </div>
   </div>
 </header>
 
@@ -1107,6 +1245,29 @@ body {
     </div>
     <div class="modal-footer">
       <button class="hbtn hbtn-ghost" onclick="closeEstList()">닫기</button>
+    </div>
+  </div>
+</div>
+
+<!-- 관리자 패널 모달 -->
+<div class="modal-overlay" id="adminModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title">사용자 관리</span>
+      <button class="modal-close" onclick="closeAdminPanel()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="admin-add-form" id="adminAddForm">
+        <input type="text" id="newUserId" placeholder="아이디" style="flex:1;min-width:100px">
+        <input type="password" id="newUserPw" placeholder="비밀번호" style="flex:1;min-width:100px">
+        <input type="text" id="newUserName" placeholder="이름" style="width:80px">
+        <select id="newUserRole"><option value="user">사용자</option><option value="admin">관리자</option></select>
+        <button onclick="addUser()">추가</button>
+      </div>
+      <div id="adminUserList"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="hbtn hbtn-ghost" onclick="closeAdminPanel()">닫기</button>
     </div>
   </div>
 </div>
@@ -2066,8 +2227,153 @@ function showToast(msg, dur=2400) {
 /* ════════════════════════════════════
    SERVER API — 견적서 저장/목록/수정/삭제
 ════════════════════════════════════ */
-const API_BASE = window.location.origin; // Railway 배포 시 자동 감지
-let currentEstId = null; // 현재 편집 중인 견적서 ID
+const API_BASE = window.location.origin;
+let currentEstId = null;
+let authToken = localStorage.getItem('sido_token') || null;
+let currentUser = null;
+
+/* ── 인증 헤더 ── */
+function authHeaders() {
+  return authToken ? { 'Authorization': 'Bearer ' + authToken, 'Content-Type': 'application/json' } : { 'Content-Type': 'application/json' };
+}
+
+/* ══════════════════════════════════
+   LOGIN / LOGOUT / AUTH
+════════════════════════════════════ */
+async function doLogin() {
+  const username = document.getElementById('loginId').value.trim();
+  const password = document.getElementById('loginPw').value;
+  if (!username || !password) { document.getElementById('loginError').textContent = '아이디와 비밀번호를 입력하세요'; return; }
+  try {
+    const res = await fetch(`${API_BASE}/api/auth/login`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password }),
+    });
+    const data = await res.json();
+    if (!res.ok) { document.getElementById('loginError').textContent = data.error; return; }
+    authToken = data.token;
+    currentUser = data.user;
+    localStorage.setItem('sido_token', authToken);
+    showApp();
+  } catch (err) {
+    document.getElementById('loginError').textContent = '서버 연결 실패';
+  }
+}
+
+function doLogout() {
+  authToken = null; currentUser = null;
+  localStorage.removeItem('sido_token');
+  document.getElementById('loginScreen').classList.remove('hidden');
+  document.getElementById('loginId').value = '';
+  document.getElementById('loginPw').value = '';
+  document.getElementById('loginError').textContent = '';
+}
+
+async function checkAuth() {
+  if (!authToken) return false;
+  try {
+    const res = await fetch(`${API_BASE}/api/auth/me`, { headers: authHeaders() });
+    if (!res.ok) { doLogout(); return false; }
+    currentUser = await res.json();
+    return true;
+  } catch { doLogout(); return false; }
+}
+
+function showApp() {
+  document.getElementById('loginScreen').classList.add('hidden');
+  // 사용자 정보 표시
+  const hu = document.getElementById('headerUser');
+  hu.style.display = 'flex';
+  document.getElementById('headerUserName').textContent = currentUser.name || currentUser.username;
+  const roleEl = document.getElementById('headerUserRole');
+  roleEl.textContent = currentUser.role === 'admin' ? '관리자' : '사용자';
+  roleEl.className = 'header-user-role ' + currentUser.role;
+  // 관리자 버튼
+  document.getElementById('btnAdmin').style.display = currentUser.role === 'admin' ? '' : 'none';
+}
+
+// Enter 키로 로그인
+document.getElementById('loginPw')?.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+document.getElementById('loginId')?.addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('loginPw').focus(); });
+
+/* ══════════════════════════════════
+   ADMIN — 사용자 관리
+════════════════════════════════════ */
+function openAdminPanel() {
+  document.getElementById('adminModal').classList.add('open');
+  loadAdminUsers();
+}
+function closeAdminPanel() {
+  document.getElementById('adminModal').classList.remove('open');
+}
+document.getElementById('adminModal')?.addEventListener('click', e => { if (e.target === e.currentTarget) closeAdminPanel(); });
+
+async function loadAdminUsers() {
+  const el = document.getElementById('adminUserList');
+  el.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text2)">불러오는 중...</div>';
+  try {
+    const res = await fetch(`${API_BASE}/api/admin/users`, { headers: authHeaders() });
+    if (!res.ok) throw new Error();
+    const users = await res.json();
+    el.innerHTML = users.map(u => `
+      <div class="admin-user-row">
+        <div class="admin-user-info">
+          <div class="admin-user-name">${x(u.name||'')} <span style="color:var(--text2);font-weight:400;font-size:12px;">@${x(u.username)}</span></div>
+          <div class="admin-user-meta">가입: ${u.createdAt?.slice(0,10)||'—'}</div>
+        </div>
+        <span class="admin-user-badge ${u.active===false?'inactive':u.role}">${u.active===false?'비활성':u.role==='admin'?'관리자':'사용자'}</span>
+        <div style="display:flex;gap:4px;">
+          ${u.active!==false
+            ? `<button class="est-card-btn" onclick="toggleUser('${u._id}',false)">비활성화</button>`
+            : `<button class="est-card-btn" onclick="toggleUser('${u._id}',true)">활성화</button>`}
+          <button class="est-card-btn danger" onclick="deleteUser('${u._id}','${x(u.username)}')">삭제</button>
+        </div>
+      </div>
+    `).join('');
+  } catch { el.innerHTML = '<div style="text-align:center;padding:20px;color:#FF3B30">로드 실패</div>'; }
+}
+
+async function addUser() {
+  const username = document.getElementById('newUserId').value.trim();
+  const password = document.getElementById('newUserPw').value;
+  const name = document.getElementById('newUserName').value.trim();
+  const role = document.getElementById('newUserRole').value;
+  if (!username || !password) { showToast('⚠️ 아이디와 비밀번호를 입력하세요'); return; }
+  try {
+    const res = await fetch(`${API_BASE}/api/admin/users`, {
+      method: 'POST', headers: authHeaders(),
+      body: JSON.stringify({ username, password, name, role }),
+    });
+    const data = await res.json();
+    if (!res.ok) { showToast('❌ ' + data.error); return; }
+    document.getElementById('newUserId').value = '';
+    document.getElementById('newUserPw').value = '';
+    document.getElementById('newUserName').value = '';
+    showToast('✅ 사용자 추가 완료');
+    loadAdminUsers();
+  } catch { showToast('❌ 추가 실패'); }
+}
+
+async function toggleUser(id, active) {
+  try {
+    await fetch(`${API_BASE}/api/admin/users/${id}`, {
+      method: 'PUT', headers: authHeaders(),
+      body: JSON.stringify({ active }),
+    });
+    loadAdminUsers();
+  } catch { showToast('❌ 변경 실패'); }
+}
+
+async function deleteUser(id, username) {
+  if (!confirm(`"${username}" 사용자를 삭제할까요?`)) return;
+  try {
+    const res = await fetch(`${API_BASE}/api/admin/users/${id}`, { method: 'DELETE', headers: authHeaders() });
+    const data = await res.json();
+    if (!res.ok) { showToast('❌ ' + data.error); return; }
+    showToast('🗑 삭제 완료');
+    loadAdminUsers();
+  } catch { showToast('❌ 삭제 실패'); }
+}
 
 /* ── 데이터 직렬화 (폼 + DB → JSON) ── */
 function serializeEstimate() {
@@ -2167,7 +2473,7 @@ async function saveToServer() {
 
     const res = await fetch(url, {
       method,
-      headers: { 'Content-Type': 'application/json' },
+      headers: authHeaders(),
       body: JSON.stringify(data),
     });
 
@@ -2190,7 +2496,7 @@ async function openEstList() {
   listEl.innerHTML = '<div class="est-empty"><span class="est-empty-icon">⏳</span>불러오는 중...</div>';
 
   try {
-    const res = await fetch(`${API_BASE}/api/estimates`);
+    const res = await fetch(`${API_BASE}/api/estimates`, { headers: authHeaders() });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const list = await res.json();
 
@@ -2235,7 +2541,7 @@ function closeEstList() {
 /* ── 견적서 불러오기 ── */
 async function loadEstimate(id) {
   try {
-    const res = await fetch(`${API_BASE}/api/estimates/${id}`);
+    const res = await fetch(`${API_BASE}/api/estimates/${id}`, { headers: authHeaders() });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
     currentEstId = id;
@@ -2252,7 +2558,7 @@ async function loadEstimate(id) {
 async function deleteEstimate(id) {
   if (!confirm('이 견적서를 삭제할까요?')) return;
   try {
-    const res = await fetch(`${API_BASE}/api/estimates/${id}`, { method: 'DELETE' });
+    const res = await fetch(`${API_BASE}/api/estimates/${id}`, { method: 'DELETE', headers: authHeaders() });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     if (currentEstId === id) currentEstId = null;
     showToast('🗑 삭제 완료');
@@ -2275,7 +2581,14 @@ document.getElementById('estModal').addEventListener('click', e => {
   if (e.target === e.currentTarget) closeEstList();
 });
 
-init();
+// ── App Start with Auth Check ──
+(async () => {
+  init();
+  if (authToken) {
+    const ok = await checkAuth();
+    if (ok) showApp();
+  }
+})();
 </script>
 </body>
 </html>

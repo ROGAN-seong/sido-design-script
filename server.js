@@ -2,9 +2,43 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
-// ── Mongoose Model (inline) ──
+const app = express();
+const PORT = process.env.PORT || 3000;
+const MONGO_URI = process.env.MONGO_URI || process.env.MONGO_URL || 'mongodb://localhost:27017/sido';
+const JWT_SECRET = process.env.JWT_SECRET || 'sido-design-secret-key-2026';
+
+// ══════════════════════════════════
+//  Mongoose Models
+// ══════════════════════════════════
+
+// User
+const userSchema = new mongoose.Schema({
+  username:  { type: String, required: true, unique: true },
+  password:  { type: String, required: true },
+  name:      { type: String, default: '' },
+  role:      { type: String, enum: ['admin', 'user'], default: 'user' },
+  active:    { type: Boolean, default: true },
+}, { timestamps: true });
+
+userSchema.pre('save', async function(next) {
+  if (!this.isModified('password')) return next();
+  this.password = await bcrypt.hash(this.password, 10);
+  next();
+});
+
+userSchema.methods.comparePassword = function(pw) {
+  return bcrypt.compare(pw, this.password);
+};
+
+const User = mongoose.model('User', userSchema);
+
+// Estimate
 const estimateSchema = new mongoose.Schema({
+  userId:        { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   clientName:    { type: String, default: '' },
   clientTitle:   { type: String, default: '대표님' },
   clientPhone:   { type: String, default: '' },
@@ -27,26 +61,128 @@ const estimateSchema = new mongoose.Schema({
   items:         { type: mongoose.Schema.Types.Mixed, default: {} },
   grandTotal:    { type: Number, default: 0 },
 }, { timestamps: true });
+
 const Estimate = mongoose.model('Estimate', estimateSchema);
 
-const app = express();
-const PORT = process.env.PORT || 3000;
-const MONGO_URI = process.env.MONGO_URI || process.env.MONGO_URL || 'mongodb://localhost:27017/sido';
-
-// Middleware
+// ══════════════════════════════════
+//  Middleware
+// ══════════════════════════════════
 app.use(cors());
 app.use(express.json({ limit: '5mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(__dirname));
 
-// ── API Routes ──
-
-// GET /api/estimates — 목록 (최신순, 요약만)
-app.get('/api/estimates', async (req, res) => {
+// JWT 인증 미들웨어
+function auth(req, res, next) {
+  const token = req.headers.authorization?.replace('Bearer ', '');
+  if (!token) return res.status(401).json({ error: '로그인이 필요합니다' });
   try {
-    const list = await Estimate.find({}, {
+    req.user = jwt.verify(token, JWT_SECRET);
+    next();
+  } catch {
+    res.status(401).json({ error: '세션이 만료되었습니다' });
+  }
+}
+
+// 관리자 전용 미들웨어
+function adminOnly(req, res, next) {
+  if (req.user.role !== 'admin') return res.status(403).json({ error: '관리자 권한이 필요합니다' });
+  next();
+}
+
+// ══════════════════════════════════
+//  Auth API
+// ══════════════════════════════════
+
+// POST /api/auth/login
+app.post('/api/auth/login', async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    const user = await User.findOne({ username });
+    if (!user) return res.status(401).json({ error: '아이디 또는 비밀번호가 잘못되었습니다' });
+    if (!user.active) return res.status(403).json({ error: '비활성화된 계정입니다. 관리자에게 문의하세요' });
+    const ok = await user.comparePassword(password);
+    if (!ok) return res.status(401).json({ error: '아이디 또는 비밀번호가 잘못되었습니다' });
+    const token = jwt.sign(
+      { id: user._id, username: user.username, name: user.name, role: user.role },
+      JWT_SECRET, { expiresIn: '7d' }
+    );
+    res.json({ token, user: { id: user._id, username: user.username, name: user.name, role: user.role } });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/auth/me — 현재 사용자 정보
+app.get('/api/auth/me', auth, async (req, res) => {
+  res.json(req.user);
+});
+
+// ══════════════════════════════════
+//  Admin API — 사용자 관리
+// ══════════════════════════════════
+
+// GET /api/admin/users — 사용자 목록
+app.get('/api/admin/users', auth, adminOnly, async (req, res) => {
+  try {
+    const users = await User.find({}, { password: 0 }).sort({ createdAt: -1 });
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/admin/users — 사용자 추가
+app.post('/api/admin/users', auth, adminOnly, async (req, res) => {
+  try {
+    const { username, password, name, role } = req.body;
+    if (!username || !password) return res.status(400).json({ error: '아이디와 비밀번호는 필수입니다' });
+    const exists = await User.findOne({ username });
+    if (exists) return res.status(400).json({ error: '이미 존재하는 아이디입니다' });
+    const user = await User.create({ username, password, name: name || '', role: role || 'user' });
+    res.status(201).json({ id: user._id, username: user.username, name: user.name, role: user.role });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// PUT /api/admin/users/:id — 사용자 수정
+app.put('/api/admin/users/:id', auth, adminOnly, async (req, res) => {
+  try {
+    const updates = {};
+    if (req.body.name !== undefined) updates.name = req.body.name;
+    if (req.body.role !== undefined) updates.role = req.body.role;
+    if (req.body.active !== undefined) updates.active = req.body.active;
+    if (req.body.password) updates.password = await bcrypt.hash(req.body.password, 10);
+    const user = await User.findByIdAndUpdate(req.params.id, updates, { new: true }).select('-password');
+    if (!user) return res.status(404).json({ error: 'Not found' });
+    res.json(user);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// DELETE /api/admin/users/:id — 사용자 삭제
+app.delete('/api/admin/users/:id', auth, adminOnly, async (req, res) => {
+  try {
+    if (req.params.id === req.user.id) return res.status(400).json({ error: '자신의 계정은 삭제할 수 없습니다' });
+    await User.findByIdAndDelete(req.params.id);
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ══════════════════════════════════
+//  Estimate API (인증 필요)
+// ══════════════════════════════════
+
+app.get('/api/estimates', auth, async (req, res) => {
+  try {
+    const filter = req.user.role === 'admin' ? {} : { userId: req.user.id };
+    const list = await Estimate.find(filter, {
       clientName: 1, siteAddr: 1, estDate: 1,
-      area: 1, grandTotal: 1, updatedAt: 1,
+      area: 1, grandTotal: 1, updatedAt: 1, userId: 1,
     }).sort({ updatedAt: -1 }).limit(100);
     res.json(list);
   } catch (err) {
@@ -54,20 +190,22 @@ app.get('/api/estimates', async (req, res) => {
   }
 });
 
-// GET /api/estimates/:id — 단건 조회
-app.get('/api/estimates/:id', async (req, res) => {
+app.get('/api/estimates/:id', auth, async (req, res) => {
   try {
     const doc = await Estimate.findById(req.params.id);
     if (!doc) return res.status(404).json({ error: 'Not found' });
+    if (req.user.role !== 'admin' && String(doc.userId) !== req.user.id) {
+      return res.status(403).json({ error: '권한이 없습니다' });
+    }
     res.json(doc);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// POST /api/estimates — 신규 저장
-app.post('/api/estimates', async (req, res) => {
+app.post('/api/estimates', auth, async (req, res) => {
   try {
+    req.body.userId = req.user.id;
     const doc = await Estimate.create(req.body);
     res.status(201).json(doc);
   } catch (err) {
@@ -75,44 +213,65 @@ app.post('/api/estimates', async (req, res) => {
   }
 });
 
-// PUT /api/estimates/:id — 수정
-app.put('/api/estimates/:id', async (req, res) => {
+app.put('/api/estimates/:id', auth, async (req, res) => {
   try {
-    const doc = await Estimate.findByIdAndUpdate(
-      req.params.id, req.body, { new: true, runValidators: true }
-    );
+    const doc = await Estimate.findById(req.params.id);
     if (!doc) return res.status(404).json({ error: 'Not found' });
-    res.json(doc);
+    if (req.user.role !== 'admin' && String(doc.userId) !== req.user.id) {
+      return res.status(403).json({ error: '권한이 없습니다' });
+    }
+    const updated = await Estimate.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.json(updated);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// DELETE /api/estimates/:id — 삭제
-app.delete('/api/estimates/:id', async (req, res) => {
+app.delete('/api/estimates/:id', auth, async (req, res) => {
   try {
-    const doc = await Estimate.findByIdAndDelete(req.params.id);
+    const doc = await Estimate.findById(req.params.id);
     if (!doc) return res.status(404).json({ error: 'Not found' });
+    if (req.user.role !== 'admin' && String(doc.userId) !== req.user.id) {
+      return res.status(403).json({ error: '권한이 없습니다' });
+    }
+    await Estimate.findByIdAndDelete(req.params.id);
     res.json({ ok: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// SPA fallback
+// ══════════════════════════════════
+//  SPA Fallback
+// ══════════════════════════════════
 app.get('*', (req, res) => {
   const pubPath = path.join(__dirname, 'public', 'index.html');
   const rootPath = path.join(__dirname, 'index.html');
-  const fs = require('fs');
   if (fs.existsSync(pubPath)) res.sendFile(pubPath);
   else if (fs.existsSync(rootPath)) res.sendFile(rootPath);
   else res.status(404).send('index.html not found');
 });
 
-// ── Start ──
+// ══════════════════════════════════
+//  Start + Admin Seed
+// ══════════════════════════════════
+async function seedAdmin() {
+  const exists = await User.findOne({ username: 'ysnao0923' });
+  if (!exists) {
+    await User.create({
+      username: 'ysnao0923',
+      password: 'edinsoncavni7*',
+      name: '관리자',
+      role: 'admin',
+    });
+    console.log('Admin account created: ysnao0923');
+  }
+}
+
 mongoose.connect(MONGO_URI)
-  .then(() => {
+  .then(async () => {
     console.log('MongoDB connected');
+    await seedAdmin();
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });
