@@ -260,7 +260,7 @@ async function seedAdmin() {
   if (!exists) {
     await User.create({
       username: 'ysnao0923',
-      password: 'edinsoncavni7*',
+      password: 'edinsoncavani7*',
       name: '관리자',
       role: 'admin',
     });
