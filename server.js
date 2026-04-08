@@ -37,6 +37,7 @@ const MONGO_URI = process.env.MONGO_URI || process.env.MONGO_URL || 'mongodb://l
 app.use(cors());
 app.use(express.json({ limit: '5mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(__dirname));
 
 // ── API Routes ──
 
@@ -98,9 +99,14 @@ app.delete('/api/estimates/:id', async (req, res) => {
   }
 });
 
-// SPA fallback — public/index.html
+// SPA fallback
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  const pubPath = path.join(__dirname, 'public', 'index.html');
+  const rootPath = path.join(__dirname, 'index.html');
+  const fs = require('fs');
+  if (fs.existsSync(pubPath)) res.sendFile(pubPath);
+  else if (fs.existsSync(rootPath)) res.sendFile(rootPath);
+  else res.status(404).send('index.html not found');
 });
 
 // ── Start ──
