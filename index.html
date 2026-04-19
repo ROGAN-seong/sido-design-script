@@ -660,18 +660,36 @@ body {
 }
 
 /* ══════════════════════════════════════════
-   DOCUMENT PREVIEW — 컨테이너 (각 디자인 내부에서 배경 제어)
+   DOCUMENT PREVIEW — A4 세로 비율 컨테이너
+   폭 기준 580px → 높이 ~820px (A4 210×297mm = 1:1.414)
+   내용이 길어지면 컨테이너가 길어지며 PDF 시 여러 페이지로 분리.
 ══════════════════════════════════════════ */
 .doc-wrap {
-  width: 100%; max-width: 640px;
+  width: 100%;
+  max-width: 580px;
+  min-height: calc(580px * 1.414);   /* A4 세로 비율 최소 높이 ≈ 820px */
   color: var(--ink);
   border-radius: 0;
   overflow: hidden;
   box-shadow: var(--shadow-lg);
   position: relative;
-  background: #fff;  /* fallback only */
+  background: #fff;
+  /* 페이지 모서리 그림자로 종이 느낌 강조 */
+  margin: 0 auto;
 }
-.doc-wrap > * { box-sizing: border-box; }
+.doc-wrap > * {
+  box-sizing: border-box;
+  /* 각 렌더러의 최상위 컨테이너가 doc-wrap 전체를 채우도록 */
+  min-height: 100%;
+}
+
+/* 중간폭 화면에서 약간 축소 */
+@media (max-width: 1280px) {
+  .doc-wrap { max-width: 540px; min-height: calc(540px * 1.414); }
+}
+@media (max-width: 1100px) {
+  .doc-wrap { max-width: 480px; min-height: calc(480px * 1.414); }
+}
 
 .doc-topbar {
   background: var(--ink); padding: 22px 44px 20px;
@@ -997,8 +1015,14 @@ body {
 ══════════════════════════════════════════ */
 .preview-toolbar {
   display: flex; align-items: center; justify-content: space-between;
-  width: 100%; max-width: 640px;
+  width: 100%; max-width: 580px;
   margin-bottom: 18px;
+}
+@media (max-width: 1280px) {
+  .preview-toolbar { max-width: 540px; }
+}
+@media (max-width: 1100px) {
+  .preview-toolbar { max-width: 480px; }
 }
 .preview-toolbar-title {
   font-family: 'Inter', 'Noto Sans KR', sans-serif;
@@ -2558,35 +2582,35 @@ function renderLedger(ctx) {
 
   return `
     <style>
-      .doc-ledger { background:${t.paper}; color:${t.ink}; font-family:'IBM Plex Sans KR','Noto Sans KR',sans-serif; display:grid; grid-template-columns:12px 1fr; min-height:100%; }
+      .doc-ledger { background:${t.paper}; color:${t.ink}; font-family:'IBM Plex Sans KR','Noto Sans KR',sans-serif; display:grid; grid-template-columns:10px 1fr; min-height:100%; }
       .lg-spine { background:repeating-linear-gradient(0deg,${t.accent} 0 14px,${t.accent2} 14px 16px); }
-      .lg-body { padding:28px 34px 40px; }
-      .lg-top { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; padding-bottom:12px; border-bottom:4px solid ${t.ink}; }
-      .lg-top-c .k { font-family:'Inter',sans-serif; font-size:9px; font-weight:700; letter-spacing:.22em; color:${t.ink3}; text-transform:uppercase; }
-      .lg-top-c .v { font-size:12px; font-weight:600; margin-top:3px; letter-spacing:-.005em; }
-      .lg-title { font-family:'Nanum Myeongjo',serif; font-size:54px; font-weight:800; letter-spacing:-.02em; line-height:1; margin:22px 0 4px; }
-      .lg-title sup { font-family:'Inter',sans-serif; font-size:11px; font-weight:700; color:${t.accent}; letter-spacing:.2em; margin-left:6px; vertical-align:super; }
-      .lg-sub { font-family:'Inter',sans-serif; font-size:10px; letter-spacing:.28em; color:${t.ink2}; text-transform:uppercase; margin-bottom:24px; }
-      .lg-section-h { font-family:'Inter',sans-serif; font-size:10px; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:${t.ink2}; margin:24px 0 10px; padding-bottom:6px; border-bottom:1px solid ${t.ink}; }
-      .lg-table { width:100%; border-collapse:collapse; font-size:12px; }
-      .lg-table th { font-family:'Inter',sans-serif; font-size:9px; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:${t.ink2}; text-align:left; padding:9px 6px; border-bottom:1px solid ${t.ink}; }
+      .lg-body { padding:26px 26px 32px; }
+      .lg-top { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; padding-bottom:10px; border-bottom:3px solid ${t.ink}; }
+      .lg-top-c .k { font-family:'Inter',sans-serif; font-size:8px; font-weight:700; letter-spacing:.2em; color:${t.ink3}; text-transform:uppercase; }
+      .lg-top-c .v { font-size:11px; font-weight:600; margin-top:2px; letter-spacing:-.005em; }
+      .lg-title { font-family:'Nanum Myeongjo',serif; font-size:44px; font-weight:800; letter-spacing:-.02em; line-height:1; margin:18px 0 3px; }
+      .lg-title sup { font-family:'Inter',sans-serif; font-size:9px; font-weight:700; color:${t.accent}; letter-spacing:.2em; margin-left:5px; vertical-align:super; }
+      .lg-sub { font-family:'Inter',sans-serif; font-size:9px; letter-spacing:.26em; color:${t.ink2}; text-transform:uppercase; margin-bottom:20px; }
+      .lg-section-h { font-family:'Inter',sans-serif; font-size:9px; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:${t.ink2}; margin:20px 0 8px; padding-bottom:5px; border-bottom:1px solid ${t.ink}; }
+      .lg-table { width:100%; border-collapse:collapse; font-size:11px; }
+      .lg-table th { font-family:'Inter',sans-serif; font-size:8px; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:${t.ink2}; text-align:left; padding:8px 5px; border-bottom:1px solid ${t.ink}; }
       .lg-table th.lg-r { text-align:right; }
-      .lg-table td { padding:9px 6px; border-bottom:1px dotted rgba(26,23,19,.28); }
-      .lg-code { font-family:'JetBrains Mono',monospace; font-size:11px; color:${t.accent}; letter-spacing:.04em; width:52px; font-weight:600; }
-      .lg-desc { font-size:10.5px; color:${t.ink2}; margin-top:2px; }
+      .lg-table td { padding:8px 5px; border-bottom:1px dotted rgba(26,23,19,.28); }
+      .lg-code { font-family:'JetBrains Mono',monospace; font-size:10px; color:${t.accent}; letter-spacing:.04em; width:44px; font-weight:600; }
+      .lg-desc { font-size:9.5px; color:${t.ink2}; margin-top:2px; }
       .lg-r { text-align:right; font-variant-numeric:tabular-nums; font-family:'Inter','Noto Sans KR',sans-serif; font-weight:500; }
       .lg-amt { font-weight:700; color:${t.ink}; }
-      .lg-calc { margin-top:22px; border-top:1px solid ${t.ink}; padding-top:12px; font-size:12px; }
-      .lg-calc .row { display:flex; justify-content:space-between; padding:5px 0; color:${t.ink2}; }
+      .lg-calc { margin-top:18px; border-top:1px solid ${t.ink}; padding-top:10px; font-size:11px; }
+      .lg-calc .row { display:flex; justify-content:space-between; padding:4px 0; color:${t.ink2}; }
       .lg-calc .row.b { color:${t.ink}; font-weight:600; }
       .lg-calc .row .v { font-variant-numeric:tabular-nums; font-family:'Inter','Noto Sans KR',sans-serif; }
-      .lg-crown { margin-top:18px; padding:16px 0; border-top:3px double ${t.ink}; display:grid; grid-template-columns:1fr auto; align-items:end; }
-      .lg-crown .l { font-family:'Inter',sans-serif; font-size:10px; letter-spacing:.3em; color:${t.ink2}; text-transform:uppercase; font-weight:700; }
-      .lg-crown .v { font-family:'Fraunces',serif; font-weight:800; font-size:44px; color:${t.accent}; letter-spacing:-.03em; line-height:.95; text-align:right; }
-      .lg-crown .v small { display:block; font-family:'Inter',sans-serif; font-size:9px; font-weight:500; color:${t.ink3}; letter-spacing:.18em; margin-top:4px; }
-      .lg-foot { margin-top:30px; padding-top:16px; border-top:1px solid ${t.ink}; display:grid; grid-template-columns:1fr auto; gap:18px; font-size:11px; line-height:1.7; color:${t.ink2}; }
+      .lg-crown { margin-top:16px; padding:14px 0; border-top:3px double ${t.ink}; display:grid; grid-template-columns:1fr auto; align-items:end; }
+      .lg-crown .l { font-family:'Inter',sans-serif; font-size:9px; letter-spacing:.3em; color:${t.ink2}; text-transform:uppercase; font-weight:700; }
+      .lg-crown .v { font-family:'Fraunces',serif; font-weight:800; font-size:36px; color:${t.accent}; letter-spacing:-.03em; line-height:.95; text-align:right; }
+      .lg-crown .v small { display:block; font-family:'Inter',sans-serif; font-size:8px; font-weight:500; color:${t.ink3}; letter-spacing:.18em; margin-top:3px; }
+      .lg-foot { margin-top:26px; padding-top:14px; border-top:1px solid ${t.ink}; display:grid; grid-template-columns:1fr auto; gap:16px; font-size:10px; line-height:1.6; color:${t.ink2}; }
       .lg-foot b { color:${t.ink}; font-weight:700; }
-      .lg-foot .seal { width:58px; height:58px; border:1.5px solid ${t.accent}; border-radius:50%; display:flex; align-items:center; justify-content:center; color:${t.accent}; font-family:'Nanum Myeongjo',serif; font-weight:800; font-size:10px; line-height:1.2; text-align:center; transform:rotate(-6deg); letter-spacing:.1em; }
+      .lg-foot .seal { width:54px; height:54px; border:1.5px solid ${t.accent}; border-radius:50%; display:flex; align-items:center; justify-content:center; color:${t.accent}; font-family:'Nanum Myeongjo',serif; font-weight:800; font-size:9.5px; line-height:1.2; text-align:center; transform:rotate(-6deg); letter-spacing:.1em; }
     </style>
     <div class="doc-ledger">
       <div class="lg-spine"></div>
@@ -2598,8 +2622,8 @@ function renderLedger(ctx) {
           <div class="lg-top-c"><div class="k">Area</div><div class="v">${ctx.area?ctx.x(ctx.area)+' 평':'—'}</div></div>
         </div>
 
-        <div class="lg-title">견 적 서<sup>EST-${ctx.docNo.slice(-3)}</sup></div>
-        <div class="lg-sub">Construction Estimate · Interior</div>
+        <div class="lg-title">견 적 서<sup>No. ${ctx.docNo.slice(-3)}</sup></div>
+        <div class="lg-sub">Cost Estimate · Interior Design Studio</div>
 
         <div class="lg-section-h">Schedule of Works</div>
         <table class="lg-table">
@@ -2618,18 +2642,18 @@ function renderLedger(ctx) {
         </div>
 
         <div class="lg-crown">
-          <div class="l">합계 · VAT 포함</div>
-          <div class="v">${ctx.fmtWon(ctx.grand)}<small>KRW / INCL. VAT 10%</small></div>
+          <div class="l">Total · VAT Included</div>
+          <div class="v">${ctx.fmtWon(ctx.grand)}<small>KRW · INCL. VAT 10%</small></div>
         </div>
 
         ${ctx.comp||ctx.mgr?`
         <div class="lg-foot">
           <div>
-            <b>${ctx.comp?ctx.x(ctx.comp):'시도 디자인'}</b><br>
+            <b>${ctx.comp?ctx.x(ctx.comp):'SIDO DESIGN'}</b><br>
             ${ctx.mgr?`담당 ${ctx.x(ctx.mgr)}${ctx.mgrp?' · '+ctx.x(ctx.mgrp):''}<br>`:''}
             본 견적은 현장 실측 후 확정되며, 유효기간은 견적일로부터 <b>${ctx.x(ctx.vd)}일</b>입니다.
           </div>
-          <div class="seal">시도<br>디자인<br>印</div>
+          <div class="seal">SIDO<br>DESIGN<br>印</div>
         </div>`:''}
         ${details}
       </div>
@@ -2657,32 +2681,33 @@ function renderEssay(ctx) {
 
   return `
     <style>
-      .doc-essay { background:${t.paper}; color:${t.ink}; font-family:'Fraunces',serif; padding:32px 40px 36px; }
-      .es-top { display:grid; grid-template-columns:auto 1fr auto; align-items:baseline; padding-bottom:14px; border-bottom:1px solid ${t.ink}; gap:16px; }
-      .es-brand { font-family:'Inter',sans-serif; font-size:10.5px; font-weight:800; letter-spacing:.32em; color:${t.ink}; }
+      .doc-essay { background:${t.paper}; color:${t.ink}; font-family:'Fraunces',serif; padding:28px 32px 30px; min-height:100%; }
+      .es-top { display:grid; grid-template-columns:auto 1fr auto; align-items:baseline; padding-bottom:12px; border-bottom:1px solid ${t.ink}; gap:14px; }
+      .es-brand { font-family:'Inter',sans-serif; font-size:10px; font-weight:800; letter-spacing:.3em; color:${t.ink}; }
       .es-brand b { color:${t.accent}; }
-      .es-ornament { text-align:center; font-family:'Instrument Serif',serif; font-style:italic; font-size:15px; color:${t.accent}; }
-      .es-no { font-family:'JetBrains Mono',monospace; font-size:10px; color:${t.ink2}; letter-spacing:.06em; }
-      .es-kicker { font-family:'Inter',sans-serif; font-size:9px; font-weight:700; letter-spacing:.32em; text-transform:uppercase; color:${t.ink2}; margin:20px 0 8px; }
-      .es-h1 { font-family:'Instrument Serif',serif; font-size:76px; font-weight:400; line-height:.9; letter-spacing:-.02em; margin-bottom:18px; color:${t.ink}; }
+      .es-ornament { text-align:center; font-family:'Instrument Serif',serif; font-style:italic; font-size:13px; color:${t.accent}; }
+      .es-no { font-family:'JetBrains Mono',monospace; font-size:9.5px; color:${t.ink2}; letter-spacing:.06em; }
+      .es-kicker { font-family:'Inter',sans-serif; font-size:8.5px; font-weight:700; letter-spacing:.3em; text-transform:uppercase; color:${t.ink2}; margin:18px 0 6px; }
+      .es-h1 { font-family:'Instrument Serif',serif; font-size:58px; font-weight:400; line-height:.92; letter-spacing:-.02em; margin-bottom:4px; color:${t.ink}; }
       .es-h1 em { font-style:italic; color:${t.accent}; }
-      .es-prose { font-size:13.5px; line-height:1.85; color:${t.ink}; max-width:92%; margin-bottom:22px; }
+      .es-subtitle { font-family:'Inter','Noto Sans KR',sans-serif; font-size:9.5px; font-weight:700; letter-spacing:.3em; text-transform:uppercase; color:${t.ink2}; margin-bottom:18px; }
+      .es-prose { font-size:12px; line-height:1.8; color:${t.ink}; max-width:96%; margin-bottom:18px; }
       .es-prose em { font-style:italic; color:${t.accent}; }
       .es-prose b { font-weight:700; color:${t.ink}; }
-      .es-prose .won { font-family:'Fraunces',serif; font-style:italic; font-weight:800; color:${t.accent}; font-size:16px; letter-spacing:-.01em; }
-      .es-sched { padding:14px 0; border-top:1px solid ${t.ink}; border-bottom:1px solid ${t.ink}; }
-      .es-sched-label { font-family:'Inter',sans-serif; font-size:9px; font-weight:700; letter-spacing:.3em; text-transform:uppercase; color:${t.ink2}; margin-bottom:12px; }
-      .es-row { display:grid; grid-template-columns:30px 1fr auto; gap:10px; padding:7px 0; border-bottom:1px dotted rgba(26,23,16,.18); font-family:'Inter','Noto Sans KR',sans-serif; font-size:11.5px; align-items:baseline; }
+      .es-prose .won { font-family:'Fraunces',serif; font-style:italic; font-weight:800; color:${t.accent}; font-size:14px; letter-spacing:-.01em; }
+      .es-sched { padding:12px 0; border-top:1px solid ${t.ink}; border-bottom:1px solid ${t.ink}; }
+      .es-sched-label { font-family:'Inter',sans-serif; font-size:8.5px; font-weight:700; letter-spacing:.3em; text-transform:uppercase; color:${t.ink2}; margin-bottom:10px; }
+      .es-row { display:grid; grid-template-columns:28px 1fr auto; gap:10px; padding:6px 0; border-bottom:1px dotted rgba(26,23,16,.18); font-family:'Inter','Noto Sans KR',sans-serif; font-size:10.5px; align-items:baseline; }
       .es-row:last-child { border-bottom:none; }
-      .es-n { font-family:'Fraunces',serif; font-style:italic; font-weight:700; color:${t.accent}; font-size:13px; text-align:center; }
+      .es-n { font-family:'Fraunces',serif; font-style:italic; font-weight:700; color:${t.accent}; font-size:12px; text-align:center; }
       .es-name { font-weight:500; color:${t.ink}; letter-spacing:-.005em; }
       .es-v { font-variant-numeric:tabular-nums; font-weight:700; color:${t.ink}; }
-      .es-tot { margin-top:22px; display:grid; grid-template-columns:1fr auto; align-items:baseline; }
-      .es-tot .l { font-family:'Inter',sans-serif; font-size:10.5px; font-weight:700; letter-spacing:.3em; text-transform:uppercase; color:${t.ink2}; }
-      .es-tot .v { font-family:'Instrument Serif',serif; font-style:italic; font-size:52px; color:${t.accent}; letter-spacing:-.02em; line-height:1; }
-      .es-foot { margin-top:28px; padding-top:18px; border-top:1px solid ${t.border}; display:flex; justify-content:space-between; align-items:flex-end; font-family:'Inter',sans-serif; font-size:10.5px; color:${t.ink2}; line-height:1.7; }
-      .es-foot .company { font-family:'Fraunces',serif; font-size:13.5px; font-weight:700; color:${t.ink}; margin-bottom:3px; }
-      .es-foot .seal { width:56px; height:56px; border:1.5px solid ${t.accent}; border-radius:50%; display:flex; align-items:center; justify-content:center; color:${t.accent}; font-family:'Nanum Myeongjo',serif; font-weight:800; font-size:11px; transform:rotate(6deg); letter-spacing:.1em; }
+      .es-tot { margin-top:18px; display:grid; grid-template-columns:1fr auto; align-items:baseline; }
+      .es-tot .l { font-family:'Inter',sans-serif; font-size:9.5px; font-weight:700; letter-spacing:.3em; text-transform:uppercase; color:${t.ink2}; }
+      .es-tot .v { font-family:'Instrument Serif',serif; font-style:italic; font-size:40px; color:${t.accent}; letter-spacing:-.02em; line-height:1; }
+      .es-foot { margin-top:24px; padding-top:16px; border-top:1px solid ${t.border}; display:flex; justify-content:space-between; align-items:flex-end; font-family:'Inter',sans-serif; font-size:10px; color:${t.ink2}; line-height:1.6; }
+      .es-foot .company { font-family:'Fraunces',serif; font-size:12.5px; font-weight:700; color:${t.ink}; margin-bottom:3px; }
+      .es-foot .seal { width:52px; height:52px; border:1.5px solid ${t.accent}; border-radius:50%; display:flex; align-items:center; justify-content:center; color:${t.accent}; font-family:'Nanum Myeongjo',serif; font-weight:800; font-size:10px; transform:rotate(6deg); letter-spacing:.1em; }
     </style>
     <div class="doc-essay">
       <div class="es-top">
@@ -2691,12 +2716,13 @@ function renderEssay(ctx) {
         <span class="es-no">${ctx.docNo}</span>
       </div>
 
-      <div class="es-kicker">A Proposal Issued · ${ctx.x(ctx.date||'—')}</div>
-      <h1 class="es-h1">An <em>Estimate,</em><br>composed <em>with care.</em></h1>
+      <div class="es-kicker">Issued · ${ctx.x(ctx.date||'—')}</div>
+      <h1 class="es-h1"><em>Estimate.</em></h1>
+      <div class="es-subtitle">견 적 서 · Interior Design Studio</div>
 
       <p class="es-prose">
-        ${ctx.x(ctx.cn)} <b>${ctx.x(ctx.ct)}</b>께 ${ctx.addr&&ctx.addr!=='—'?ctx.x(ctx.addr)+' ':''}${ctx.area?'전용 '+ctx.x(ctx.area)+'평 ':''}리모델링 공사에 대한 견적을 <em>삼가 제출합니다.</em>
-        ${ctx.wp?'공사 기간은 <em>'+ctx.x(ctx.wp)+'</em>이며, ':''}부가세를 포함한 합계 금액은 <span class="won">${ctx.fmtWon(ctx.grand)}</span>입니다.
+        ${ctx.x(ctx.cn)} <b>${ctx.x(ctx.ct)}</b>께 ${ctx.addr&&ctx.addr!=='—'?ctx.x(ctx.addr)+' ':''}${ctx.area?'전용 '+ctx.x(ctx.area)+'평 ':''}리모델링 공사에 대한 견적을 제출합니다.
+        ${ctx.wp?'공사 기간은 <em>'+ctx.x(ctx.wp)+'</em>이며, ':''}부가가치세를 포함한 합계 금액은 <span class="won">${ctx.fmtWon(ctx.grand)}</span>입니다.
       </p>
 
       <div class="es-sched">
@@ -2705,14 +2731,14 @@ function renderEssay(ctx) {
       </div>
 
       <div class="es-tot">
-        <span class="l">Total · VAT incl.</span>
+        <span class="l">Total · VAT Included</span>
         <span class="v">${ctx.fmtWon(ctx.grand)}</span>
       </div>
 
       ${ctx.comp||ctx.mgr?`
       <div class="es-foot">
         <div>
-          <div class="company">${ctx.comp?ctx.x(ctx.comp):'시도 디자인'}</div>
+          <div class="company">${ctx.comp?ctx.x(ctx.comp):'SIDO DESIGN'}</div>
           ${ctx.mgr?`담당 ${ctx.x(ctx.mgr)}${ctx.mgrp?' · '+ctx.x(ctx.mgrp):''}<br>`:''}
           유효기간: 견적일로부터 ${ctx.x(ctx.vd)}일
         </div>
@@ -2752,42 +2778,42 @@ function renderMonument(ctx) {
 
   return `
     <style>
-      .doc-monument { background:${t.paper}; color:${t.ink}; font-family:'IBM Plex Sans KR','Noto Sans KR',sans-serif; }
-      .mn-column { background:${t.ink}; color:${t.paper}; padding:22px 34px 20px; position:relative; }
+      .doc-monument { background:${t.paper}; color:${t.ink}; font-family:'IBM Plex Sans KR','Noto Sans KR',sans-serif; min-height:100%; }
+      .mn-column { background:${t.ink}; color:${t.paper}; padding:20px 28px 18px; position:relative; }
       .mn-column::after { content:''; position:absolute; bottom:0; left:0; right:0; height:4px; background:${t.accent}; }
-      .mn-top-meta { display:flex; justify-content:space-between; align-items:center; font-family:'Inter',sans-serif; font-size:10px; font-weight:700; letter-spacing:.24em; text-transform:uppercase; color:${t.ink3}; padding-bottom:14px; }
+      .mn-top-meta { display:flex; justify-content:space-between; align-items:center; font-family:'Inter',sans-serif; font-size:9px; font-weight:700; letter-spacing:.22em; text-transform:uppercase; color:${t.ink3}; padding-bottom:12px; }
       .mn-top-meta b { color:${t.paper}; }
-      .mn-h1 { font-family:'Fraunces',serif; font-weight:800; font-size:72px; line-height:.88; letter-spacing:-.035em; color:${t.paper}; }
+      .mn-h1 { font-family:'Fraunces',serif; font-weight:800; font-size:58px; line-height:.88; letter-spacing:-.035em; color:${t.paper}; }
       .mn-h1 em { font-style:italic; font-weight:400; color:${t.accent2}; }
-      .mn-sub { font-family:'Nanum Myeongjo',serif; font-size:17px; font-weight:700; letter-spacing:.18em; margin-top:8px; color:${t.paper}; }
-      .mn-body { padding:24px 34px 32px; }
-      .mn-info { display:grid; grid-template-columns:repeat(4,1fr); gap:10px 18px; padding:14px 0; border-bottom:2px solid ${t.ink}; font-size:11px; }
-      .mn-info .k { font-family:'Inter',sans-serif; font-size:8.5px; font-weight:700; letter-spacing:.22em; text-transform:uppercase; color:${t.ink3}; margin-bottom:3px; }
-      .mn-info .v { font-weight:600; font-size:11px; color:${t.ink}; letter-spacing:-.005em; }
-      .mn-section-h { font-family:'Inter',sans-serif; font-size:10px; font-weight:700; letter-spacing:.22em; text-transform:uppercase; color:${t.ink2}; margin:22px 0 8px; }
-      .mn-items { display:grid; gap:0; font-size:11px; }
-      .mn-ln { display:grid; grid-template-columns:34px 1fr 110px; gap:14px; padding:10px 0; align-items:baseline; border-bottom:1px solid rgba(14,12,10,.15); }
-      .mn-n { font-family:'Fraunces',serif; font-style:italic; font-weight:800; font-size:20px; color:${t.accent}; line-height:1; }
+      .mn-sub { font-family:'Nanum Myeongjo',serif; font-size:15px; font-weight:700; letter-spacing:.18em; margin-top:6px; color:${t.paper}; }
+      .mn-body { padding:20px 28px 28px; }
+      .mn-info { display:grid; grid-template-columns:repeat(4,1fr); gap:8px 14px; padding:12px 0; border-bottom:2px solid ${t.ink}; font-size:10px; }
+      .mn-info .k { font-family:'Inter',sans-serif; font-size:8px; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:${t.ink3}; margin-bottom:2px; }
+      .mn-info .v { font-weight:600; font-size:10px; color:${t.ink}; letter-spacing:-.005em; }
+      .mn-section-h { font-family:'Inter',sans-serif; font-size:9px; font-weight:700; letter-spacing:.22em; text-transform:uppercase; color:${t.ink2}; margin:18px 0 6px; }
+      .mn-items { display:grid; gap:0; font-size:10.5px; }
+      .mn-ln { display:grid; grid-template-columns:28px 1fr 100px; gap:12px; padding:9px 0; align-items:baseline; border-bottom:1px solid rgba(14,12,10,.15); }
+      .mn-n { font-family:'Fraunces',serif; font-style:italic; font-weight:800; font-size:18px; color:${t.accent}; line-height:1; }
       .mn-nm { font-weight:600; color:${t.ink}; letter-spacing:-.005em; }
-      .mn-nm small { display:block; font-family:'Inter',sans-serif; font-size:9.5px; color:${t.ink2}; margin-top:2px; font-weight:400; }
-      .mn-vl { font-family:'Inter','Noto Sans KR',sans-serif; font-variant-numeric:tabular-nums; font-weight:700; font-size:13px; text-align:right; color:${t.ink}; }
-      .mn-calc { margin-top:18px; padding:12px 0; border-top:1px solid ${t.ink}; font-size:11px; }
-      .mn-calc .r { display:flex; justify-content:space-between; padding:4px 0; color:${t.ink2}; }
+      .mn-nm small { display:block; font-family:'Inter',sans-serif; font-size:9px; color:${t.ink2}; margin-top:2px; font-weight:400; }
+      .mn-vl { font-family:'Inter','Noto Sans KR',sans-serif; font-variant-numeric:tabular-nums; font-weight:700; font-size:12px; text-align:right; color:${t.ink}; }
+      .mn-calc { margin-top:16px; padding:10px 0; border-top:1px solid ${t.ink}; font-size:10.5px; }
+      .mn-calc .r { display:flex; justify-content:space-between; padding:3px 0; color:${t.ink2}; }
       .mn-calc .r.b { color:${t.ink}; font-weight:600; }
-      .mn-crown { margin-top:18px; padding-top:16px; border-top:6px solid ${t.ink}; display:grid; grid-template-columns:1fr auto; align-items:baseline; }
-      .mn-crown .l { font-family:'Inter',sans-serif; font-size:10px; font-weight:700; letter-spacing:.3em; text-transform:uppercase; color:${t.ink2}; }
-      .mn-crown .v { font-family:'Fraunces',serif; font-weight:800; font-size:46px; color:${t.accent}; letter-spacing:-.03em; line-height:1; text-align:right; }
-      .mn-crown .v small { display:block; font-family:'Inter',sans-serif; font-weight:500; font-size:8.5px; color:${t.ink3}; letter-spacing:.22em; margin-top:4px; }
-      .mn-foot { margin-top:26px; padding:16px 0; border-top:1px solid ${t.border}; font-size:11px; display:flex; justify-content:space-between; gap:18px; }
-      .mn-foot .company { font-weight:700; color:${t.ink}; font-size:12.5px; margin-bottom:3px; }
+      .mn-crown { margin-top:16px; padding-top:14px; border-top:6px solid ${t.ink}; display:grid; grid-template-columns:1fr auto; align-items:baseline; }
+      .mn-crown .l { font-family:'Inter',sans-serif; font-size:9.5px; font-weight:700; letter-spacing:.3em; text-transform:uppercase; color:${t.ink2}; }
+      .mn-crown .v { font-family:'Fraunces',serif; font-weight:800; font-size:38px; color:${t.accent}; letter-spacing:-.03em; line-height:1; text-align:right; }
+      .mn-crown .v small { display:block; font-family:'Inter',sans-serif; font-weight:500; font-size:8px; color:${t.ink3}; letter-spacing:.22em; margin-top:3px; }
+      .mn-foot { margin-top:22px; padding:14px 0; border-top:1px solid ${t.border}; font-size:10.5px; display:flex; justify-content:space-between; gap:16px; }
+      .mn-foot .company { font-weight:700; color:${t.ink}; font-size:12px; margin-bottom:3px; }
     </style>
     <div class="doc-monument">
       <div class="mn-column">
         <div class="mn-top-meta">
-          <span>SIDO <b>DESIGN</b> · Interior Studio</span>
+          <span>SIDO <b>DESIGN</b> · Interior Design Studio</span>
           <span>${ctx.docNo}</span>
         </div>
-        <h1 class="mn-h1"><em>An</em><br>Estimate.</h1>
+        <h1 class="mn-h1"><em>Estimate.</em></h1>
         <div class="mn-sub">견 적 서</div>
       </div>
 
@@ -2812,14 +2838,14 @@ function renderMonument(ctx) {
         </div>
 
         <div class="mn-crown">
-          <span class="l">Grand Total · VAT incl.</span>
+          <span class="l">Total · VAT Included</span>
           <span class="v">${ctx.fmtWon(ctx.grand)}<small>KRW · INCL. 10%</small></span>
         </div>
 
         ${ctx.comp||ctx.mgr?`
         <div class="mn-foot">
           <div>
-            <div class="company">${ctx.comp?ctx.x(ctx.comp):'시도 디자인'}</div>
+            <div class="company">${ctx.comp?ctx.x(ctx.comp):'SIDO DESIGN'}</div>
             ${ctx.mgr?`담당 ${ctx.x(ctx.mgr)}${ctx.mgrp?' · '+ctx.x(ctx.mgrp):''}`:''}
           </div>
           <div style="text-align:right;color:${t.ink2};">
@@ -2856,46 +2882,46 @@ function renderChamber(ctx) {
 
   return `
     <style>
-      .doc-chamber { background:${t.paper}; color:${t.ink}; font-family:'IBM Plex Sans KR','Noto Sans KR',sans-serif; padding:16px; position:relative; }
-      .cb-outer { border:1.5px solid ${t.ink}; padding:16px 26px 24px; position:relative; min-height:calc(100% - 32px); }
-      .cb-outer::before, .cb-outer::after { content:''; position:absolute; width:12px; height:12px; border:1.5px solid ${t.ink}; background:${t.accent}; }
-      .cb-outer::before { top:-7px; left:-7px; }
-      .cb-outer::after { bottom:-7px; right:-7px; }
-      .cb-seal { position:absolute; top:42px; right:-8px; background:${t.accent}; color:${t.paper}; padding:5px 14px; font-family:'Inter',sans-serif; font-size:9px; font-weight:800; letter-spacing:.32em; text-transform:uppercase; box-shadow:3px 3px 0 ${t.ink}; z-index:1; }
-      .cb-head { display:flex; justify-content:space-between; align-items:baseline; padding-bottom:8px; border-bottom:1px solid ${t.ink}; font-family:'Inter',sans-serif; font-size:9.5px; font-weight:700; letter-spacing:.24em; text-transform:uppercase; }
+      .doc-chamber { background:${t.paper}; color:${t.ink}; font-family:'IBM Plex Sans KR','Noto Sans KR',sans-serif; padding:14px; position:relative; min-height:100%; }
+      .cb-outer { border:1.5px solid ${t.ink}; padding:14px 22px 20px; position:relative; min-height:calc(100% - 28px); }
+      .cb-outer::before, .cb-outer::after { content:''; position:absolute; width:11px; height:11px; border:1.5px solid ${t.ink}; background:${t.accent}; }
+      .cb-outer::before { top:-6px; left:-6px; }
+      .cb-outer::after { bottom:-6px; right:-6px; }
+      .cb-seal { position:absolute; top:36px; right:-7px; background:${t.accent}; color:${t.paper}; padding:4px 12px; font-family:'Inter',sans-serif; font-size:8.5px; font-weight:800; letter-spacing:.3em; text-transform:uppercase; box-shadow:3px 3px 0 ${t.ink}; z-index:1; }
+      .cb-head { display:flex; justify-content:space-between; align-items:baseline; padding-bottom:7px; border-bottom:1px solid ${t.ink}; font-family:'Inter',sans-serif; font-size:9px; font-weight:700; letter-spacing:.22em; text-transform:uppercase; }
       .cb-head .l b { color:${t.accent}; }
-      .cb-head .r { font-family:'JetBrains Mono',monospace; color:${t.ink2}; font-weight:500; text-transform:none; font-size:10px; letter-spacing:.08em; }
-      .cb-title { text-align:center; padding:22px 0 14px; border-bottom:3px double ${t.ink}; }
-      .cb-title .kr { font-family:'Nanum Myeongjo',serif; font-weight:800; font-size:58px; letter-spacing:.14em; line-height:1; color:${t.ink}; }
-      .cb-title .en { font-family:'Fraunces',serif; font-style:italic; font-size:14px; color:${t.accent}; letter-spacing:.24em; margin-top:8px; text-transform:uppercase; }
-      .cb-folio { margin-top:14px; display:grid; grid-template-columns:1fr 1fr; gap:4px 24px; padding:12px 4px; font-size:11px; border-bottom:1px solid ${t.ink}; }
-      .cb-folio .row { display:grid; grid-template-columns:78px 1fr; align-items:baseline; padding:4px 0; border-bottom:1px dotted rgba(14,12,10,.22); }
+      .cb-head .r { font-family:'JetBrains Mono',monospace; color:${t.ink2}; font-weight:500; text-transform:none; font-size:9.5px; letter-spacing:.06em; }
+      .cb-title { text-align:center; padding:20px 0 12px; border-bottom:3px double ${t.ink}; }
+      .cb-title .kr { font-family:'Nanum Myeongjo',serif; font-weight:800; font-size:46px; letter-spacing:.14em; line-height:1; color:${t.ink}; }
+      .cb-title .en { font-family:'Fraunces',serif; font-style:italic; font-size:13px; color:${t.accent}; letter-spacing:.22em; margin-top:7px; text-transform:uppercase; }
+      .cb-folio { margin-top:12px; display:grid; grid-template-columns:1fr 1fr; gap:3px 20px; padding:10px 2px; font-size:10.5px; border-bottom:1px solid ${t.ink}; }
+      .cb-folio .row { display:grid; grid-template-columns:70px 1fr; align-items:baseline; padding:3px 0; border-bottom:1px dotted rgba(14,12,10,.22); }
       .cb-folio .row:nth-last-child(-n+2) { border-bottom:none; }
-      .cb-folio .k { font-family:'Inter',sans-serif; font-size:9px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:${t.ink3}; }
-      .cb-folio .v { font-weight:600; font-size:11px; }
-      .cb-section-h { font-family:'Inter',sans-serif; font-size:9.5px; font-weight:800; letter-spacing:.24em; text-transform:uppercase; color:${t.ink2}; margin:16px 0 0; padding:8px 0 6px; }
-      .cb-ledger { width:100%; border-collapse:collapse; font-size:11.5px; }
-      .cb-ledger thead th { font-family:'Inter',sans-serif; font-size:9px; font-weight:800; letter-spacing:.22em; text-transform:uppercase; color:${t.ink}; text-align:left; padding:8px 7px; background:${t.paperAlt}; border-top:1.5px solid ${t.ink}; border-bottom:1.5px solid ${t.ink}; }
+      .cb-folio .k { font-family:'Inter',sans-serif; font-size:8.5px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:${t.ink3}; }
+      .cb-folio .v { font-weight:600; font-size:10.5px; }
+      .cb-section-h { font-family:'Inter',sans-serif; font-size:9px; font-weight:800; letter-spacing:.22em; text-transform:uppercase; color:${t.ink2}; margin:14px 0 0; padding:6px 0 5px; }
+      .cb-ledger { width:100%; border-collapse:collapse; font-size:10.5px; }
+      .cb-ledger thead th { font-family:'Inter',sans-serif; font-size:8.5px; font-weight:800; letter-spacing:.2em; text-transform:uppercase; color:${t.ink}; text-align:left; padding:7px 6px; background:${t.paperAlt}; border-top:1.5px solid ${t.ink}; border-bottom:1.5px solid ${t.ink}; }
       .cb-ledger thead th.cb-r { text-align:right; }
-      .cb-ledger tbody td { padding:8px 7px; border-bottom:1px solid rgba(14,12,10,.14); }
-      .cb-ledger td.cb-c { font-family:'JetBrains Mono',monospace; color:${t.accent}; font-size:10.5px; letterspacing:.05em; width:52px; font-weight:600; }
+      .cb-ledger tbody td { padding:7px 6px; border-bottom:1px solid rgba(14,12,10,.14); }
+      .cb-ledger td.cb-c { font-family:'JetBrains Mono',monospace; color:${t.accent}; font-size:10px; letter-spacing:.04em; width:46px; font-weight:600; }
       .cb-ledger td.cb-r { text-align:right; font-variant-numeric:tabular-nums; font-family:'Inter','Noto Sans KR',sans-serif; font-weight:500; }
       .cb-ledger td.cb-amt { font-weight:700; color:${t.ink}; }
-      .cb-calc { margin-top:12px; font-size:11px; padding:8px 0; border-bottom:1px solid ${t.ink}; }
+      .cb-calc { margin-top:10px; font-size:10.5px; padding:7px 0; border-bottom:1px solid ${t.ink}; }
       .cb-calc .r { display:flex; justify-content:space-between; padding:3px 0; color:${t.ink2}; }
       .cb-calc .r.b { color:${t.ink}; font-weight:700; }
-      .cb-verdict { margin-top:14px; background:${t.ink}; color:${t.paper}; padding:16px 20px; display:grid; grid-template-columns:1fr auto auto; align-items:center; gap:18px; }
-      .cb-verdict .l { font-family:'Inter',sans-serif; font-size:10px; font-weight:700; letter-spacing:.3em; text-transform:uppercase; color:${t.ink3}; }
-      .cb-verdict .stamp { font-family:'Nanum Myeongjo',serif; font-weight:800; font-size:14px; color:${t.accent2}; letter-spacing:.24em; padding:4px 10px; border:1.5px solid ${t.accent2}; border-radius:2px; }
-      .cb-verdict .v { font-family:'Fraunces',serif; font-weight:800; font-size:30px; color:${t.accent2}; letter-spacing:-.02em; line-height:1; }
-      .cb-foot { margin-top:16px; display:flex; justify-content:space-between; gap:16px; font-family:'Inter',sans-serif; font-size:10.5px; color:${t.ink2}; line-height:1.7; }
-      .cb-foot .company { font-family:'Nanum Myeongjo',serif; font-weight:700; color:${t.ink}; font-size:13px; margin-bottom:3px; }
+      .cb-verdict { margin-top:12px; background:${t.ink}; color:${t.paper}; padding:14px 18px; display:grid; grid-template-columns:1fr auto auto; align-items:center; gap:14px; }
+      .cb-verdict .l { font-family:'Inter',sans-serif; font-size:9.5px; font-weight:700; letter-spacing:.28em; text-transform:uppercase; color:${t.ink3}; }
+      .cb-verdict .stamp { font-family:'Nanum Myeongjo',serif; font-weight:800; font-size:13px; color:${t.accent2}; letter-spacing:.22em; padding:3px 9px; border:1.5px solid ${t.accent2}; border-radius:2px; }
+      .cb-verdict .v { font-family:'Fraunces',serif; font-weight:800; font-size:26px; color:${t.accent2}; letter-spacing:-.02em; line-height:1; }
+      .cb-foot { margin-top:14px; display:flex; justify-content:space-between; gap:14px; font-family:'Inter',sans-serif; font-size:10px; color:${t.ink2}; line-height:1.6; }
+      .cb-foot .company { font-family:'Nanum Myeongjo',serif; font-weight:700; color:${t.ink}; font-size:12px; margin-bottom:3px; }
     </style>
     <div class="doc-chamber">
       <div class="cb-outer">
-        <div class="cb-seal">Certified · ${ctx.docNo}</div>
+        <div class="cb-seal">Official · ${ctx.docNo}</div>
         <div class="cb-head">
-          <span class="l">SIDO <b>DESIGN</b> · Interior Studio</span>
+          <span class="l">SIDO <b>DESIGN</b> · Interior Design Studio</span>
           <span class="r">${ctx.docNo} · ${ctx.x(ctx.date||'—')}</span>
         </div>
 
@@ -2929,7 +2955,7 @@ function renderChamber(ctx) {
         </div>
 
         <div class="cb-verdict">
-          <span class="l">Sealed Total · VAT incl.</span>
+          <span class="l">Total · VAT Included</span>
           <span class="stamp">印</span>
           <span class="v">${ctx.fmtWon(ctx.grand)}</span>
         </div>
@@ -2937,7 +2963,7 @@ function renderChamber(ctx) {
         ${ctx.comp||ctx.mgr?`
         <div class="cb-foot">
           <div>
-            <div class="company">${ctx.comp?ctx.x(ctx.comp):'시도 디자인'}</div>
+            <div class="company">${ctx.comp?ctx.x(ctx.comp):'SIDO DESIGN'}</div>
             ${ctx.mgr?`담당 ${ctx.x(ctx.mgr)}${ctx.mgrp?' · '+ctx.x(ctx.mgrp):''}`:''}
           </div>
           <div style="text-align:right;">본 견적은 현장 실측 후 확정됩니다</div>
@@ -2968,53 +2994,53 @@ function renderScroll(ctx) {
 
   return `
     <style>
-      .doc-scroll { background:linear-gradient(180deg,${t.paper} 0%,${t.paperAlt} 100%); color:${t.ink}; padding:32px 42px 32px; position:relative; font-family:'EB Garamond','Cormorant Garamond',serif; }
-      .doc-scroll::before, .doc-scroll::after { content:''; position:absolute; left:0; right:0; height:8px; background:linear-gradient(90deg,${t.border},${t.accent2} 50%,${t.border}); }
+      .doc-scroll { background:linear-gradient(180deg,${t.paper} 0%,${t.paperAlt} 100%); color:${t.ink}; padding:28px 34px 28px; position:relative; font-family:'EB Garamond','Cormorant Garamond',serif; min-height:100%; }
+      .doc-scroll::before, .doc-scroll::after { content:''; position:absolute; left:0; right:0; height:7px; background:linear-gradient(90deg,${t.border},${t.accent2} 50%,${t.border}); }
       .doc-scroll::before { top:0; }
       .doc-scroll::after { bottom:0; }
-      .sc-masthead { text-align:center; padding-bottom:14px; border-bottom:1px solid ${t.ink}; }
-      .sc-brand { font-family:'Fraunces',serif; font-weight:800; font-size:13px; letter-spacing:.4em; color:${t.ink}; }
+      .sc-masthead { text-align:center; padding-bottom:12px; border-bottom:1px solid ${t.ink}; }
+      .sc-brand { font-family:'Fraunces',serif; font-weight:800; font-size:12px; letter-spacing:.36em; color:${t.ink}; }
       .sc-brand b { color:${t.accent}; }
-      .sc-date { font-family:'Cormorant Garamond',serif; font-style:italic; font-size:11px; color:${t.ink2}; letter-spacing:.08em; margin-top:4px; }
-      .sc-h1 { font-family:'Cormorant Garamond',serif; font-weight:500; font-size:64px; letter-spacing:-.02em; line-height:1; text-align:center; margin:22px 0 4px; color:${t.ink}; }
+      .sc-date { font-family:'Cormorant Garamond',serif; font-style:italic; font-size:10.5px; color:${t.ink2}; letter-spacing:.06em; margin-top:4px; }
+      .sc-h1 { font-family:'Cormorant Garamond',serif; font-weight:500; font-size:50px; letter-spacing:-.02em; line-height:1; text-align:center; margin:20px 0 4px; color:${t.ink}; }
       .sc-h1 em { font-style:italic; color:${t.accent}; font-weight:600; }
-      .sc-under { text-align:center; font-family:'Inter',sans-serif; font-size:9.5px; font-weight:700; letter-spacing:.42em; text-transform:uppercase; color:${t.accent}; margin-bottom:22px; }
-      .sc-greeting { font-size:14.5px; line-height:1.9; color:${t.ink}; text-align:justify; text-indent:2.2em; margin-bottom:6px; }
+      .sc-under { text-align:center; font-family:'Inter',sans-serif; font-size:9px; font-weight:700; letter-spacing:.4em; text-transform:uppercase; color:${t.accent}; margin-bottom:18px; }
+      .sc-greeting { font-size:13px; line-height:1.85; color:${t.ink}; text-align:justify; text-indent:2em; margin-bottom:6px; }
       .sc-greeting b { font-weight:700; color:${t.ink}; }
       .sc-greeting em { font-style:italic; color:${t.accent}; }
-      .sc-greeting .won { font-family:'Fraunces',serif; font-style:italic; font-weight:800; font-size:20px; color:${t.accent}; letter-spacing:-.01em; }
-      .sc-ornament { text-align:center; font-family:'Cormorant Garamond',serif; font-style:italic; font-size:24px; color:${t.accent2}; margin:10px 0 12px; letter-spacing:.4em; }
-      .sc-table-wrap { margin:10px 0 18px; padding:14px 0; border-top:1px solid ${t.ink}; border-bottom:1px solid ${t.ink}; }
-      .sc-caption { font-family:'Inter',sans-serif; font-size:9.5px; font-weight:700; letter-spacing:.34em; text-transform:uppercase; color:${t.ink2}; text-align:center; margin-bottom:12px; }
-      .sc-table { width:100%; border-collapse:collapse; font-size:12.5px; font-family:'EB Garamond',serif; }
-      .sc-table td { padding:6px 0; border-bottom:1px dotted rgba(26,20,8,.22); }
-      .sc-table td.sc-n { padding-right:10px; width:28px; font-family:'Fraunces',serif; font-style:italic; color:${t.accent}; font-weight:700; }
-      .sc-table td.sc-r { text-align:right; font-variant-numeric:tabular-nums; font-family:'Inter','Noto Sans KR',sans-serif; font-weight:500; font-size:11.5px; }
-      .sc-calc { display:grid; grid-template-columns:1fr auto; gap:2px 16px; font-family:'Inter','Noto Sans KR',sans-serif; font-size:11.5px; margin-bottom:14px; }
+      .sc-greeting .won { font-family:'Fraunces',serif; font-style:italic; font-weight:800; font-size:18px; color:${t.accent}; letter-spacing:-.01em; }
+      .sc-ornament { text-align:center; font-family:'Cormorant Garamond',serif; font-style:italic; font-size:22px; color:${t.accent2}; margin:10px 0 10px; letter-spacing:.4em; }
+      .sc-table-wrap { margin:8px 0 16px; padding:12px 0; border-top:1px solid ${t.ink}; border-bottom:1px solid ${t.ink}; }
+      .sc-caption { font-family:'Inter',sans-serif; font-size:9px; font-weight:700; letter-spacing:.32em; text-transform:uppercase; color:${t.ink2}; text-align:center; margin-bottom:10px; }
+      .sc-table { width:100%; border-collapse:collapse; font-size:11.5px; font-family:'EB Garamond',serif; }
+      .sc-table td { padding:5px 0; border-bottom:1px dotted rgba(26,20,8,.22); }
+      .sc-table td.sc-n { padding-right:8px; width:24px; font-family:'Fraunces',serif; font-style:italic; color:${t.accent}; font-weight:700; }
+      .sc-table td.sc-r { text-align:right; font-variant-numeric:tabular-nums; font-family:'Inter','Noto Sans KR',sans-serif; font-weight:500; font-size:10.5px; }
+      .sc-calc { display:grid; grid-template-columns:1fr auto; gap:2px 16px; font-family:'Inter','Noto Sans KR',sans-serif; font-size:10.5px; margin-bottom:12px; }
       .sc-calc .l { color:${t.ink2}; }
       .sc-calc .v { font-variant-numeric:tabular-nums; text-align:right; font-weight:500; }
       .sc-calc .b .l, .sc-calc .b .v { color:${t.ink}; font-weight:700; }
-      .sc-seal-row { display:grid; grid-template-columns:1fr auto 1fr; align-items:end; margin-top:14px; padding-top:14px; border-top:2px solid ${t.ink}; }
-      .sc-seal-row .l { font-family:'Inter',sans-serif; font-size:10px; letter-spacing:.32em; text-transform:uppercase; color:${t.ink2}; font-weight:700; }
-      .sc-seal-row .v { font-family:'Cormorant Garamond',serif; font-style:italic; font-weight:700; font-size:46px; color:${t.accent}; text-align:center; letter-spacing:-.02em; line-height:1; }
-      .sc-seal-row .r { text-align:right; font-family:'Cormorant Garamond',serif; font-style:italic; font-size:12px; color:${t.ink2}; }
-      .sc-seal-row .r .circle { display:inline-block; width:32px; height:32px; border:1.5px solid ${t.accent}; border-radius:50%; line-height:28px; color:${t.accent}; font-family:'Nanum Myeongjo',serif; font-weight:800; text-align:center; margin-top:6px; font-size:12px; }
+      .sc-seal-row { display:grid; grid-template-columns:1fr auto 1fr; align-items:end; margin-top:12px; padding-top:12px; border-top:2px solid ${t.ink}; }
+      .sc-seal-row .l { font-family:'Inter',sans-serif; font-size:9.5px; letter-spacing:.3em; text-transform:uppercase; color:${t.ink2}; font-weight:700; }
+      .sc-seal-row .v { font-family:'Cormorant Garamond',serif; font-style:italic; font-weight:700; font-size:38px; color:${t.accent}; text-align:center; letter-spacing:-.02em; line-height:1; }
+      .sc-seal-row .r { text-align:right; font-family:'Cormorant Garamond',serif; font-style:italic; font-size:11px; color:${t.ink2}; }
+      .sc-seal-row .r .circle { display:inline-block; width:30px; height:30px; border:1.5px solid ${t.accent}; border-radius:50%; line-height:26px; color:${t.accent}; font-family:'Nanum Myeongjo',serif; font-weight:800; text-align:center; margin-top:5px; font-size:11px; }
     </style>
     <div class="doc-scroll">
       <div class="sc-masthead">
-        <div class="sc-brand">SIDO <b>DESIGN</b></div>
+        <div class="sc-brand">SIDO <b>DESIGN</b> · Interior Design Studio</div>
         <div class="sc-date">Issued on ${fmtEngDate(ctx.date)}</div>
       </div>
 
-      <h1 class="sc-h1">An Estimate, <em>Respectfully Submitted</em></h1>
+      <h1 class="sc-h1"><em>Quotation.</em></h1>
       <div class="sc-under">견 · 적 · 서</div>
 
       <p class="sc-greeting">
-        ${ctx.x(ctx.cn)} <b>${ctx.x(ctx.ct)}</b>께. ${ctx.addr&&ctx.addr!=='—'?ctx.x(ctx.addr)+' ':''}${ctx.area?'전용 '+ctx.x(ctx.area)+'평 ':''}리모델링 공사에 대한 견적을 <em>삼가 제출합니다.</em>
+        ${ctx.x(ctx.cn)} <b>${ctx.x(ctx.ct)}</b>께. ${ctx.addr&&ctx.addr!=='—'?ctx.x(ctx.addr)+' ':''}${ctx.area?'전용 '+ctx.x(ctx.area)+'평 ':''}리모델링 공사에 대한 견적을 제출합니다.
         ${ctx.wp?'공사 기간은 '+ctx.x(ctx.wp)+'이며, ':''}부가가치세를 포함한 최종 합계 금액은 <span class="won">${ctx.fmtWon(ctx.grand)}</span>입니다.
       </p>
 
-      <div class="sc-ornament">· &nbsp; ✦ &nbsp; ·</div>
+      <div class="sc-ornament">·&nbsp;&nbsp;·&nbsp;&nbsp;·</div>
 
       <div class="sc-table-wrap">
         <div class="sc-caption">Schedule of Works</div>
@@ -3031,10 +3057,10 @@ function renderScroll(ctx) {
       </div>
 
       <div class="sc-seal-row">
-        <span class="l">Total · Incl. VAT</span>
+        <span class="l">Total · VAT Included</span>
         <span class="v">${ctx.fmtWon(ctx.grand)}</span>
         <span class="r">
-          ${ctx.comp?ctx.x(ctx.comp):'시도 디자인'}<br>
+          ${ctx.comp?ctx.x(ctx.comp):'SIDO DESIGN'}<br>
           ${ctx.mgr?ctx.x(ctx.mgr):''}
           <div class="circle">印</div>
         </span>
@@ -3088,24 +3114,24 @@ function renderDetailPages(ctx, design) {
 
   return `
     <style>
-      .dp-wrap { margin-top:32px; padding-top:18px; border-top:2px solid ${t.ink}; }
-      .dp-wrap-title { font-family:'Inter',sans-serif; font-size:10.5px; font-weight:700; letter-spacing:.3em; text-transform:uppercase; color:${t.ink2}; margin-bottom:14px; }
-      .dp-block { margin-bottom:20px; }
-      .dp-h { display:flex; align-items:baseline; justify-content:space-between; padding:10px 12px; background:${t.ink}; color:${t.paper}; }
-      .dp-code { font-family:'JetBrains Mono',monospace; font-size:10.5px; color:${t.accent2}; letter-spacing:.06em; margin-right:12px; }
-      .dp-nm { font-size:12.5px; font-weight:700; letter-spacing:.06em; flex:1; }
-      .dp-t { font-family:'Inter','Noto Sans KR',sans-serif; font-variant-numeric:tabular-nums; font-size:11.5px; font-weight:700; color:${t.accent2}; }
-      .dp-t-table { width:100%; border-collapse:collapse; font-size:11px; }
-      .dp-t-table thead th { font-family:'Inter',sans-serif; font-size:9px; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:${t.ink2}; text-align:left; padding:7px 8px; border-bottom:1px solid ${t.ink}; background:${t.paperAlt}; }
+      .dp-wrap { margin-top:28px; padding-top:14px; border-top:2px solid ${t.ink}; }
+      .dp-wrap-title { font-family:'Inter',sans-serif; font-size:9.5px; font-weight:700; letter-spacing:.28em; text-transform:uppercase; color:${t.ink2}; margin-bottom:12px; }
+      .dp-block { margin-bottom:16px; }
+      .dp-h { display:flex; align-items:baseline; justify-content:space-between; padding:9px 11px; background:${t.ink}; color:${t.paper}; }
+      .dp-code { font-family:'JetBrains Mono',monospace; font-size:9.5px; color:${t.accent2}; letter-spacing:.06em; margin-right:10px; }
+      .dp-nm { font-size:11.5px; font-weight:700; letter-spacing:.05em; flex:1; }
+      .dp-t { font-family:'Inter','Noto Sans KR',sans-serif; font-variant-numeric:tabular-nums; font-size:10.5px; font-weight:700; color:${t.accent2}; }
+      .dp-t-table { width:100%; border-collapse:collapse; font-size:10px; }
+      .dp-t-table thead th { font-family:'Inter',sans-serif; font-size:8.5px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:${t.ink2}; text-align:left; padding:6px 7px; border-bottom:1px solid ${t.ink}; background:${t.paperAlt}; }
       .dp-t-table thead th.dp-r { text-align:right; }
       .dp-t-table thead th.dp-c { text-align:center; }
-      .dp-t-table tbody td { padding:6px 8px; border-bottom:1px solid ${t.border}; }
+      .dp-t-table tbody td { padding:5px 7px; border-bottom:1px solid ${t.border}; }
       .dp-t-table td.dp-r { text-align:right; font-variant-numeric:tabular-nums; font-family:'Inter','Noto Sans KR',sans-serif; }
       .dp-t-table td.dp-c { text-align:center; color:${t.ink2}; }
       .dp-t-table td.dp-a { font-weight:700; color:${t.ink}; }
     </style>
     <div class="dp-wrap">
-      <div class="dp-wrap-title">공사별 세부 내역 · Detail Breakdown</div>
+      <div class="dp-wrap-title">공사별 세부 내역 · Detailed Breakdown</div>
       ${pages}
     </div>
   `;
