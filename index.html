@@ -55,7 +55,7 @@
   --green:         #32D74B;
 
   --sidebar-w:     300px;
-  --editor-w:      420px;
+  --editor-w:      480px;
   --header-h:      56px;        /* v2 — thinner institutional strip */
   --radius:        12px;
   --radius-sm:     8px;
@@ -429,11 +429,11 @@ body {
   font-family: 'Inter', 'Noto Sans KR', sans-serif;
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
-  font-size: 10px; color: var(--ink4);
+  font-size: 10.5px; color: var(--ink4);
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   letter-spacing: -.01em;
 }
-.cat-cell.has-data .cat-amt { color: var(--accent); font-weight: 600; }
+.cat-cell.has-data .cat-amt { color: var(--accent); font-weight: 700; }
 
 /* ══════════════════════════════════════════
    ITEM EDITOR — v2 accountant-style table
@@ -465,11 +465,14 @@ body {
 /* 빠른 입력 strip */
 .quick-strip {
   display: flex; flex-wrap: wrap; gap: 5px;
-  padding: 10px 14px;
+  padding: 10px 14px 12px;
   background: var(--surface2);
   border-bottom: 1px solid var(--border);
-  max-height: 84px; overflow-y: auto;
+  max-height: 132px;
+  overflow-y: auto;
 }
+.quick-strip::-webkit-scrollbar { width: 4px; }
+.quick-strip::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 2px; }
 .q-chip {
   padding: 4px 10px;
   background: var(--surface);
@@ -481,6 +484,7 @@ body {
   font-family: inherit; white-space: nowrap;
   -webkit-user-select: none; user-select: none;
   letter-spacing: -.005em;
+  position: relative;
 }
 .q-chip:hover {
   border-color: var(--accent);
@@ -488,11 +492,27 @@ body {
   background: var(--accent-soft);
 }
 .q-chip:active { transform: scale(.95); }
+/* 단위 프리셋이 있는 칩은 꼬리표 표시 */
+.q-chip[data-unit]::after {
+  content: attr(data-unit);
+  display: inline-block;
+  margin-left: 6px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--border2);
+  color: var(--ink3);
+  font-family: 'Inter', sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  vertical-align: 1px;
+}
+.q-chip:hover[data-unit]::after { background: var(--accent); color: #fff; }
 
 /* 항목 열 헤더 */
 .item-cols-hd {
   display: grid;
-  grid-template-columns: minmax(0,1fr) 100px 70px 84px 30px;
+  grid-template-columns: minmax(0,1fr) 56px 52px 88px 96px 26px;
   gap: 6px; padding: 9px 14px;
   font-family: 'Inter', 'Noto Sans KR', sans-serif;
   font-size: 9.5px; font-weight: 700;
@@ -501,55 +521,80 @@ body {
   border-bottom: 1px solid var(--ink3);
   background: var(--surface2);
 }
+.item-cols-hd > div { text-align: right; }
+.item-cols-hd > div:first-child { text-align: left; }
+.item-cols-hd > div:nth-child(2),
+.item-cols-hd > div:nth-child(3) { text-align: center; }
 
 /* 항목 행 */
 .item-entry {
-  padding: 8px 14px;
+  padding: 10px 14px;
   border-bottom: 1px solid var(--border2);
   animation: rowIn .18s ease;
 }
-.item-entry:last-child { border-bottom: none; }
+.item-entry:last-of-type { border-bottom: none; }
 @keyframes rowIn { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:translateY(0); } }
 
 .item-row1 {
   display: grid;
-  grid-template-columns: minmax(0,1fr) 100px 70px 84px 30px;
+  grid-template-columns: minmax(0,1fr) 56px 52px 88px 96px 26px;
   gap: 6px; align-items: center; margin-bottom: 4px;
 }
 .iinput {
-  padding: 6px 0;
-  background: transparent;
-  border: 0;
-  border-bottom: 1px solid transparent;
-  border-radius: 0;
+  padding: 7px 8px;
+  background: var(--surface2);
+  border: 1px solid transparent;
+  border-radius: 4px;
   color: var(--ink);
-  font-family: inherit; font-size: 12.5px;
+  font-family: inherit; font-size: 13px;
   letter-spacing: -.005em;
   outline: none; width: 100%; min-width: 0;
-  transition: border-color var(--dur) var(--ease-spring);
+  transition: border-color var(--dur) var(--ease-spring), background var(--dur);
 }
-.iinput:hover { border-bottom-color: var(--border); }
-.iinput:focus { border-bottom-color: var(--accent); }
+.iinput:hover { background: var(--surface3); }
+.iinput:focus {
+  background: var(--surface);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-dim);
+}
 .iinput::placeholder { color: var(--ink4); }
-.iinput[type=number] {
+.iinput[type=number],
+.iinput.num {
   text-align: right;
   font-family: 'Inter', 'Noto Sans KR', sans-serif;
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
 }
+.iinput.unit { text-align: center; }
+
+/* 수동 편집 가능한 금액 pill */
 .amt-pill {
-  padding: 6px 8px;
+  padding: 7px 8px;
   background: transparent;
-  border: 0;
-  border-bottom: 1px solid var(--border);
+  border: 1px solid transparent;
+  border-radius: 4px;
   font-family: 'Inter', 'Noto Sans KR', sans-serif;
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
-  font-size: 12.5px; font-weight: 700;
-  color: var(--ink); text-align: right; white-space: nowrap;
+  font-size: 13px; font-weight: 700;
+  color: var(--ink); text-align: right;
   letter-spacing: -.01em;
+  outline: none; width: 100%;
+  transition: border-color var(--dur) var(--ease-spring), background var(--dur);
+  cursor: text;
 }
-.amt-pill:empty::before { content: '—'; color: var(--ink4); font-weight: 400; }
+.amt-pill:hover { background: var(--surface3); }
+.amt-pill:focus {
+  background: var(--surface);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-dim);
+}
+.amt-pill.overridden {
+  color: var(--accent);
+  border-color: var(--accent-dim);
+  background: var(--accent-soft);
+}
+.amt-pill::placeholder { color: var(--ink4); font-weight: 400; }
 .del-btn {
   width: 24px; height: 24px;
   background: transparent; border: 0;
@@ -560,16 +605,17 @@ body {
   flex-shrink: 0;
 }
 .del-btn:hover { background: #FDEAEA; color: #C23B30; }
+.del-btn:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
 
 .note-inp {
   width: 100%; padding: 4px 0 2px;
   background: transparent; border: none;
   color: var(--ink3); font-family: inherit;
-  font-size: 10.5px; outline: none;
+  font-size: 11px; outline: none;
   letter-spacing: -.005em;
 }
 .note-inp:focus { color: var(--ink2); }
-.note-inp::placeholder { color: var(--ink4); }
+.note-inp::placeholder { color: var(--ink4); font-style: italic; }
 
 .add-row-btn {
   width: 100%; padding: 10px;
@@ -1026,15 +1072,32 @@ body {
   background: var(--ink);
   color: #fff;
   border: 1px solid rgba(255,255,255,.1);
-  border-radius: 999px; padding: 11px 24px;
+  border-radius: 999px; padding: 10px 12px 10px 22px;
   font-size: 13px;
   letter-spacing: -.005em;
   white-space: nowrap; z-index: 999;
   opacity: 0; pointer-events: none;
   transition: all var(--dur-slow) var(--ease-modal);
   box-shadow: var(--shadow-lg);
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
 }
-.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
+.toast-undo {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,.3);
+  color: #fff;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  letter-spacing: .02em;
+  transition: all var(--dur-fast) var(--ease-spring);
+}
+.toast-undo:hover { background: var(--accent); border-color: var(--accent); }
 
 /* ══════════════════════════════════════════
    DESIGN SELECTOR
@@ -1439,8 +1502,11 @@ body {
 /* ══════════════════════════════════════════
    RESPONSIVE
 ══════════════════════════════════════════ */
-@media (max-width: 1200px) {
-  :root { --editor-w: 360px; }
+@media (max-width: 1280px) {
+  :root { --editor-w: 420px; }
+}
+@media (max-width: 1100px) {
+  :root { --editor-w: 380px; --sidebar-w: 260px; }
 }
 @media (max-width: 960px) {
   .main { grid-template-columns: 1fr; grid-template-rows: auto; height: auto; overflow: visible; }
@@ -1871,6 +1937,40 @@ const QUICK = {
   2400: ['가스배관 철거','실링팬','실링팬 시공비','준공청소','실리콘 작업','구청 행위허가','주민동의서 대행','E/V 보양','에어컨 배관 이동','폐기물 처리','공과잡비'],
 };
 
+/* ── Quick preset: 자주 쓰는 품목의 단위 추정 ──
+   QUICK 배열 항목은 문자열 또는 {desc, unit, price} 객체가 될 수 있음.
+   문자열만 있어도 이름을 보고 자주 쓰는 단위를 자동 추정. */
+function quickNormalize(entry) {
+  if (typeof entry === 'string') {
+    return { desc: entry, unit: guessUnit(entry), price: '' };
+  }
+  return { desc: entry.desc || '', unit: entry.unit || guessUnit(entry.desc || ''), price: entry.price || '' };
+}
+function guessUnit(name) {
+  if (!name) return '';
+  // 벽지·장판·바닥재·타일 (M² — 면적 단위는 가장 먼저 매칭)
+  if (/벽지|장판|강마루|마루|타일|필름/.test(name)) return 'M²';
+  // 판재·각재류 먼저 매칭 (MDF 같은 약어가 "M/D" 패턴에 잘못 걸리는 걸 방지)
+  if (/MDF|석고|아이소핑크|합판|각재|패널|징크/.test(name)) return '장';
+  // 걸레받이/몰딩·레일 (길이 단위)
+  if (/걸레받이|몰딩|코너비드|레일/.test(name)) return 'm';
+  // 인건비/식대/장비 계열
+  if (/인건비|기공|일당/.test(name))             return 'M/D';
+  if (/식대|식비/.test(name))                     return '식';
+  if (/운송|양중|장비대|사다리차|폐기|운반/.test(name)) return '식';
+  // 본드·실리콘·폼·시멘트·페인트·줄눈 (소모자재)
+  if (/본드|실리콘|줄눈|폼|시멘트|페인트/.test(name)) return '개';
+  // 스위치·콘센트·조명
+  if (/스위치|콘센트|다운라이트|매입등|간접등|LED/.test(name)) return '개';
+  // 수전·도기류·가구 완제품
+  if (/변기|세면대|수전|파티션|거울|수건걸이|휴지걸이|문짝|신발장|상하부|아일랜드/.test(name)) return '개';
+  // 시트지 (필름과 별도)
+  if (/^시트|무늬 필름|무늬시트/.test(name)) return 'M²';
+  // 공사 포괄
+  if (/공사|교체|철거|행위허가|동의서|보양|준공|이동|대행|청소/.test(name)) return '식';
+  return '';
+}
+
 /* ════════════════════════════════════
    DESIGN THEMES
 ════════════════════════════════════ */
@@ -1987,11 +2087,13 @@ function init() {
                    'area','estDate','workPeriod','companyName','managerName','managerPhone',
                    'profitPct','discVal','validDays'];
   infoIds.forEach(id => document.getElementById(id)?.addEventListener('input', () => {
+    persistDraft();
     updateHeader(); renderDoc();
   }));
 
   // 단수 직접 입력 이벤트
   document.getElementById('roundManualVal')?.addEventListener('input', () => {
+    persistDraft();
     updateHeader(); renderDoc(); updateRoundPreview();
   });
 
@@ -2069,15 +2171,24 @@ function buildEditor() {
   // Quick chips
   if (quickList.length) {
     const strip = mk('div', 'quick-strip');
-    quickList.forEach(name => {
-      const chip = mk('span', 'q-chip', name);
+    quickList.forEach(rawEntry => {
+      const preset = quickNormalize(rawEntry);
+      const chip = mk('span', 'q-chip', preset.desc);
+      if (preset.unit) chip.setAttribute('data-unit', preset.unit);
+      chip.title = preset.unit ? `${preset.desc} · 단위 ${preset.unit}` : preset.desc;
       chip.addEventListener('click', () => {
-        DB[selectedCat].push({ desc: name, qty: '', price: '', note: '' });
+        DB[selectedCat].push({
+          desc: preset.desc,
+          qty: '',
+          price: preset.price || '',
+          note: preset.unit || '',
+        });
+        persistDraft();
         buildCatGrid();
         buildEditor();
         updateHeader();
         renderDoc();
-        // focus last qty
+        // focus the newly added qty cell
         setTimeout(() => {
           const qs = document.querySelectorAll('.iinput[data-t="qty"]');
           if (qs.length) { qs[qs.length-1].focus(); qs[qs.length-1].scrollIntoView({behavior:'smooth',block:'nearest'}); }
@@ -2091,7 +2202,7 @@ function buildEditor() {
   // Col header
   if (list.length) {
     const ch = mk('div', 'item-cols-hd');
-    ['내용','단가(원)','수량','금액',''].forEach(t => ch.appendChild(mk('div','',t)));
+    ['내용','수량','단위','단가(원)','금액',''].forEach(t => ch.appendChild(mk('div','',t)));
     panel.appendChild(ch);
   }
 
@@ -2102,7 +2213,13 @@ function buildEditor() {
   const addBtn = mk('button', 'add-row-btn', '+ 항목 추가');
   addBtn.addEventListener('click', () => {
     DB[selectedCat].push({ desc:'', qty:'', price:'', note:'' });
+    persistDraft();
     buildCatGrid(); buildEditor(); updateHeader(); renderDoc();
+    // 새 행의 내용 input에 포커스
+    setTimeout(() => {
+      const inputs = document.querySelectorAll('.item-entry .iinput[type=text]');
+      if (inputs.length) inputs[inputs.length-1].focus();
+    }, 50);
   });
   panel.appendChild(addBtn);
 
@@ -2111,70 +2228,154 @@ function buildEditor() {
 }
 
 /* ════════════════════════════════════
-   ITEM ENTRY
+   ITEM ENTRY — v2 UX
+   column order: 내용 / 수량 / 단위 / 단가 / 금액 / 삭제
+   features: 수량·단가 실시간 천단위, 금액 수동 오버라이드, 삭제 시 undo 토스트
 ════════════════════════════════════ */
 function buildEntry(item, idx, code) {
   const entry = mk('div', 'item-entry');
 
   const r1 = mk('div', 'item-row1');
 
-  // 내용
+  // ── 1. 내용 ──
   const descIn = document.createElement('input');
-  descIn.className = 'iinput'; descIn.type = 'text';
-  descIn.value = item.desc || ''; descIn.placeholder = '내용';
+  descIn.className = 'iinput';
+  descIn.type = 'text';
+  descIn.value = item.desc || '';
+  descIn.placeholder = '품목명';
   descIn.addEventListener('input', e => {
     DB[code][idx].desc = e.target.value;
+    persistDraft();
     buildCatGrid(); updateHeader(); renderDoc();
   });
 
-  // 수량
+  // ── 2. 수량 (쉼표 포맷) ──
   const qtyIn = document.createElement('input');
-  qtyIn.className = 'iinput'; qtyIn.type = 'number';
+  qtyIn.className = 'iinput num';
+  qtyIn.type = 'text';
+  qtyIn.inputMode = 'decimal';
   qtyIn.dataset.t = 'qty';
-  qtyIn.value = item.qty || ''; qtyIn.placeholder = '0';
+  qtyIn.value = fmtTyping(item.qty);
+  qtyIn.placeholder = '0';
   qtyIn.addEventListener('input', e => {
-    DB[code][idx].qty = e.target.value;
+    const raw = parseTyping(e.target.value);
+    DB[code][idx].qty = raw;
+    // 커서 위치 유지하며 재포맷
+    const cursor = e.target.selectionStart;
+    const before = e.target.value.slice(0, cursor).replace(/[^\d.-]/g, '').length;
+    e.target.value = fmtTyping(raw);
+    const after = findCursorPos(e.target.value, before);
+    e.target.setSelectionRange(after, after);
+    // override 해제 (수량/단가 바꾸면 자동 재계산 복귀)
+    delete DB[code][idx].amountOverride;
     refreshAmt(amtEl, DB[code][idx]);
+    persistDraft();
     refreshEdTot(); updateHeader(); renderDoc();
   });
 
-  // 단가
+  // ── 3. 단위 ──
+  const unitIn = document.createElement('input');
+  unitIn.className = 'iinput unit';
+  unitIn.type = 'text';
+  unitIn.value = item.note || '';
+  unitIn.placeholder = '식';
+  unitIn.title = '단위 (식 / M² / M/D / 개 / 장 / Roll 등)';
+  unitIn.addEventListener('input', e => {
+    DB[code][idx].note = e.target.value;
+    persistDraft();
+    renderDoc();
+  });
+
+  // ── 4. 단가 (쉼표 포맷) ──
   const priceIn = document.createElement('input');
-  priceIn.className = 'iinput'; priceIn.type = 'number';
-  priceIn.value = item.price || ''; priceIn.placeholder = '0';
+  priceIn.className = 'iinput num';
+  priceIn.type = 'text';
+  priceIn.inputMode = 'numeric';
+  priceIn.value = fmtTyping(item.price);
+  priceIn.placeholder = '0';
   priceIn.addEventListener('input', e => {
-    DB[code][idx].price = e.target.value;
+    const raw = parseTyping(e.target.value);
+    DB[code][idx].price = raw;
+    const cursor = e.target.selectionStart;
+    const before = e.target.value.slice(0, cursor).replace(/[^\d.-]/g, '').length;
+    e.target.value = fmtTyping(raw);
+    const after = findCursorPos(e.target.value, before);
+    e.target.setSelectionRange(after, after);
+    delete DB[code][idx].amountOverride;
     refreshAmt(amtEl, DB[code][idx]);
+    persistDraft();
     buildCatGrid(); refreshEdTot(); updateHeader(); renderDoc();
   });
 
-  // 금액
-  const amtEl = mk('div', 'amt-pill');
-  amtEl.textContent = calcRowFmt(item);
-
-  // 삭제
-  const del = mk('button', 'del-btn', '×');
-  del.addEventListener('click', () => {
-    DB[code].splice(idx, 1);
-    buildCatGrid(); buildEditor(); updateHeader(); renderDoc();
+  // ── 5. 금액 (편집 가능: 수량×단가 자동, 타이핑 시 수동 오버라이드) ──
+  const amtEl = document.createElement('input');
+  amtEl.className = 'amt-pill';
+  amtEl.type = 'text';
+  amtEl.inputMode = 'numeric';
+  amtEl.placeholder = '0';
+  amtEl.title = '자동계산 결과. 직접 입력하면 수동값으로 고정됩니다';
+  refreshAmt(amtEl, item);
+  amtEl.addEventListener('input', e => {
+    const raw = parseTyping(e.target.value);
+    DB[code][idx].amountOverride = raw === '' ? null : Number(raw);
+    const cursor = e.target.selectionStart;
+    const before = e.target.value.slice(0, cursor).replace(/[^\d.-]/g, '').length;
+    e.target.value = fmtTyping(raw);
+    const after = findCursorPos(e.target.value, before);
+    e.target.setSelectionRange(after, after);
+    amtEl.classList.toggle('overridden', DB[code][idx].amountOverride != null);
+    persistDraft();
+    buildCatGrid(); refreshEdTot(); updateHeader(); renderDoc();
+  });
+  amtEl.addEventListener('dblclick', () => {
+    // 더블클릭으로 오버라이드 해제
+    if (DB[code][idx].amountOverride != null) {
+      delete DB[code][idx].amountOverride;
+      refreshAmt(amtEl, DB[code][idx]);
+      persistDraft();
+      buildCatGrid(); refreshEdTot(); updateHeader(); renderDoc();
+      showToast('자동 계산으로 복귀');
+    }
   });
 
-  r1.appendChild(descIn); r1.appendChild(priceIn);
-  r1.appendChild(qtyIn); r1.appendChild(amtEl); r1.appendChild(del);
-  entry.appendChild(r1);
+  // ── 6. 삭제 (undo 지원) ──
+  const del = mk('button', 'del-btn', '×');
+  del.type = 'button';
+  del.tabIndex = -1; // Tab으로 이동 차단 (실수 방지)
+  del.title = '행 삭제';
+  del.addEventListener('click', () => {
+    const snapshot = JSON.parse(JSON.stringify(DB[code][idx]));
+    const savedIdx = idx;
+    DB[code].splice(idx, 1);
+    persistDraft();
+    buildCatGrid(); buildEditor(); updateHeader(); renderDoc();
+    showToastUndo('행 삭제됨', () => {
+      DB[code].splice(savedIdx, 0, snapshot);
+      persistDraft();
+      buildCatGrid(); buildEditor(); updateHeader(); renderDoc();
+    });
+  });
 
-  // 비고
-  const noteIn = document.createElement('input');
-  noteIn.className = 'note-inp'; noteIn.type = 'text';
-  noteIn.value = item.note || '';
-  noteIn.placeholder = '비고 / 단위 (식, M/D, 개, Roll…)';
-  noteIn.addEventListener('input', e => { DB[code][idx].note = e.target.value; renderDoc(); });
-  entry.appendChild(noteIn);
+  r1.appendChild(descIn);
+  r1.appendChild(qtyIn);
+  r1.appendChild(unitIn);
+  r1.appendChild(priceIn);
+  r1.appendChild(amtEl);
+  r1.appendChild(del);
+  entry.appendChild(r1);
 
   return entry;
 }
 
-function refreshAmt(el, item) { el.textContent = calcRowFmt(item); }
+function refreshAmt(el, item) {
+  const a = calcRow(item);
+  if (el.tagName === 'INPUT') {
+    el.value = a > 0 ? fmtTyping(String(a)) : '';
+    el.classList.toggle('overridden', item.amountOverride != null);
+  } else {
+    el.textContent = a > 0 ? fmt(a) : '—';
+  }
+}
 function refreshEdTot() {
   const el = document.getElementById('edTot');
   if (el && selectedCat) {
@@ -2349,7 +2550,10 @@ function renderDoc() {
 /* ════════════════════════════════════
    CALC
 ════════════════════════════════════ */
-function calcRow(it) { return (parseFloat(it.qty)||0)*(parseFloat(it.price)||0); }
+function calcRow(it) {
+  if (it.amountOverride != null && !isNaN(it.amountOverride)) return Number(it.amountOverride);
+  return (parseFloat(it.qty)||0)*(parseFloat(it.price)||0);
+}
 function calcRowFmt(it) { const a = calcRow(it); return a>0?fmt(a):'—'; }
 function catTotal(code) { return DB[code].reduce((s,it)=>s+calcRow(it),0); }
 function subtotal() { return CATS.reduce((s,c)=>s+catTotal(c.code),0); }
@@ -2753,6 +2957,7 @@ function resetAll() {
     else el.value = '';
   });
   selectedCat = null;
+  currentEstId = null;
   discType = 'pct';
   document.getElementById('dbPct').classList.add('on');
   document.getElementById('dbWon').classList.remove('on');
@@ -2762,6 +2967,7 @@ function resetAll() {
   document.getElementById('editorWrap').innerHTML =
     '<div class="no-cat-hint"><svg class="hint-svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>위에서 공사 항목을 클릭하면<br>세부 내역을 입력할 수 있습니다</div>';
   buildCatGrid(); updateHeader(); renderDoc();
+  clearDraft();
   showToast('초기화 완료');
 }
 
@@ -2783,11 +2989,101 @@ function fmtShort(n) {
 }
 function x(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function g(id) { return (document.getElementById(id)?.value||'').trim(); }
+
+/* 입력 중 실시간 천단위 포맷팅 */
+function parseTyping(v) {
+  if (v == null) return '';
+  // 한국어 콤마·공백 제거, 음수/소수점 허용
+  const s = String(v).replace(/[^\d.\-]/g, '');
+  if (s === '' || s === '-' || s === '.') return s;
+  return s;
+}
+function fmtTyping(v) {
+  if (v == null || v === '') return '';
+  const s = String(v);
+  if (s === '-' || s === '.') return s;
+  const n = Number(s);
+  if (isNaN(n)) return s;
+  // 소수부 보존
+  const [intPart, decPart] = s.split('.');
+  const formatted = Number(intPart).toLocaleString('ko-KR');
+  return decPart !== undefined ? formatted + '.' + decPart : formatted;
+}
+// 쉼표가 포함된 포맷 문자열에서 N번째 숫자 문자 이후 커서 위치 찾기
+function findCursorPos(formatted, digitIndex) {
+  let seen = 0;
+  for (let i = 0; i < formatted.length; i++) {
+    if (/[\d.\-]/.test(formatted[i])) {
+      if (seen === digitIndex) return i;
+      seen++;
+    }
+  }
+  return formatted.length;
+}
+
+/* 토스트: 단순 안내 */
 function showToast(msg, dur=2400) {
   const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'), dur);
+  t.innerHTML = '<span>' + msg + '</span>';
+  t.classList.add('show');
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(()=>t.classList.remove('show'), dur);
 }
+/* 토스트: 되돌리기 버튼 포함 */
+function showToastUndo(msg, undoFn, dur=4500) {
+  const t = document.getElementById('toast');
+  t.innerHTML = '<span>' + msg + '</span>'
+    + '<button class="toast-undo" id="_toastUndo">되돌리기</button>';
+  t.classList.add('show');
+  const btn = document.getElementById('_toastUndo');
+  btn.addEventListener('click', () => {
+    t.classList.remove('show');
+    clearTimeout(showToastUndo._t);
+    undoFn();
+  });
+  clearTimeout(showToastUndo._t);
+  showToastUndo._t = setTimeout(()=>t.classList.remove('show'), dur);
+}
+
+/* ════════════════════════════════════
+   LOCAL DRAFT — 자동저장 (페이지 닫기/새로고침 방어)
+════════════════════════════════════ */
+const DRAFT_KEY = 'sido_draft_v2';
+let _persistTimer = null;
+function persistDraft() {
+  clearTimeout(_persistTimer);
+  _persistTimer = setTimeout(() => {
+    try {
+      const data = serializeEstimate();
+      data._draftSavedAt = Date.now();
+      data._currentEstId = currentEstId;
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(data));
+    } catch (e) { /* 용량 초과 무시 */ }
+  }, 300);
+}
+function loadDraft() {
+  try {
+    const raw = localStorage.getItem(DRAFT_KEY);
+    if (!raw) return false;
+    const data = JSON.parse(raw);
+    const ageMin = (Date.now() - (data._draftSavedAt || 0)) / 60000;
+    // 6시간 내 drafts만
+    if (ageMin > 360) { localStorage.removeItem(DRAFT_KEY); return false; }
+    currentEstId = data._currentEstId || null;
+    deserializeEstimate(data);
+    return true;
+  } catch { return false; }
+}
+function clearDraft() { localStorage.removeItem(DRAFT_KEY); }
+
+// 페이지 닫을 때 자동저장 drafts가 아직 남아 있으면 경고 (서버 저장 안 한 상태)
+window.addEventListener('beforeunload', e => {
+  if (localStorage.getItem(DRAFT_KEY)) {
+    e.preventDefault();
+    e.returnValue = '저장되지 않은 견적서가 있습니다.';
+    return e.returnValue;
+  }
+});
 
 /* ════════════════════════════════════
    SERVER API — 견적서 저장/목록/수정/삭제
@@ -2820,6 +3116,10 @@ async function doLogin() {
     currentUser = data.user;
     localStorage.setItem('sido_token', authToken);
     showApp();
+    // 로그인 후 drafts 복구
+    if (loadDraft()) {
+      setTimeout(() => showToast('이전 작성 중이던 내용을 복구했습니다'), 300);
+    }
   } catch (err) {
     document.getElementById('loginError').textContent = '서버 연결 실패';
   }
@@ -2964,7 +3264,14 @@ function serializeEstimate() {
     roundManualVal: g('roundManualVal'),
     design:       currentDesign,
     items:        Object.fromEntries(
-      CATS.map(c => [c.code, DB[c.code].filter(i => i.desc || i.price || i.qty)])
+      CATS.map(c => [c.code, DB[c.code]
+        .filter(i => i.desc || i.price || i.qty || i.note || i.amountOverride != null)
+        .map(i => {
+          const out = { desc: i.desc || '', qty: i.qty || '', price: i.price || '', note: i.note || '' };
+          if (i.amountOverride != null) out.amountOverride = i.amountOverride;
+          return out;
+        })
+      ])
     ),
     grandTotal:   grand,
   };
@@ -2998,9 +3305,11 @@ function deserializeEstimate(data) {
   // 공사 항목 복원
   CATS.forEach(c => {
     DB[c.code] = (data.items && data.items[c.code])
-      ? data.items[c.code].map(i => ({
-          desc: i.desc || '', qty: i.qty || '', price: i.price || '', note: i.note || ''
-        }))
+      ? data.items[c.code].map(i => {
+          const row = { desc: i.desc || '', qty: i.qty || '', price: i.price || '', note: i.note || '' };
+          if (i.amountOverride != null) row.amountOverride = Number(i.amountOverride);
+          return row;
+        })
       : [];
   });
 
@@ -3045,6 +3354,7 @@ async function saveToServer() {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const result = await res.json();
     currentEstId = result._id || result.id || currentEstId;
+    clearDraft();
     showSaveStatus('ok', '저장 완료');
     showToast('서버 저장 완료');
   } catch (err) {
@@ -3111,6 +3421,7 @@ async function loadEstimate(id) {
     const data = await res.json();
     currentEstId = id;
     deserializeEstimate(data);
+    persistDraft();
     closeEstList();
     showToast('견적서를 불러왔습니다');
   } catch (err) {
@@ -3151,7 +3462,13 @@ document.getElementById('estModal').addEventListener('click', e => {
   init();
   if (authToken) {
     const ok = await checkAuth();
-    if (ok) showApp();
+    if (ok) {
+      showApp();
+      // 로그인 상태면 drafts 복구 시도
+      if (loadDraft()) {
+        showToast('이전 작성 중이던 내용을 복구했습니다');
+      }
+    }
   }
 })();
 </script>
