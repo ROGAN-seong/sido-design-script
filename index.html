@@ -312,7 +312,7 @@ body {
   gap: 2px;
 }
 .seg button {
-  flex: 1; padding: 5px 10px;
+  flex: 1; padding: 5px 12px;
   background: transparent;
   border: none; border-radius: 4px;
   font-family: inherit;
@@ -321,12 +321,22 @@ body {
   cursor: pointer;
   transition: all var(--dur) var(--ease-spring);
   letter-spacing: .02em;
+  white-space: nowrap;
+  min-width: 0;
 }
 .seg button:hover { color: var(--ink); }
 .seg button.on {
   background: var(--accent);
   color: #fff;
   font-weight: 700;
+}
+/* 블록형 세그먼트 — 컨테이너 가로 전체 사용 */
+.seg.seg-block {
+  display: flex;
+  width: 100%;
+}
+.seg.seg-block button {
+  flex: 1;
 }
 
 /* ══════════════════════════════════════════
@@ -512,7 +522,7 @@ body {
 /* 항목 열 헤더 */
 .item-cols-hd {
   display: grid;
-  grid-template-columns: minmax(0,1fr) 56px 52px 88px 96px 26px;
+  grid-template-columns: minmax(0,1fr) 88px 56px 52px 96px 26px;
   gap: 6px; padding: 9px 14px;
   font-family: 'Inter', 'Noto Sans KR', sans-serif;
   font-size: 9.5px; font-weight: 700;
@@ -523,8 +533,8 @@ body {
 }
 .item-cols-hd > div { text-align: right; }
 .item-cols-hd > div:first-child { text-align: left; }
-.item-cols-hd > div:nth-child(2),
-.item-cols-hd > div:nth-child(3) { text-align: center; }
+.item-cols-hd > div:nth-child(3),
+.item-cols-hd > div:nth-child(4) { text-align: center; }
 
 /* 항목 행 */
 .item-entry {
@@ -537,7 +547,7 @@ body {
 
 .item-row1 {
   display: grid;
-  grid-template-columns: minmax(0,1fr) 56px 52px 88px 96px 26px;
+  grid-template-columns: minmax(0,1fr) 88px 56px 52px 96px 26px;
   gap: 6px; align-items: center; margin-bottom: 4px;
 }
 .iinput {
@@ -1034,6 +1044,17 @@ body {
   padding: 12px;
   margin: 10px 0 6px;
   display: flex; flex-direction: column; gap: 10px;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+.round-section-label-top {
+  font-size: 13px;
+  color: var(--ink);
+  font-weight: 600;
+  letter-spacing: -.005em;
+  margin-bottom: 2px;
 }
 .round-section-top {
   display: flex; align-items: center; gap: 8px;
@@ -1053,6 +1074,24 @@ body {
 }
 .round-manual-row {
   display: flex; align-items: center; gap: 8px;
+  min-width: 0;   /* flex 부모의 오버플로 방지 */
+  width: 100%;
+}
+/* 증액/감액 세그먼트 — 고정폭, 버튼이 좁아져서 세로로 꺾이는 걸 방지 */
+.seg.seg-compact {
+  flex-shrink: 0;
+}
+.seg.seg-compact button {
+  padding: 5px 10px;
+  min-width: 52px;    /* 한 글자(증/감)가 꺾이지 않게 충분한 폭 확보 */
+  white-space: nowrap;
+}
+/* 금액 입력 — 남은 공간 안에서만 자라고, 컨테이너를 넘치지 않게 */
+.round-manual-input {
+  flex: 1 1 0;
+  width: auto;
+  min-width: 0;
+  text-align: right;
 }
 .round-preview {
   font-family: 'Inter', 'Noto Sans KR', sans-serif;
@@ -1717,12 +1756,10 @@ body {
 
       <!-- 단수 처리 -->
       <div class="round-section">
-        <div class="round-section-top">
-          <span class="round-section-label">단수 처리</span>
-          <div class="seg" id="roundModeSeg" style="min-width:130px">
-            <button id="rmAuto" class="on" onclick="setRoundMode('auto')">자동 (8 배수)</button>
-            <button id="rmManual" onclick="setRoundMode('manual')">직접 입력</button>
-          </div>
+        <div class="round-section-label-top">단수 처리</div>
+        <div class="seg seg-block" id="roundModeSeg">
+          <button id="rmAuto" class="on" onclick="setRoundMode('auto')">자동 · 8배수</button>
+          <button id="rmManual" onclick="setRoundMode('manual')">직접 입력</button>
         </div>
         <div class="round-info" id="roundAutoInfo">
           부가세 합산 후 8의 배수로 자동 반올림합니다
@@ -1732,12 +1769,12 @@ body {
             최종 합계에서 가감할 단수 금액을 입력하세요
           </div>
           <div class="round-manual-row">
-            <div class="seg" style="min-width:68px">
+            <div class="seg seg-compact" style="flex-shrink:0">
               <button id="rsPlus"  class="on" onclick="setRoundSign('+')">+ 증액</button>
               <button id="rsMinus" onclick="setRoundSign('−')">− 감액</button>
             </div>
-            <input type="number" class="setting-small-input" id="roundManualVal"
-              placeholder="0" min="0" style="flex:1;width:auto;text-align:right">
+            <input type="number" class="setting-small-input round-manual-input" id="roundManualVal"
+              placeholder="0" min="0">
             <span class="sfx">원</span>
           </div>
           <div class="round-preview" id="roundPreview"></div>
@@ -2202,7 +2239,7 @@ function buildEditor() {
   // Col header
   if (list.length) {
     const ch = mk('div', 'item-cols-hd');
-    ['내용','수량','단위','단가(원)','금액',''].forEach(t => ch.appendChild(mk('div','',t)));
+    ['내용','단가(원)','수량','단위','금액',''].forEach(t => ch.appendChild(mk('div','',t)));
     panel.appendChild(ch);
   }
 
@@ -2357,9 +2394,9 @@ function buildEntry(item, idx, code) {
   });
 
   r1.appendChild(descIn);
+  r1.appendChild(priceIn);
   r1.appendChild(qtyIn);
   r1.appendChild(unitIn);
-  r1.appendChild(priceIn);
   r1.appendChild(amtEl);
   r1.appendChild(del);
   entry.appendChild(r1);
