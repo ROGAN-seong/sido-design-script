@@ -1643,8 +1643,7 @@ body {
 ══════════════════════════════════════════ */
 @page {
   size: 210mm 297mm;
-  /* 하단 18mm는 푸터 반복용 영역 */
-  margin: 0 0 18mm 0;
+  margin: 0;
 }
 @media print {
   /* UI 모두 숨김 */
@@ -1738,63 +1737,12 @@ body {
     break-after: avoid !important;
   }
 
-  /* ⭐ 페이지마다 반복되는 푸터 — position: fixed 트릭 */
-  /* 인라인 푸터(.lg-foot 등)는 마지막 페이지에만 표시 */
+  /* 인라인 푸터(.lg-foot 등) — 페이지 경계에서 잘리지 않게 */
   .lg-foot, .es-foot, .mn-foot, .cb-foot {
     break-inside: avoid !important;
     page-break-inside: avoid !important;
   }
-  /* 페이지마다 반복되는 mini 푸터 (회사명 + 페이지번호) */
-  .print-page-footer {
-    display: block !important;
-    position: fixed !important;
-    bottom: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    width: 210mm !important;
-    height: 16mm !important;
-    padding: 4mm 12mm !important;
-    box-sizing: border-box !important;
-    border-top: 0.5pt solid #1a1713 !important;
-    background: #fff !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-    font-family: 'Inter', 'Noto Sans KR', sans-serif !important;
-    font-size: 8pt !important;
-    color: #6c6c70 !important;
-    z-index: 999 !important;
-  }
-  .print-page-footer .pf-l {
-    display: flex !important;
-    align-items: center !important;
-    gap: 10pt !important;
-  }
-  .print-page-footer .pf-company {
-    font-weight: 700 !important;
-    color: #1a1713 !important;
-    letter-spacing: 0.05em !important;
-  }
-  .print-page-footer .pf-seal {
-    width: 22pt !important;
-    height: 22pt !important;
-    border: 0.7pt solid #B94A0A !important;
-    border-radius: 50% !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    color: #B94A0A !important;
-    font-family: 'Nanum Myeongjo', serif !important;
-    font-weight: 800 !important;
-    font-size: 9pt !important;
-  }
-  .print-page-footer .pf-r {
-    font-variant-numeric: tabular-nums !important;
-  }
 }
-
-/* 화면에서는 print-page-footer 숨김 */
-.print-page-footer { display: none; }
 
 /* ══════════════════════════════════════════
    MISC ANIMATIONS
@@ -2125,18 +2073,6 @@ body {
   </div>
 
 </div><!-- /main -->
-
-<!-- 페이지마다 반복되는 인쇄용 푸터 -->
-<div class="print-page-footer" id="printPageFooter">
-  <div class="pf-l">
-    <div class="pf-seal">印</div>
-    <div>
-      <div class="pf-company" id="pfCompany">SIDO DESIGN</div>
-      <div id="pfMgr">Interior Design Studio</div>
-    </div>
-  </div>
-  <div class="pf-r" id="pfDocNo">Q-—</div>
-</div>
 
 <!-- 견적서 목록 모달 -->
 <div class="modal-overlay" id="estModal">
@@ -2675,19 +2611,6 @@ function renderDoc() {
   const wrap = document.getElementById('docWrap');
   const renderer = RENDERERS[currentDesign] || RENDERERS.ledger;
   wrap.innerHTML = renderer(ctx);
-
-  // 페이지마다 반복되는 인쇄용 푸터 업데이트
-  const pfCompany = document.getElementById('pfCompany');
-  const pfMgr     = document.getElementById('pfMgr');
-  const pfDocNo   = document.getElementById('pfDocNo');
-  if (pfCompany) {
-    pfCompany.textContent = ctx.comp || 'SIDO DESIGN';
-    const mgrParts = [];
-    if (ctx.mgr)  mgrParts.push('담당 ' + ctx.mgr);
-    if (ctx.mgrp) mgrParts.push(ctx.mgrp);
-    pfMgr.textContent = mgrParts.length ? mgrParts.join(' · ') : 'Interior Design Studio';
-    pfDocNo.textContent = ctx.docNo || 'Q-—';
-  }
 }
 
 /* ── 렌더 컨텍스트: 모든 디자인이 공유하는 데이터 ── */
