@@ -1714,6 +1714,22 @@ body {
     break-inside: avoid !important;
     page-break-inside: avoid !important;
   }
+
+  /* ⭐ 푸터·합계·낙관 블록은 페이지 경계에서 잘리지 않도록 */
+  /* 5개 디자인 (Ledger, Essay, Monument, Chamber, Scroll) 공통 */
+  .lg-crown, .lg-foot,
+  .es-tot, .es-foot,
+  .mn-crown, .mn-foot,
+  .cb-verdict, .cb-foot,
+  .sc-seal-row {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+  /* 푸터 + 합계가 함께 다음 페이지로 넘어가도록 (분리 방지) */
+  .lg-crown { page-break-after: avoid !important; break-after: avoid !important; }
+  .mn-crown { page-break-after: avoid !important; break-after: avoid !important; }
+  .cb-verdict { page-break-after: avoid !important; break-after: avoid !important; }
+  .es-tot { page-break-after: avoid !important; break-after: avoid !important; }
 }
 
 /* ══════════════════════════════════════════
@@ -2696,7 +2712,7 @@ function renderLedger(ctx) {
       .lg-crown .l { font-family:'Inter',sans-serif; font-size:9px; letter-spacing:.3em; color:${t.ink2}; text-transform:uppercase; font-weight:700; }
       .lg-crown .v { font-family:'Fraunces',serif; font-weight:800; font-size:36px; color:${t.accent}; letter-spacing:-.03em; line-height:.95; text-align:right; }
       .lg-crown .v small { display:block; font-family:'Inter',sans-serif; font-size:8px; font-weight:500; color:${t.ink3}; letter-spacing:.18em; margin-top:3px; }
-      .lg-foot { margin-top:26px; padding-top:14px; border-top:1px solid ${t.ink}; display:grid; grid-template-columns:1fr auto; gap:16px; font-size:10px; line-height:1.6; color:${t.ink2}; }
+      .lg-foot { margin-top:18px; padding-top:14px; border-top:1px solid ${t.ink}; display:grid; grid-template-columns:1fr auto; gap:16px; font-size:10px; line-height:1.6; color:${t.ink2}; }
       .lg-foot b { color:${t.ink}; font-weight:700; }
       .lg-foot .seal { width:54px; height:54px; border:1.5px solid ${t.accent}; border-radius:50%; display:flex; align-items:center; justify-content:center; color:${t.accent}; font-family:'Nanum Myeongjo',serif; font-weight:800; font-size:9.5px; line-height:1.2; text-align:center; transform:rotate(-6deg); letter-spacing:.1em; }
     </style>
