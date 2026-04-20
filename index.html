@@ -3250,20 +3250,22 @@ function exportPDF() {
   const docHTML = renderer(ctx);
   const t = ctx.t;
 
-  /* ── PDF용 HTML — A4 세로 강제 ── */
+  /* ── PDF용 HTML — A4 세로 명시적 mm 강제 ── */
   const pdfHTML = `<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=210mm, initial-scale=1">
+<meta name="viewport" content="width=794, initial-scale=1">
 <title>견적서 — ${x(cn)}</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&family=Nanum+Myeongjo:wght@400;700;800&family=Fraunces:ital,wght@0,400;0,700;0,800;1,400;1,700&family=EB+Garamond:ital,wght@0,400;0,500;0,700;0,800;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700&family=Instrument+Serif:ital@0;1&family=Archivo:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 /* ═══════════════════════════════════════
-   A4 세로 (210×297mm) 절대 강제
+   A4 세로 — 명시적 mm 단위로 페이지 매핑
+   디자인 CSS는 px 단위(794px = 210mm @ 96dpi 가정)로 작성됨
+   인쇄 엔진이 해당 px → mm 1:1 매핑하도록 모든 변수 강제
 ═══════════════════════════════════════ */
 @page {
-  size: A4 portrait;
+  size: 210mm 297mm;
   margin: 0;
 }
 
@@ -3274,12 +3276,17 @@ function exportPDF() {
   -webkit-print-color-adjust: exact !important;
   print-color-adjust: exact !important;
   color-adjust: exact !important;
-  /* 미리보기에서 적용된 transform 강제 해제 */
   transform: none !important;
 }
 
-html, body {
-  width: 100%;
+html {
+  width: 210mm;
+  height: auto;
+  margin: 0;
+  padding: 0;
+}
+body {
+  width: 210mm;
   margin: 0;
   padding: 0;
   font-family: 'IBM Plex Sans KR', 'Noto Sans KR', sans-serif;
@@ -3288,30 +3295,38 @@ html, body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* PDF 문서 래퍼 — 페이지 전체를 사용 */
+/* PDF 래퍼 — 정확히 210mm 폭, 높이는 컨텐츠에 맞춤 */
 .pdf-doc {
-  width: 100%;
-  min-height: 100vh;
+  width: 210mm !important;
+  max-width: 210mm !important;
+  margin: 0;
+  padding: 0;
   position: relative;
+  background: ${t.paper};
 }
 
-/* 직계 자식(각 디자인 컨테이너)이 페이지 폭 전체 차지 */
+/* 디자인 컨테이너 (.doc-ledger 등)가 정확히 페이지 폭 차지 */
 .pdf-doc > * {
-  width: 100% !important;
-  max-width: 100% !important;
+  width: 210mm !important;
+  max-width: 210mm !important;
+  min-width: 210mm !important;
   box-sizing: border-box !important;
   transform: none !important;
 }
 
+/* 테이블·이미지 오버플로 방지 */
 .pdf-doc table {
   max-width: 100%;
   width: 100%;
   table-layout: auto;
 }
 .pdf-doc img,
-.pdf-doc svg { max-width: 100%; height: auto; }
+.pdf-doc svg {
+  max-width: 100%;
+  height: auto;
+}
 
-/* 상세 페이지 새 페이지 시작 */
+/* 상세 페이지: 새 페이지 시작, 단 빈 페이지 방지 */
 .dp-wrap {
   page-break-before: always;
   break-before: page;
@@ -3321,19 +3336,22 @@ html, body {
   page-break-inside: avoid;
 }
 
+/* 마지막 빈 페이지 방지 — 메인 컨텐츠는 페이지 break 강제 안 함 */
+.pdf-doc > *:not(.dp-wrap) {
+  page-break-after: auto;
+}
+
 @media print {
-  @page { size: A4 portrait; margin: 0; }
+  @page { size: 210mm 297mm; margin: 0; }
   html, body {
-    width: 100% !important;
+    width: 210mm !important;
     margin: 0 !important;
     padding: 0 !important;
   }
   .pdf-doc {
-    width: 100% !important;
+    width: 210mm !important;
+    max-width: 210mm !important;
     box-shadow: none !important;
-    transform: none !important;
-  }
-  .pdf-doc > * {
     transform: none !important;
   }
 }
