@@ -1637,14 +1637,83 @@ body {
 }
 
 /* ══════════════════════════════════════════
-   PRINT
+   PRINT — 인쇄/PDF 출력 시 A4 세로 강제
+   미리보기의 transform: scale()을 해제하고
+   .doc-wrap을 정확히 210mm × 297mm로 매핑
 ══════════════════════════════════════════ */
+@page {
+  size: 210mm 297mm;
+  margin: 0;
+}
 @media print {
+  /* UI 모두 숨김 */
   .header, .panel-info, .panel-editor, .preview-toolbar,
-  .loading-overlay, .toast { display: none !important; }
-  .main { grid-template-columns: 1fr; padding-top: 0; }
-  .panel-preview { padding: 0; background: #fff; }
-  .doc-wrap { box-shadow: none; border-radius: 0; max-width: 100%; }
+  .loading-overlay, .toast, #loginScreen, .modal-overlay,
+  .save-indicator { display: none !important; }
+
+  /* 레이아웃 초기화 */
+  html, body {
+    width: 210mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fff !important;
+    overflow: visible !important;
+  }
+  .main {
+    grid-template-columns: 1fr !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    height: auto !important;
+    display: block !important;
+  }
+  .panel-preview {
+    padding: 0 !important;
+    margin: 0 !important;
+    background: #fff !important;
+    width: 210mm !important;
+    overflow: visible !important;
+    display: block !important;
+  }
+  /* 미리보기 프레임 → 인쇄 시 풀폭 */
+  .doc-preview-frame {
+    width: 210mm !important;
+    max-width: 210mm !important;
+    height: auto !important;
+    overflow: visible !important;
+    margin: 0 !important;
+  }
+  /* 핵심: 미리보기용 transform: scale() 강제 해제 + A4 매핑 */
+  .doc-wrap {
+    width: 210mm !important;
+    max-width: 210mm !important;
+    min-height: auto !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    transform: none !important;          /* ← 핵심! */
+    transform-origin: top left !important;
+  }
+  /* 디자인 컨테이너는 doc-wrap 폭 그대로 */
+  .doc-wrap > * {
+    width: 100% !important;
+    max-width: 100% !important;
+    transform: none !important;
+  }
+  /* 모든 색·배경 인쇄 시 보존 */
+  *, *::before, *::after {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+  /* 상세 페이지 분리 */
+  .dp-wrap {
+    page-break-before: always !important;
+    break-before: page !important;
+  }
+  .dp-block {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
 }
 
 /* ══════════════════════════════════════════
@@ -3241,155 +3310,19 @@ function updateRoundPreview() {
 
 /* ════════════════════════════════════
    PDF EXPORT
+   메인 페이지의 @media print CSS가 알아서 A4 매핑하므로
+   여기서는 단순히 window.print() 호출만 하면 됨.
 ════════════════════════════════════ */
 function exportPDF() {
-  const cn = g('clientName') || '견적서';
-
-  const ctx = buildRenderCtx();
-  const renderer = RENDERERS[currentDesign] || RENDERERS.ledger;
-  const docHTML = renderer(ctx);
-  const t = ctx.t;
-
-  /* ── PDF용 HTML — A4 세로 명시적 mm 강제 ── */
-  const pdfHTML = `<!DOCTYPE html>
-<html lang="ko">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=794, initial-scale=1">
-<title>견적서 — ${x(cn)}</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&family=Nanum+Myeongjo:wght@400;700;800&family=Fraunces:ital,wght@0,400;0,700;0,800;1,400;1,700&family=EB+Garamond:ital,wght@0,400;0,500;0,700;0,800;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700&family=Instrument+Serif:ital@0;1&family=Archivo:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<style>
-/* ═══════════════════════════════════════
-   A4 세로 — 명시적 mm 단위로 페이지 매핑
-   디자인 CSS는 px 단위(794px = 210mm @ 96dpi 가정)로 작성됨
-   인쇄 엔진이 해당 px → mm 1:1 매핑하도록 모든 변수 강제
-═══════════════════════════════════════ */
-@page {
-  size: 210mm 297mm;
-  margin: 0;
-}
-
-*, *::before, *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  -webkit-print-color-adjust: exact !important;
-  print-color-adjust: exact !important;
-  color-adjust: exact !important;
-  transform: none !important;
-}
-
-html {
-  width: 210mm;
-  height: auto;
-  margin: 0;
-  padding: 0;
-}
-body {
-  width: 210mm;
-  margin: 0;
-  padding: 0;
-  font-family: 'IBM Plex Sans KR', 'Noto Sans KR', sans-serif;
-  color: ${t.ink};
-  background: ${t.paper};
-  -webkit-font-smoothing: antialiased;
-}
-
-/* PDF 래퍼 — 정확히 210mm 폭, 높이는 컨텐츠에 맞춤 */
-.pdf-doc {
-  width: 210mm !important;
-  max-width: 210mm !important;
-  margin: 0;
-  padding: 0;
-  position: relative;
-  background: ${t.paper};
-}
-
-/* 디자인 컨테이너 (.doc-ledger 등)가 정확히 페이지 폭 차지 */
-.pdf-doc > * {
-  width: 210mm !important;
-  max-width: 210mm !important;
-  min-width: 210mm !important;
-  box-sizing: border-box !important;
-  transform: none !important;
-}
-
-/* 테이블·이미지 오버플로 방지 */
-.pdf-doc table {
-  max-width: 100%;
-  width: 100%;
-  table-layout: auto;
-}
-.pdf-doc img,
-.pdf-doc svg {
-  max-width: 100%;
-  height: auto;
-}
-
-/* 상세 페이지: 새 페이지 시작, 단 빈 페이지 방지 */
-.dp-wrap {
-  page-break-before: always;
-  break-before: page;
-}
-.dp-block {
-  break-inside: avoid;
-  page-break-inside: avoid;
-}
-
-/* 마지막 빈 페이지 방지 — 메인 컨텐츠는 페이지 break 강제 안 함 */
-.pdf-doc > *:not(.dp-wrap) {
-  page-break-after: auto;
-}
-
-@media print {
-  @page { size: 210mm 297mm; margin: 0; }
-  html, body {
-    width: 210mm !important;
-    margin: 0 !important;
-    padding: 0 !important;
-  }
-  .pdf-doc {
-    width: 210mm !important;
-    max-width: 210mm !important;
-    box-shadow: none !important;
-    transform: none !important;
-  }
-}
-</style>
-</head>
-<body>
-<div class="pdf-doc">${docHTML}</div>
-</body>
-</html>`;
-
-  /* ── 숨겨진 iframe으로 인쇄 ── */
-  const oldFrame = document.getElementById('_pdfFrame');
-  if (oldFrame) oldFrame.remove();
-
-  const iframe = document.createElement('iframe');
-  iframe.id = '_pdfFrame';
-  // 화면 밖에 두되 크기는 정확히 A4 (210mm = 794px @ 96dpi)
-  iframe.style.cssText = 'position:fixed;right:0;bottom:0;width:794px;height:1123px;border:0;opacity:0;pointer-events:none;z-index:-1;';
-  document.body.appendChild(iframe);
-
-  const doc = iframe.contentDocument || iframe.contentWindow.document;
-  doc.open();
-  doc.write(pdfHTML);
-  doc.close();
+  // 미리보기가 최신인지 확인
+  renderDoc();
 
   showToast('인쇄 창이 열리면: 레이아웃 "세로", 여백 "기본값", 배경 그래픽 ✓');
 
-  // 폰트·이미지 로드 대기 후 인쇄
-  iframe.onload = () => {
-    setTimeout(() => {
-      try {
-        iframe.contentWindow.focus();
-        iframe.contentWindow.print();
-      } catch (e) {
-        showToast('인쇄 실패: ' + e.message);
-      }
-    }, 1500);
-  };
+  // 폰트·이미지 로드 여유를 두고 인쇄 트리거
+  setTimeout(() => {
+    window.print();
+  }, 300);
 }
 
 /* ════════════════════════════════════
