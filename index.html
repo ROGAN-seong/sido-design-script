@@ -3178,11 +3178,11 @@ function renderDetailPages(ctx, design) {
     const rows = list.map(it => {
       const a = calcRow(it);
       return `<tr>
-        <td>${ctx.x(it.desc)||'—'}</td>
-        <td class="dp-r">${it.price?ctx.fmtWon(parseFloat(it.price)):''}</td>
-        <td class="dp-c">${it.qty||''}</td>
-        <td class="dp-c">${ctx.x(it.note||'')}</td>
-        <td class="dp-r dp-a">${a?ctx.fmtWon(a):''}</td>
+        <td class="dp-desc">${ctx.x(it.desc)||'—'}</td>
+        <td class="dp-r dp-price">${it.price?ctx.fmtWon(parseFloat(it.price)):''}</td>
+        <td class="dp-c dp-qty">${it.qty||''}</td>
+        <td class="dp-c dp-unit">${ctx.x(it.note||'')}</td>
+        <td class="dp-r dp-a dp-amt">${a?ctx.fmtWon(a):''}</td>
       </tr>`;
     }).join('');
     return `
@@ -3193,7 +3193,20 @@ function renderDetailPages(ctx, design) {
           <span class="dp-t">소계 ${ctx.fmtWon(tot)}</span>
         </div>
         <table class="dp-t-table">
-          <thead><tr><th>내용</th><th class="dp-r">단가</th><th class="dp-c">수량</th><th class="dp-c">단위</th><th class="dp-r">금액</th></tr></thead>
+          <colgroup>
+            <col class="dp-col-desc">
+            <col class="dp-col-price">
+            <col class="dp-col-qty">
+            <col class="dp-col-unit">
+            <col class="dp-col-amt">
+          </colgroup>
+          <thead><tr>
+            <th class="dp-desc">내용</th>
+            <th class="dp-r dp-price">단가</th>
+            <th class="dp-c dp-qty">수량</th>
+            <th class="dp-c dp-unit">단위</th>
+            <th class="dp-r dp-amt">금액</th>
+          </tr></thead>
           <tbody>${rows}</tbody>
         </table>
       </div>`;
@@ -3209,13 +3222,21 @@ function renderDetailPages(ctx, design) {
       .dp-code { font-family:'JetBrains Mono',monospace; font-size:9.5px; color:${t.accent2}; letter-spacing:.06em; margin-right:10px; }
       .dp-nm { font-size:11.5px; font-weight:700; letter-spacing:.05em; flex:1; }
       .dp-t { font-family:'Inter','Noto Sans KR',sans-serif; font-variant-numeric:tabular-nums; font-size:10.5px; font-weight:700; color:${t.accent2}; }
-      .dp-t-table { width:100%; border-collapse:collapse; font-size:10px; }
-      .dp-t-table thead th { font-family:'Inter',sans-serif; font-size:8.5px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:${t.ink2}; text-align:left; padding:6px 7px; border-bottom:1px solid ${t.ink}; background:${t.paperAlt}; }
+      /* 표 자체: fixed layout + 명시적 컬럼 폭 = 헤더-본문 정렬 보장 */
+      .dp-t-table { width:100%; border-collapse:collapse; font-size:10px; table-layout:fixed; }
+      /* colgroup 컬럼 폭 — 합계 100% */
+      .dp-t-table .dp-col-desc  { width:auto; }
+      .dp-t-table .dp-col-price { width:90px; }
+      .dp-t-table .dp-col-qty   { width:48px; }
+      .dp-t-table .dp-col-unit  { width:60px; }
+      .dp-t-table .dp-col-amt   { width:100px; }
+      .dp-t-table thead th { font-family:'Inter',sans-serif; font-size:8.5px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:${t.ink2}; text-align:left; padding:6px 7px; border-bottom:1px solid ${t.ink}; background:${t.paperAlt}; white-space:nowrap; }
       .dp-t-table thead th.dp-r { text-align:right; }
       .dp-t-table thead th.dp-c { text-align:center; }
-      .dp-t-table tbody td { padding:5px 7px; border-bottom:1px solid ${t.border}; }
-      .dp-t-table td.dp-r { text-align:right; font-variant-numeric:tabular-nums; font-family:'Inter','Noto Sans KR',sans-serif; }
-      .dp-t-table td.dp-c { text-align:center; color:${t.ink2}; }
+      .dp-t-table tbody td { padding:5px 7px; border-bottom:1px solid ${t.border}; vertical-align:top; }
+      .dp-t-table td.dp-desc { word-break:break-word; }
+      .dp-t-table td.dp-r { text-align:right; font-variant-numeric:tabular-nums; font-family:'Inter','Noto Sans KR',sans-serif; white-space:nowrap; }
+      .dp-t-table td.dp-c { text-align:center; color:${t.ink2}; white-space:nowrap; }
       .dp-t-table td.dp-a { font-weight:700; color:${t.ink}; }
     </style>
     <div class="dp-wrap">
