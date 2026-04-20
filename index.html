@@ -2688,33 +2688,33 @@ function renderLedger(ctx) {
     <style>
       .doc-ledger { background:${t.paper}; color:${t.ink}; font-family:'IBM Plex Sans KR','Noto Sans KR',sans-serif; display:grid; grid-template-columns:10px 1fr; min-height:100%; width:100%; max-width:100%; box-sizing:border-box; }
       .lg-spine { background:repeating-linear-gradient(0deg,${t.accent} 0 14px,${t.accent2} 14px 16px); }
-      .lg-body { padding:26px 26px 32px; }
+      .lg-body { padding:22px 26px 24px; }
       .lg-top { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; padding-bottom:10px; border-bottom:3px solid ${t.ink}; }
       .lg-top-c .k { font-family:'Inter',sans-serif; font-size:8px; font-weight:700; letter-spacing:.2em; color:${t.ink3}; text-transform:uppercase; }
       .lg-top-c .v { font-size:11px; font-weight:600; margin-top:2px; letter-spacing:-.005em; }
-      .lg-title { font-family:'Nanum Myeongjo',serif; font-size:44px; font-weight:800; letter-spacing:-.02em; line-height:1; margin:18px 0 3px; }
+      .lg-title { font-family:'Nanum Myeongjo',serif; font-size:42px; font-weight:800; letter-spacing:-.02em; line-height:1; margin:14px 0 3px; }
       .lg-title sup { font-family:'Inter',sans-serif; font-size:9px; font-weight:700; color:${t.accent}; letter-spacing:.2em; margin-left:5px; vertical-align:super; }
-      .lg-sub { font-family:'Inter',sans-serif; font-size:9px; letter-spacing:.26em; color:${t.ink2}; text-transform:uppercase; margin-bottom:20px; }
-      .lg-section-h { font-family:'Inter',sans-serif; font-size:9px; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:${t.ink2}; margin:20px 0 8px; padding-bottom:5px; border-bottom:1px solid ${t.ink}; }
+      .lg-sub { font-family:'Inter',sans-serif; font-size:9px; letter-spacing:.26em; color:${t.ink2}; text-transform:uppercase; margin-bottom:14px; }
+      .lg-section-h { font-family:'Inter',sans-serif; font-size:9px; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:${t.ink2}; margin:14px 0 6px; padding-bottom:5px; border-bottom:1px solid ${t.ink}; }
       .lg-table { width:100%; border-collapse:collapse; font-size:11px; }
-      .lg-table th { font-family:'Inter',sans-serif; font-size:8px; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:${t.ink2}; text-align:left; padding:8px 5px; border-bottom:1px solid ${t.ink}; }
+      .lg-table th { font-family:'Inter',sans-serif; font-size:8px; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:${t.ink2}; text-align:left; padding:6px 5px; border-bottom:1px solid ${t.ink}; }
       .lg-table th.lg-r { text-align:right; }
-      .lg-table td { padding:8px 5px; border-bottom:1px dotted rgba(26,23,19,.28); }
+      .lg-table td { padding:6px 5px; border-bottom:1px dotted rgba(26,23,19,.28); }
       .lg-code { font-family:'JetBrains Mono',monospace; font-size:10px; color:${t.accent}; letter-spacing:.04em; width:44px; font-weight:600; }
       .lg-desc { font-size:9.5px; color:${t.ink2}; margin-top:2px; }
       .lg-r { text-align:right; font-variant-numeric:tabular-nums; font-family:'Inter','Noto Sans KR',sans-serif; font-weight:500; }
       .lg-amt { font-weight:700; color:${t.ink}; }
-      .lg-calc { margin-top:18px; border-top:1px solid ${t.ink}; padding-top:10px; font-size:11px; }
-      .lg-calc .row { display:flex; justify-content:space-between; padding:4px 0; color:${t.ink2}; }
+      .lg-calc { margin-top:12px; border-top:1px solid ${t.ink}; padding-top:8px; font-size:11px; }
+      .lg-calc .row { display:flex; justify-content:space-between; padding:3px 0; color:${t.ink2}; }
       .lg-calc .row.b { color:${t.ink}; font-weight:600; }
       .lg-calc .row .v { font-variant-numeric:tabular-nums; font-family:'Inter','Noto Sans KR',sans-serif; }
-      .lg-crown { margin-top:16px; padding:14px 0; border-top:3px double ${t.ink}; display:grid; grid-template-columns:1fr auto; align-items:end; }
+      .lg-crown { margin-top:12px; padding:10px 0; border-top:3px double ${t.ink}; display:grid; grid-template-columns:1fr auto; align-items:end; }
       .lg-crown .l { font-family:'Inter',sans-serif; font-size:9px; letter-spacing:.3em; color:${t.ink2}; text-transform:uppercase; font-weight:700; }
-      .lg-crown .v { font-family:'Fraunces',serif; font-weight:800; font-size:36px; color:${t.accent}; letter-spacing:-.03em; line-height:.95; text-align:right; }
+      .lg-crown .v { font-family:'Fraunces',serif; font-weight:800; font-size:34px; color:${t.accent}; letter-spacing:-.03em; line-height:.95; text-align:right; }
       .lg-crown .v small { display:block; font-family:'Inter',sans-serif; font-size:8px; font-weight:500; color:${t.ink3}; letter-spacing:.18em; margin-top:3px; }
-      .lg-foot { margin-top:18px; padding-top:14px; border-top:1px solid ${t.ink}; display:grid; grid-template-columns:1fr auto; gap:16px; font-size:10px; line-height:1.6; color:${t.ink2}; }
+      .lg-foot { margin-top:14px; padding-top:10px; border-top:1px solid ${t.ink}; display:grid; grid-template-columns:1fr auto; gap:16px; font-size:10px; line-height:1.55; color:${t.ink2}; }
       .lg-foot b { color:${t.ink}; font-weight:700; }
-      .lg-foot .seal { width:54px; height:54px; border:1.5px solid ${t.accent}; border-radius:50%; display:flex; align-items:center; justify-content:center; color:${t.accent}; font-family:'Nanum Myeongjo',serif; font-weight:800; font-size:9.5px; line-height:1.2; text-align:center; transform:rotate(-6deg); letter-spacing:.1em; }
+      .lg-foot .seal { width:50px; height:50px; border:1.5px solid ${t.accent}; border-radius:50%; display:flex; align-items:center; justify-content:center; color:${t.accent}; font-family:'Nanum Myeongjo',serif; font-weight:800; font-size:9px; line-height:1.2; text-align:center; transform:rotate(-6deg); letter-spacing:.1em; }
     </style>
     <div class="doc-ledger">
       <div class="lg-spine"></div>
