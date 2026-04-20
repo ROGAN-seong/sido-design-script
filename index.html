@@ -3255,6 +3255,7 @@ function exportPDF() {
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=210mm, initial-scale=1">
 <title>견적서 — ${x(cn)}</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&family=Nanum+Myeongjo:wght@400;700;800&family=Fraunces:ital,wght@0,400;0,700;0,800;1,400;1,700&family=EB+Garamond:ital,wght@0,400;0,500;0,700;0,800;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700&family=Instrument+Serif:ital@0;1&family=Archivo:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -3262,7 +3263,7 @@ function exportPDF() {
    A4 세로 (210×297mm) 절대 강제
 ═══════════════════════════════════════ */
 @page {
-  size: 210mm 297mm;
+  size: A4 portrait;
   margin: 0;
 }
 
@@ -3273,35 +3274,33 @@ function exportPDF() {
   -webkit-print-color-adjust: exact !important;
   print-color-adjust: exact !important;
   color-adjust: exact !important;
+  /* 미리보기에서 적용된 transform 강제 해제 */
+  transform: none !important;
 }
 
 html, body {
-  width: 210mm;
-  max-width: 210mm;
-  margin: 0 auto;
+  width: 100%;
+  margin: 0;
   padding: 0;
   font-family: 'IBM Plex Sans KR', 'Noto Sans KR', sans-serif;
   color: ${t.ink};
   background: ${t.paper};
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
 }
 
-/* PDF 문서 래퍼 — 세로 A4 절대 폭 */
+/* PDF 문서 래퍼 — 페이지 전체를 사용 */
 .pdf-doc {
-  width: 210mm !important;
-  max-width: 210mm !important;
-  min-height: 297mm;
-  margin: 0 auto;
+  width: 100%;
+  min-height: 100vh;
   position: relative;
-  overflow: hidden;
 }
 
-/* 모든 직계 자식(각 디자인 컨테이너)이 정확히 210mm 차지 */
+/* 직계 자식(각 디자인 컨테이너)이 페이지 폭 전체 차지 */
 .pdf-doc > * {
-  width: 210mm !important;
-  max-width: 210mm !important;
+  width: 100% !important;
+  max-width: 100% !important;
   box-sizing: border-box !important;
+  transform: none !important;
 }
 
 .pdf-doc table {
@@ -3322,17 +3321,20 @@ html, body {
   page-break-inside: avoid;
 }
 
-/* 인쇄 시 추가 강제 */
 @media print {
-  @page { size: 210mm 297mm; margin: 0; }
+  @page { size: A4 portrait; margin: 0; }
   html, body {
-    width: 210mm !important;
-    max-width: 210mm !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
   .pdf-doc {
-    width: 210mm !important;
-    max-width: 210mm !important;
+    width: 100% !important;
     box-shadow: none !important;
+    transform: none !important;
+  }
+  .pdf-doc > * {
+    transform: none !important;
   }
 }
 </style>
@@ -3342,14 +3344,14 @@ html, body {
 </body>
 </html>`;
 
-  /* ── 숨겨진 iframe으로 인쇄 — 새 창보다 안정적 ── */
-  // 기존 iframe 제거
+  /* ── 숨겨진 iframe으로 인쇄 ── */
   const oldFrame = document.getElementById('_pdfFrame');
   if (oldFrame) oldFrame.remove();
 
   const iframe = document.createElement('iframe');
   iframe.id = '_pdfFrame';
-  iframe.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:210mm;height:297mm;border:0;visibility:hidden;';
+  // 화면 밖에 두되 크기는 정확히 A4 (210mm = 794px @ 96dpi)
+  iframe.style.cssText = 'position:fixed;right:0;bottom:0;width:794px;height:1123px;border:0;opacity:0;pointer-events:none;z-index:-1;';
   document.body.appendChild(iframe);
 
   const doc = iframe.contentDocument || iframe.contentWindow.document;
@@ -3357,10 +3359,9 @@ html, body {
   doc.write(pdfHTML);
   doc.close();
 
-  // 토스트로 사용자 안내
   showToast('인쇄 창이 열리면: 레이아웃 "세로", 여백 "기본값", 배경 그래픽 ✓');
 
-  // 폰트·이미지 로드를 위해 충분히 기다린 후 인쇄
+  // 폰트·이미지 로드 대기 후 인쇄
   iframe.onload = () => {
     setTimeout(() => {
       try {
