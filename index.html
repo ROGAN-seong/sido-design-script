@@ -660,35 +660,52 @@ body {
 }
 
 /* ══════════════════════════════════════════
-   DOCUMENT PREVIEW — A4 세로 비율 컨테이너
-   폭 기준 580px → 높이 ~820px (A4 210×297mm = 1:1.414)
-   내용이 길어지면 컨테이너가 길어지며 PDF 시 여러 페이지로 분리.
+   DOCUMENT PREVIEW — 실제 A4 크기로 렌더링 후 화면에 맞게 축소
+   해상도 96dpi 기준 210mm = 794px, 297mm = 1123px
+   CSS transform: scale()로 화면 폭에 맞춰 축소만 함.
+   → 미리보기와 PDF가 픽셀 단위로 정확히 일치
 ══════════════════════════════════════════ */
-.doc-wrap {
+.doc-preview-frame {
   width: 100%;
-  max-width: 580px;
-  min-height: calc(580px * 1.414);   /* A4 세로 비율 최소 높이 ≈ 820px */
+  max-width: 580px;          /* 미리보기 시각적 최대 폭 */
+  margin: 0 auto;
+  position: relative;
+  /* 컨테이너 높이는 doc-wrap의 scale 비율로 자동 계산 */
+}
+.doc-wrap {
+  width: 794px;              /* A4 가로 = 210mm @ 96dpi */
+  min-height: 1123px;        /* A4 세로 = 297mm @ 96dpi */
   color: var(--ink);
   border-radius: 0;
   overflow: hidden;
   box-shadow: var(--shadow-lg);
   position: relative;
   background: #fff;
-  /* 페이지 모서리 그림자로 종이 느낌 강조 */
-  margin: 0 auto;
+  /* 화면 폭에 맞춰 축소: 580/794 ≈ 0.7305 */
+  transform: scale(calc(580 / 794));
+  transform-origin: top left;
+  /* 컨테이너에 빈 자리 생기지 않도록 부정 마진으로 보정 */
 }
+/* scale로 인한 빈 공간을 부모가 정확히 차지하도록 */
+.doc-preview-frame {
+  /* 폭은 580 그대로, 높이는 doc-wrap의 scaled 높이로 */
+  height: calc(1123px * (580 / 794));   /* ≈ 820px */
+  overflow: visible;
+}
+
 .doc-wrap > * {
   box-sizing: border-box;
-  /* 각 렌더러의 최상위 컨테이너가 doc-wrap 전체를 채우도록 */
   min-height: 100%;
 }
 
-/* 중간폭 화면에서 약간 축소 */
+/* 중간폭 화면 — scale 비율 조정 */
 @media (max-width: 1280px) {
-  .doc-wrap { max-width: 540px; min-height: calc(540px * 1.414); }
+  .doc-preview-frame { max-width: 540px; height: calc(1123px * (540 / 794)); }
+  .doc-wrap { transform: scale(calc(540 / 794)); }
 }
 @media (max-width: 1100px) {
-  .doc-wrap { max-width: 480px; min-height: calc(480px * 1.414); }
+  .doc-preview-frame { max-width: 480px; height: calc(1123px * (480 / 794)); }
+  .doc-wrap { transform: scale(calc(480 / 794)); }
 }
 
 .doc-topbar {
@@ -1953,7 +1970,9 @@ body {
         <button class="pbtn pbtn-print" onclick="window.print()">인쇄</button>
       </div>
     </div>
-    <div class="doc-wrap" id="docWrap"></div>
+    <div class="doc-preview-frame">
+      <div class="doc-wrap" id="docWrap"></div>
+    </div>
   </div>
 
 </div><!-- /main -->
@@ -2582,7 +2601,7 @@ function renderLedger(ctx) {
 
   return `
     <style>
-      .doc-ledger { background:${t.paper}; color:${t.ink}; font-family:'IBM Plex Sans KR','Noto Sans KR',sans-serif; display:grid; grid-template-columns:10px 1fr; min-height:100%; }
+      .doc-ledger { background:${t.paper}; color:${t.ink}; font-family:'IBM Plex Sans KR','Noto Sans KR',sans-serif; display:grid; grid-template-columns:10px 1fr; min-height:100%; width:100%; max-width:100%; box-sizing:border-box; }
       .lg-spine { background:repeating-linear-gradient(0deg,${t.accent} 0 14px,${t.accent2} 14px 16px); }
       .lg-body { padding:26px 26px 32px; }
       .lg-top { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; padding-bottom:10px; border-bottom:3px solid ${t.ink}; }
@@ -2681,7 +2700,7 @@ function renderEssay(ctx) {
 
   return `
     <style>
-      .doc-essay { background:${t.paper}; color:${t.ink}; font-family:'Fraunces',serif; padding:28px 32px 30px; min-height:100%; }
+      .doc-essay { background:${t.paper}; color:${t.ink}; font-family:'Fraunces',serif; padding:28px 32px 30px; min-height:100%; width:100%; max-width:100%; box-sizing:border-box; }
       .es-top { display:grid; grid-template-columns:auto 1fr auto; align-items:baseline; padding-bottom:12px; border-bottom:1px solid ${t.ink}; gap:14px; }
       .es-brand { font-family:'Inter',sans-serif; font-size:10px; font-weight:800; letter-spacing:.3em; color:${t.ink}; }
       .es-brand b { color:${t.accent}; }
@@ -2778,7 +2797,7 @@ function renderMonument(ctx) {
 
   return `
     <style>
-      .doc-monument { background:${t.paper}; color:${t.ink}; font-family:'IBM Plex Sans KR','Noto Sans KR',sans-serif; min-height:100%; }
+      .doc-monument { background:${t.paper}; color:${t.ink}; font-family:'IBM Plex Sans KR','Noto Sans KR',sans-serif; min-height:100%; width:100%; max-width:100%; box-sizing:border-box; }
       .mn-column { background:${t.ink}; color:${t.paper}; padding:20px 28px 18px; position:relative; }
       .mn-column::after { content:''; position:absolute; bottom:0; left:0; right:0; height:4px; background:${t.accent}; }
       .mn-top-meta { display:flex; justify-content:space-between; align-items:center; font-family:'Inter',sans-serif; font-size:9px; font-weight:700; letter-spacing:.22em; text-transform:uppercase; color:${t.ink3}; padding-bottom:12px; }
@@ -2882,7 +2901,7 @@ function renderChamber(ctx) {
 
   return `
     <style>
-      .doc-chamber { background:${t.paper}; color:${t.ink}; font-family:'IBM Plex Sans KR','Noto Sans KR',sans-serif; padding:14px; position:relative; min-height:100%; }
+      .doc-chamber { background:${t.paper}; color:${t.ink}; font-family:'IBM Plex Sans KR','Noto Sans KR',sans-serif; padding:14px; position:relative; min-height:100%; width:100%; max-width:100%; box-sizing:border-box; }
       .cb-outer { border:1.5px solid ${t.ink}; padding:14px 22px 20px; position:relative; min-height:calc(100% - 28px); }
       .cb-outer::before, .cb-outer::after { content:''; position:absolute; width:11px; height:11px; border:1.5px solid ${t.ink}; background:${t.accent}; }
       .cb-outer::before { top:-6px; left:-6px; }
@@ -2994,7 +3013,7 @@ function renderScroll(ctx) {
 
   return `
     <style>
-      .doc-scroll { background:linear-gradient(180deg,${t.paper} 0%,${t.paperAlt} 100%); color:${t.ink}; padding:28px 34px 28px; position:relative; font-family:'EB Garamond','Cormorant Garamond',serif; min-height:100%; }
+      .doc-scroll { background:linear-gradient(180deg,${t.paper} 0%,${t.paperAlt} 100%); color:${t.ink}; padding:28px 34px 28px; position:relative; font-family:'EB Garamond','Cormorant Garamond',serif; min-height:100%; width:100%; max-width:100%; box-sizing:border-box; }
       .doc-scroll::before, .doc-scroll::after { content:''; position:absolute; left:0; right:0; height:7px; background:linear-gradient(90deg,${t.border},${t.accent2} 50%,${t.border}); }
       .doc-scroll::before { top:0; }
       .doc-scroll::after { bottom:0; }
@@ -3225,15 +3244,13 @@ function updateRoundPreview() {
 ════════════════════════════════════ */
 function exportPDF() {
   const cn = g('clientName') || '견적서';
-  const dt = g('estDate') || new Date().toISOString().slice(0,10);
 
-  // renderDoc이 만든 것과 똑같은 HTML을 재생성
   const ctx = buildRenderCtx();
   const renderer = RENDERERS[currentDesign] || RENDERERS.ledger;
   const docHTML = renderer(ctx);
   const t = ctx.t;
 
-  /* ── PDF HTML 조립 (A4 인쇄 전용 래퍼) ── */
+  /* ── PDF용 HTML — A4 세로 강제 ── */
   const pdfHTML = `<!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -3241,58 +3258,118 @@ function exportPDF() {
 <title>견적서 — ${x(cn)}</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&family=Nanum+Myeongjo:wght@400;700;800&family=Fraunces:ital,wght@0,400;0,700;0,800;1,400;1,700&family=EB+Garamond:ital,wght@0,400;0,500;0,700;0,800;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700&family=Instrument+Serif:ital@0;1&family=Archivo:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
+/* ═══════════════════════════════════════
+   A4 세로 (210×297mm) 절대 강제
+═══════════════════════════════════════ */
 @page {
-  size: A4 portrait;
+  size: 210mm 297mm;
   margin: 0;
 }
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-print-color-adjust: exact !important;
+  print-color-adjust: exact !important;
+  color-adjust: exact !important;
+}
+
 html, body {
   width: 210mm;
+  max-width: 210mm;
+  margin: 0 auto;
+  padding: 0;
   font-family: 'IBM Plex Sans KR', 'Noto Sans KR', sans-serif;
   color: ${t.ink};
   background: ${t.paper};
   -webkit-font-smoothing: antialiased;
-  -webkit-print-color-adjust: exact;
-  print-color-adjust: exact;
-}
-/* 모든 배경·색상 인쇄 시 보존 */
-*, *::before, *::after {
-  -webkit-print-color-adjust: exact !important;
-  print-color-adjust: exact !important;
+  overflow-x: hidden;
 }
 
-/* 문서 래퍼 — A4 210mm 기준 */
-.pdf-doc { width: 210mm; min-height: 297mm; position: relative; }
+/* PDF 문서 래퍼 — 세로 A4 절대 폭 */
+.pdf-doc {
+  width: 210mm !important;
+  max-width: 210mm !important;
+  min-height: 297mm;
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+}
 
-/* 첫 페이지와 상세 페이지 분리 */
-.dp-wrap { page-break-before: always; break-before: page; }
-.dp-block { break-inside: avoid; page-break-inside: avoid; }
+/* 모든 직계 자식(각 디자인 컨테이너)이 정확히 210mm 차지 */
+.pdf-doc > * {
+  width: 210mm !important;
+  max-width: 210mm !important;
+  box-sizing: border-box !important;
+}
 
-/* 인쇄 시 폰트 렌더링 안정화 */
+.pdf-doc table {
+  max-width: 100%;
+  width: 100%;
+  table-layout: auto;
+}
+.pdf-doc img,
+.pdf-doc svg { max-width: 100%; height: auto; }
+
+/* 상세 페이지 새 페이지 시작 */
+.dp-wrap {
+  page-break-before: always;
+  break-before: page;
+}
+.dp-block {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+/* 인쇄 시 추가 강제 */
 @media print {
-  html, body { width: 210mm; }
-  .pdf-doc { box-shadow: none !important; }
+  @page { size: 210mm 297mm; margin: 0; }
+  html, body {
+    width: 210mm !important;
+    max-width: 210mm !important;
+  }
+  .pdf-doc {
+    width: 210mm !important;
+    max-width: 210mm !important;
+    box-shadow: none !important;
+  }
 }
 </style>
 </head>
 <body>
-<div class="pdf-doc">
-${docHTML}
-</div>
+<div class="pdf-doc">${docHTML}</div>
 </body>
 </html>`;
 
-  /* ── 새 창에서 인쇄 ── */
-  const win = window.open('', '_blank', 'width=960,height=800');
-  if (!win) { showToast('팝업 차단 해제 후 다시 시도해주세요'); return; }
-  win.document.write(pdfHTML);
-  win.document.close();
-  win.onload = () => {
+  /* ── 숨겨진 iframe으로 인쇄 — 새 창보다 안정적 ── */
+  // 기존 iframe 제거
+  const oldFrame = document.getElementById('_pdfFrame');
+  if (oldFrame) oldFrame.remove();
+
+  const iframe = document.createElement('iframe');
+  iframe.id = '_pdfFrame';
+  iframe.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:210mm;height:297mm;border:0;visibility:hidden;';
+  document.body.appendChild(iframe);
+
+  const doc = iframe.contentDocument || iframe.contentWindow.document;
+  doc.open();
+  doc.write(pdfHTML);
+  doc.close();
+
+  // 토스트로 사용자 안내
+  showToast('인쇄 창이 열리면: 레이아웃 "세로", 여백 "기본값", 배경 그래픽 ✓');
+
+  // 폰트·이미지 로드를 위해 충분히 기다린 후 인쇄
+  iframe.onload = () => {
     setTimeout(() => {
-      win.focus();
-      win.print();
-      showToast('인쇄 창에서 "PDF로 저장"을 선택하세요');
-    }, 1200);  // 폰트 로드 여유 시간 ↑
+      try {
+        iframe.contentWindow.focus();
+        iframe.contentWindow.print();
+      } catch (e) {
+        showToast('인쇄 실패: ' + e.message);
+      }
+    }, 1500);
   };
 }
 
