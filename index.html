@@ -1737,6 +1737,30 @@ body {
     break-after: avoid !important;
   }
 
+  /* ⭐ 마무리 블록 (계산표 + 합계) 한 묶음으로 처리
+     본문(스케줄)이 많아 이 블록이 잘릴 상황이 되면
+     블록 전체가 다음 페이지로 넘어감 → 합계가 어정쩡하게 잘리는 문제 방지 */
+  .doc-tail {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    break-before: auto;
+    page-break-before: auto;
+  }
+  /* 계산표 개별 행도 안전장치로 쪼개지지 않게 */
+  .lg-calc .row, .mn-calc .r, .cb-calc .r {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+  /* 마무리 블록 → 푸터 분리 방지 */
+  .doc-tail {
+    break-after: avoid !important;
+    page-break-after: avoid !important;
+  }
+  .lg-foot, .es-foot, .mn-foot, .cb-foot {
+    break-before: avoid !important;
+    page-break-before: avoid !important;
+  }
+
   /* 인라인 푸터(.lg-foot 등) — 페이지 경계에서 잘리지 않게 */
   .lg-foot, .es-foot, .mn-foot, .cb-foot {
     break-inside: avoid !important;
@@ -2760,19 +2784,21 @@ function renderLedger(ctx) {
           <tbody>${rows}</tbody>
         </table>
 
-        <div class="lg-section-h">Calculation</div>
-        <div class="lg-calc">
-          ${dv>0?`<div class="row"><span>할인 (${ctx.x(discType==='pct'?ctx.dv+'%':'직접입력')})</span><span class="v" style="color:#C23B30">- ${ctx.fmtWon(ctx.disc)}</span></div>`:''}
-          <div class="row"><span>공사비 (소계)</span><span class="v">${ctx.fmtWon(ctx.workCost)}</span></div>
-          <div class="row"><span>이윤 (+${ctx.pp}%)</span><span class="v">${ctx.fmtWon(ctx.profit)}</span></div>
-          <div class="row b"><span>공사비 합계</span><span class="v">${ctx.fmtWon(ctx.beforeVat)}</span></div>
-          <div class="row"><span>부가가치세 (10%)</span><span class="v">${ctx.fmtWon(ctx.vat)}</span></div>
-          ${ctx.roundDiff!==0?`<div class="row"><span>단수조정</span><span class="v">${ctx.roundDiff>0?'+':''}${ctx.fmt(Math.round(ctx.roundDiff))}</span></div>`:''}
-        </div>
+        <div class="doc-tail">
+          <div class="lg-section-h">Calculation</div>
+          <div class="lg-calc">
+            ${dv>0?`<div class="row"><span>할인 (${ctx.x(discType==='pct'?ctx.dv+'%':'직접입력')})</span><span class="v" style="color:#C23B30">- ${ctx.fmtWon(ctx.disc)}</span></div>`:''}
+            <div class="row"><span>공사비 (소계)</span><span class="v">${ctx.fmtWon(ctx.workCost)}</span></div>
+            <div class="row"><span>이윤 (+${ctx.pp}%)</span><span class="v">${ctx.fmtWon(ctx.profit)}</span></div>
+            <div class="row b"><span>공사비 합계</span><span class="v">${ctx.fmtWon(ctx.beforeVat)}</span></div>
+            <div class="row"><span>부가가치세 (10%)</span><span class="v">${ctx.fmtWon(ctx.vat)}</span></div>
+            ${ctx.roundDiff!==0?`<div class="row"><span>단수조정</span><span class="v">${ctx.roundDiff>0?'+':''}${ctx.fmt(Math.round(ctx.roundDiff))}</span></div>`:''}
+          </div>
 
-        <div class="lg-crown">
-          <div class="l">Total · VAT Included</div>
-          <div class="v">${ctx.fmtWon(ctx.grand)}<small>KRW · INCL. VAT 10%</small></div>
+          <div class="lg-crown">
+            <div class="l">Total · VAT Included</div>
+            <div class="v">${ctx.fmtWon(ctx.grand)}<small>KRW · INCL. VAT 10%</small></div>
+          </div>
         </div>
 
         ${ctx.comp||ctx.mgr?`
@@ -2970,18 +2996,20 @@ function renderMonument(ctx) {
         <div class="mn-section-h">Schedule of Works</div>
         <div class="mn-items">${items}</div>
 
-        <div class="mn-calc">
-          ${ctx.dv>0?`<div class="r"><span>할인</span><span style="color:#C23B30">- ${ctx.fmtWon(ctx.disc)}</span></div>`:''}
-          <div class="r"><span>공사비</span><span>${ctx.fmtWon(ctx.workCost)}</span></div>
-          <div class="r"><span>이윤 (+${ctx.pp}%)</span><span>${ctx.fmtWon(ctx.profit)}</span></div>
-          <div class="r b"><span>공사비 합계</span><span>${ctx.fmtWon(ctx.beforeVat)}</span></div>
-          <div class="r"><span>부가가치세 (10%)</span><span>${ctx.fmtWon(ctx.vat)}</span></div>
-          ${ctx.roundDiff!==0?`<div class="r"><span>단수조정</span><span>${ctx.roundDiff>0?'+':''}${ctx.fmt(Math.round(ctx.roundDiff))}</span></div>`:''}
-        </div>
+        <div class="doc-tail">
+          <div class="mn-calc">
+            ${ctx.dv>0?`<div class="r"><span>할인</span><span style="color:#C23B30">- ${ctx.fmtWon(ctx.disc)}</span></div>`:''}
+            <div class="r"><span>공사비</span><span>${ctx.fmtWon(ctx.workCost)}</span></div>
+            <div class="r"><span>이윤 (+${ctx.pp}%)</span><span>${ctx.fmtWon(ctx.profit)}</span></div>
+            <div class="r b"><span>공사비 합계</span><span>${ctx.fmtWon(ctx.beforeVat)}</span></div>
+            <div class="r"><span>부가가치세 (10%)</span><span>${ctx.fmtWon(ctx.vat)}</span></div>
+            ${ctx.roundDiff!==0?`<div class="r"><span>단수조정</span><span>${ctx.roundDiff>0?'+':''}${ctx.fmt(Math.round(ctx.roundDiff))}</span></div>`:''}
+          </div>
 
-        <div class="mn-crown">
-          <span class="l">Total · VAT Included</span>
-          <span class="v">${ctx.fmtWon(ctx.grand)}<small>KRW · INCL. 10%</small></span>
+          <div class="mn-crown">
+            <span class="l">Total · VAT Included</span>
+            <span class="v">${ctx.fmtWon(ctx.grand)}<small>KRW · INCL. 10%</small></span>
+          </div>
         </div>
 
         ${ctx.comp||ctx.mgr?`
@@ -3097,19 +3125,21 @@ function renderChamber(ctx) {
           <tbody>${rows}</tbody>
         </table>
 
-        <div class="cb-calc">
-          ${ctx.dv>0?`<div class="r"><span>할인</span><span style="color:#C23B30">- ${ctx.fmtWon(ctx.disc)}</span></div>`:''}
-          <div class="r"><span>공사비</span><span>${ctx.fmtWon(ctx.workCost)}</span></div>
-          <div class="r"><span>이윤 (+${ctx.pp}%)</span><span>${ctx.fmtWon(ctx.profit)}</span></div>
-          <div class="r b"><span>공사비 합계</span><span>${ctx.fmtWon(ctx.beforeVat)}</span></div>
-          <div class="r"><span>부가가치세 (10%)</span><span>${ctx.fmtWon(ctx.vat)}</span></div>
-          ${ctx.roundDiff!==0?`<div class="r"><span>단수조정</span><span>${ctx.roundDiff>0?'+':''}${ctx.fmt(Math.round(ctx.roundDiff))}</span></div>`:''}
-        </div>
+        <div class="doc-tail">
+          <div class="cb-calc">
+            ${ctx.dv>0?`<div class="r"><span>할인</span><span style="color:#C23B30">- ${ctx.fmtWon(ctx.disc)}</span></div>`:''}
+            <div class="r"><span>공사비</span><span>${ctx.fmtWon(ctx.workCost)}</span></div>
+            <div class="r"><span>이윤 (+${ctx.pp}%)</span><span>${ctx.fmtWon(ctx.profit)}</span></div>
+            <div class="r b"><span>공사비 합계</span><span>${ctx.fmtWon(ctx.beforeVat)}</span></div>
+            <div class="r"><span>부가가치세 (10%)</span><span>${ctx.fmtWon(ctx.vat)}</span></div>
+            ${ctx.roundDiff!==0?`<div class="r"><span>단수조정</span><span>${ctx.roundDiff>0?'+':''}${ctx.fmt(Math.round(ctx.roundDiff))}</span></div>`:''}
+          </div>
 
-        <div class="cb-verdict">
-          <span class="l">Total · VAT Included</span>
-          <span class="stamp">印</span>
-          <span class="v">${ctx.fmtWon(ctx.grand)}</span>
+          <div class="cb-verdict">
+            <span class="l">Total · VAT Included</span>
+            <span class="stamp">印</span>
+            <span class="v">${ctx.fmtWon(ctx.grand)}</span>
+          </div>
         </div>
 
         ${ctx.comp||ctx.mgr?`
@@ -3208,23 +3238,25 @@ function renderScroll(ctx) {
         <table class="sc-table">${rows}</table>
       </div>
 
-      <div class="sc-calc">
-        ${ctx.dv>0?`<span class="l">할인</span><span class="v" style="color:#C23B30">- ${ctx.fmtWon(ctx.disc)}</span>`:''}
-        <span class="l">공사비</span><span class="v">${ctx.fmtWon(ctx.workCost)}</span>
-        <span class="l">이윤 (+${ctx.pp}%)</span><span class="v">${ctx.fmtWon(ctx.profit)}</span>
-        <span class="l b" style="color:${t.ink};font-weight:700;">공사비 합계</span><span class="v b" style="color:${t.ink};font-weight:700;">${ctx.fmtWon(ctx.beforeVat)}</span>
-        <span class="l">부가가치세 (10%)</span><span class="v">${ctx.fmtWon(ctx.vat)}</span>
-        ${ctx.roundDiff!==0?`<span class="l">단수조정</span><span class="v">${ctx.roundDiff>0?'+':''}${ctx.fmt(Math.round(ctx.roundDiff))}</span>`:''}
-      </div>
+      <div class="doc-tail">
+        <div class="sc-calc">
+          ${ctx.dv>0?`<span class="l">할인</span><span class="v" style="color:#C23B30">- ${ctx.fmtWon(ctx.disc)}</span>`:''}
+          <span class="l">공사비</span><span class="v">${ctx.fmtWon(ctx.workCost)}</span>
+          <span class="l">이윤 (+${ctx.pp}%)</span><span class="v">${ctx.fmtWon(ctx.profit)}</span>
+          <span class="l b" style="color:${t.ink};font-weight:700;">공사비 합계</span><span class="v b" style="color:${t.ink};font-weight:700;">${ctx.fmtWon(ctx.beforeVat)}</span>
+          <span class="l">부가가치세 (10%)</span><span class="v">${ctx.fmtWon(ctx.vat)}</span>
+          ${ctx.roundDiff!==0?`<span class="l">단수조정</span><span class="v">${ctx.roundDiff>0?'+':''}${ctx.fmt(Math.round(ctx.roundDiff))}</span>`:''}
+        </div>
 
-      <div class="sc-seal-row">
-        <span class="l">Total · VAT Included</span>
-        <span class="v">${ctx.fmtWon(ctx.grand)}</span>
-        <span class="r">
-          ${ctx.comp?ctx.x(ctx.comp):'SIDO DESIGN'}<br>
-          ${ctx.mgr?ctx.x(ctx.mgr):''}
-          <div class="circle">印</div>
-        </span>
+        <div class="sc-seal-row">
+          <span class="l">Total · VAT Included</span>
+          <span class="v">${ctx.fmtWon(ctx.grand)}</span>
+          <span class="r">
+            ${ctx.comp?ctx.x(ctx.comp):'SIDO DESIGN'}<br>
+            ${ctx.mgr?ctx.x(ctx.mgr):''}
+            <div class="circle">印</div>
+          </span>
+        </div>
       </div>
       ${details}
     </div>
