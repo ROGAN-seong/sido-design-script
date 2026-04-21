@@ -660,8 +660,9 @@ body {
 }
 
 /* ══════════════════════════════════════════
-   DOCUMENT PREVIEW — 실제 A4 크기로 렌더링 후 화면에 맞게 축소
-   해상도 96dpi 기준 210mm = 794px, 297mm = 1123px
+   DOCUMENT PREVIEW — 실제 용지 크기로 렌더링 후 화면에 맞게 축소
+   용지: 210mm × 380mm (커스텀, 디지털 공유 최적화)
+   해상도 96dpi 기준 210mm = 794px, 380mm = 1437px
    CSS transform: scale()로 화면 폭에 맞춰 축소만 함.
    → 미리보기와 PDF가 픽셀 단위로 정확히 일치
 ══════════════════════════════════════════ */
@@ -673,8 +674,8 @@ body {
   /* 컨테이너 높이는 doc-wrap의 scale 비율로 자동 계산 */
 }
 .doc-wrap {
-  width: 794px;              /* A4 가로 = 210mm @ 96dpi */
-  min-height: 1123px;        /* A4 세로 = 297mm @ 96dpi */
+  width: 794px;              /* 용지 폭 = 210mm @ 96dpi */
+  min-height: 1437px;        /* 용지 높이 = 380mm @ 96dpi */
   color: var(--ink);
   border-radius: 0;
   overflow: hidden;
@@ -689,7 +690,7 @@ body {
 /* scale로 인한 빈 공간을 부모가 정확히 차지하도록 */
 .doc-preview-frame {
   /* 폭은 580 그대로, 높이는 doc-wrap의 scaled 높이로 */
-  height: calc(1123px * (580 / 794));   /* ≈ 820px */
+  height: calc(1437px * (580 / 794));   /* ≈ 1050px */
   overflow: visible;
 }
 
@@ -700,11 +701,11 @@ body {
 
 /* 중간폭 화면 — scale 비율 조정 */
 @media (max-width: 1280px) {
-  .doc-preview-frame { max-width: 540px; height: calc(1123px * (540 / 794)); }
+  .doc-preview-frame { max-width: 540px; height: calc(1437px * (540 / 794)); }
   .doc-wrap { transform: scale(calc(540 / 794)); }
 }
 @media (max-width: 1100px) {
-  .doc-preview-frame { max-width: 480px; height: calc(1123px * (480 / 794)); }
+  .doc-preview-frame { max-width: 480px; height: calc(1437px * (480 / 794)); }
   .doc-wrap { transform: scale(calc(480 / 794)); }
 }
 
@@ -1637,12 +1638,12 @@ body {
 }
 
 /* ══════════════════════════════════════════
-   PRINT — 인쇄/PDF 출력 시 A4 세로 강제
+   PRINT — 인쇄/PDF 출력 시 커스텀 용지(210×380mm) 강제
    미리보기의 transform: scale()을 해제하고
-   .doc-wrap을 정확히 210mm × 297mm로 매핑
+   .doc-wrap을 정확히 210mm × 380mm로 매핑
 ══════════════════════════════════════════ */
 @page {
-  size: 210mm 297mm;
+  size: 210mm 380mm;
   margin: 0;
 }
 @media print {
@@ -3436,14 +3437,14 @@ function updateRoundPreview() {
 
 /* ════════════════════════════════════
    PDF EXPORT
-   메인 페이지의 @media print CSS가 알아서 A4 매핑하므로
+   메인 페이지의 @media print CSS가 알아서 210×380mm 매핑하므로
    여기서는 단순히 window.print() 호출만 하면 됨.
 ════════════════════════════════════ */
 function exportPDF() {
   // 미리보기가 최신인지 확인
   renderDoc();
 
-  showToast('인쇄 창이 열리면: 레이아웃 "세로", 여백 "기본값", 배경 그래픽 ✓');
+  showToast('인쇄 창: 용지 "맞춤 210×380mm" 또는 "대상=PDF로 저장", 여백 "없음", 배경 그래픽 ✓');
 
   // 폰트·이미지 로드 여유를 두고 인쇄 트리거
   setTimeout(() => {
