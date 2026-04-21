@@ -2700,9 +2700,10 @@ function renderLedger(ctx) {
       .doc-ledger { background:${t.paper}; color:${t.ink}; font-family:'IBM Plex Sans KR','Noto Sans KR',sans-serif; display:grid; grid-template-columns:10px 1fr; min-height:100%; width:100%; max-width:100%; box-sizing:border-box; }
       .lg-spine { background:repeating-linear-gradient(0deg,${t.accent} 0 14px,${t.accent2} 14px 16px); }
       .lg-body { padding:22px 26px 24px; }
-      .lg-top { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; padding-bottom:10px; border-bottom:3px solid ${t.ink}; }
+      .lg-top { display:grid; grid-template-columns:repeat(3,1fr); gap:10px 14px; padding-bottom:10px; border-bottom:3px solid ${t.ink}; }
       .lg-top-c .k { font-family:'Inter',sans-serif; font-size:8px; font-weight:700; letter-spacing:.2em; color:${t.ink3}; text-transform:uppercase; }
-      .lg-top-c .v { font-size:11px; font-weight:600; margin-top:2px; letter-spacing:-.005em; }
+      .lg-top-c .v { font-size:11px; font-weight:600; margin-top:2px; letter-spacing:-.005em; word-break:break-word; }
+      .lg-top-c.span2 { grid-column:span 2; }
       .lg-title { font-family:'Nanum Myeongjo',serif; font-size:42px; font-weight:800; letter-spacing:-.02em; line-height:1; margin:14px 0 3px; }
       .lg-title sup { font-family:'Inter',sans-serif; font-size:9px; font-weight:700; color:${t.accent}; letter-spacing:.2em; margin-left:5px; vertical-align:super; }
       .lg-sub { font-family:'Inter',sans-serif; font-size:9px; letter-spacing:.26em; color:${t.ink2}; text-transform:uppercase; margin-bottom:14px; }
@@ -2738,7 +2739,10 @@ function renderLedger(ctx) {
           <div class="lg-top-c"><div class="k">Document</div><div class="v">${ctx.docNo}</div></div>
           <div class="lg-top-c"><div class="k">Issued</div><div class="v">${ctx.date||'—'}</div></div>
           <div class="lg-top-c"><div class="k">Client</div><div class="v">${ctx.x(ctx.cn)}</div></div>
+          <div class="lg-top-c span2"><div class="k">Site</div><div class="v">${ctx.x(ctx.addr)}</div></div>
           <div class="lg-top-c"><div class="k">Area</div><div class="v">${ctx.area?ctx.x(ctx.area)+' 평':'—'}</div></div>
+          <div class="lg-top-c span2"><div class="k">Period</div><div class="v">${ctx.x(ctx.wp||'—')}</div></div>
+          <div class="lg-top-c"><div class="k">Valid</div><div class="v">${ctx.x(ctx.vd)}일</div></div>
         </div>
 
         <div class="lg-title">견 적 서<sup>No. ${ctx.docNo.slice(-3)}</sup></div>
@@ -2813,6 +2817,9 @@ function renderEssay(ctx) {
       .es-ornament { text-align:center; font-family:'Instrument Serif',serif; font-style:italic; font-size:13px; color:${t.accent}; }
       .es-no { font-family:'JetBrains Mono',monospace; font-size:9.5px; color:${t.ink2}; letter-spacing:.06em; }
       .es-kicker { font-family:'Inter',sans-serif; font-size:8.5px; font-weight:700; letter-spacing:.3em; text-transform:uppercase; color:${t.ink2}; margin:18px 0 6px; }
+      .es-meta { display:flex; flex-wrap:wrap; gap:6px 18px; font-family:'Inter','Noto Sans KR',sans-serif; font-size:9.5px; color:${t.ink2}; margin:10px 0 18px; padding:8px 0; border-top:1px solid ${t.border}; border-bottom:1px solid ${t.border}; }
+      .es-meta .k { font-weight:700; letter-spacing:.22em; text-transform:uppercase; color:${t.ink3}; margin-right:6px; font-size:8.5px; }
+      .es-meta .v { font-weight:600; color:${t.ink}; letter-spacing:-.005em; font-size:10px; }
       .es-h1 { font-family:'Instrument Serif',serif; font-size:58px; font-weight:400; line-height:.92; letter-spacing:-.02em; margin-bottom:4px; color:${t.ink}; }
       .es-h1 em { font-style:italic; color:${t.accent}; }
       .es-subtitle { font-family:'Inter','Noto Sans KR',sans-serif; font-size:9.5px; font-weight:700; letter-spacing:.3em; text-transform:uppercase; color:${t.ink2}; margin-bottom:18px; }
@@ -2845,8 +2852,14 @@ function renderEssay(ctx) {
       <h1 class="es-h1"><em>Estimate.</em></h1>
       <div class="es-subtitle">견 적 서 · Interior Design Studio</div>
 
+      <div class="es-meta">
+        <span><span class="k">Site</span><span class="v">${ctx.x(ctx.addr)}</span></span>
+        <span><span class="k">Area</span><span class="v">${ctx.area?ctx.x(ctx.area)+' 평':'—'}</span></span>
+        <span><span class="k">Period</span><span class="v">${ctx.x(ctx.wp||'—')}</span></span>
+      </div>
+
       <p class="es-prose">
-        ${ctx.x(ctx.cn)} <b>${ctx.x(ctx.ct)}</b>께 ${ctx.addr&&ctx.addr!=='—'?ctx.x(ctx.addr)+' ':''}${ctx.area?'전용 '+ctx.x(ctx.area)+'평 ':''}리모델링 공사에 대한 견적을 제출합니다.
+        ${ctx.x(ctx.cn)} <b>${ctx.x(ctx.ct)}</b>께 ${ctx.area?'전용 '+ctx.x(ctx.area)+'평 ':''}리모델링 공사에 대한 견적을 제출합니다.
         ${ctx.wp?'공사 기간은 <em>'+ctx.x(ctx.wp)+'</em>이며, ':''}부가가치세를 포함한 합계 금액은 <span class="won">${ctx.fmtWon(ctx.grand)}</span>입니다.
       </p>
 
@@ -2912,9 +2925,11 @@ function renderMonument(ctx) {
       .mn-h1 em { font-style:italic; font-weight:400; color:${t.accent2}; }
       .mn-sub { font-family:'Nanum Myeongjo',serif; font-size:15px; font-weight:700; letter-spacing:.18em; margin-top:6px; color:${t.paper}; }
       .mn-body { padding:20px 28px 28px; }
-      .mn-info { display:grid; grid-template-columns:repeat(4,1fr); gap:8px 14px; padding:12px 0; border-bottom:2px solid ${t.ink}; font-size:10px; }
+      .mn-info { display:grid; grid-template-columns:repeat(6,1fr); gap:10px 14px; padding:12px 0; border-bottom:2px solid ${t.ink}; font-size:10px; }
       .mn-info .k { font-family:'Inter',sans-serif; font-size:8px; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:${t.ink3}; margin-bottom:2px; }
-      .mn-info .v { font-weight:600; font-size:10px; color:${t.ink}; letter-spacing:-.005em; }
+      .mn-info .v { font-weight:600; font-size:10px; color:${t.ink}; letter-spacing:-.005em; word-break:break-word; }
+      .mn-info .c2 { grid-column:span 2; }
+      .mn-info .c3 { grid-column:span 3; }
       .mn-section-h { font-family:'Inter',sans-serif; font-size:9px; font-weight:700; letter-spacing:.22em; text-transform:uppercase; color:${t.ink2}; margin:18px 0 6px; }
       .mn-items { display:grid; gap:0; font-size:10.5px; }
       .mn-ln { display:grid; grid-template-columns:28px 1fr 100px; gap:12px; padding:9px 0; align-items:baseline; border-bottom:1px solid rgba(14,12,10,.15); }
@@ -2944,10 +2959,12 @@ function renderMonument(ctx) {
 
       <div class="mn-body">
         <div class="mn-info">
-          <div><div class="k">Client</div><div class="v">${ctx.x(ctx.cn)} ${ctx.x(ctx.ct)}</div></div>
-          <div><div class="k">Site</div><div class="v">${ctx.x(ctx.addr)}</div></div>
+          <div class="c2"><div class="k">Client</div><div class="v">${ctx.x(ctx.cn)} ${ctx.x(ctx.ct)}</div></div>
+          <div class="c3"><div class="k">Site</div><div class="v">${ctx.x(ctx.addr)}</div></div>
           <div><div class="k">Area</div><div class="v">${ctx.area?ctx.x(ctx.area)+' 평':'—'}</div></div>
-          <div><div class="k">Issued</div><div class="v">${ctx.x(ctx.date||'—')}</div></div>
+          <div class="c2"><div class="k">Issued</div><div class="v">${ctx.x(ctx.date||'—')}</div></div>
+          <div class="c3"><div class="k">Period</div><div class="v">${ctx.x(ctx.wp||'—')}</div></div>
+          <div><div class="k">Valid</div><div class="v">${ctx.x(ctx.vd)}일</div></div>
         </div>
 
         <div class="mn-section-h">Schedule of Works</div>
@@ -3140,6 +3157,9 @@ function renderScroll(ctx) {
       .sc-h1 { font-family:'Cormorant Garamond',serif; font-weight:500; font-size:50px; letter-spacing:-.02em; line-height:1; text-align:center; margin:20px 0 4px; color:${t.ink}; }
       .sc-h1 em { font-style:italic; color:${t.accent}; font-weight:600; }
       .sc-under { text-align:center; font-family:'Inter',sans-serif; font-size:9px; font-weight:700; letter-spacing:.4em; text-transform:uppercase; color:${t.accent}; margin-bottom:18px; }
+      .sc-meta { display:flex; flex-wrap:wrap; justify-content:center; gap:6px 22px; font-family:'EB Garamond','Cormorant Garamond',serif; font-size:11px; color:${t.ink2}; margin:-6px 0 18px; padding:8px 0; border-top:1px solid ${t.border}; border-bottom:1px solid ${t.border}; }
+      .sc-meta .k { font-family:'Inter',sans-serif; font-weight:700; letter-spacing:.24em; text-transform:uppercase; color:${t.ink3}; margin-right:7px; font-size:8.5px; }
+      .sc-meta .v { font-style:italic; color:${t.ink}; font-weight:500; font-size:11.5px; }
       .sc-greeting { font-size:13px; line-height:1.85; color:${t.ink}; text-align:justify; text-indent:2em; margin-bottom:6px; }
       .sc-greeting b { font-weight:700; color:${t.ink}; }
       .sc-greeting em { font-style:italic; color:${t.accent}; }
@@ -3170,8 +3190,14 @@ function renderScroll(ctx) {
       <h1 class="sc-h1"><em>Quotation.</em></h1>
       <div class="sc-under">견 · 적 · 서</div>
 
+      <div class="sc-meta">
+        <span><span class="k">Site</span><span class="v">${ctx.x(ctx.addr)}</span></span>
+        <span><span class="k">Area</span><span class="v">${ctx.area?ctx.x(ctx.area)+' 평':'—'}</span></span>
+        <span><span class="k">Period</span><span class="v">${ctx.x(ctx.wp||'—')}</span></span>
+      </div>
+
       <p class="sc-greeting">
-        ${ctx.x(ctx.cn)} <b>${ctx.x(ctx.ct)}</b>께. ${ctx.addr&&ctx.addr!=='—'?ctx.x(ctx.addr)+' ':''}${ctx.area?'전용 '+ctx.x(ctx.area)+'평 ':''}리모델링 공사에 대한 견적을 제출합니다.
+        ${ctx.x(ctx.cn)} <b>${ctx.x(ctx.ct)}</b>께. ${ctx.area?'전용 '+ctx.x(ctx.area)+'평 ':''}리모델링 공사에 대한 견적을 제출합니다.
         ${ctx.wp?'공사 기간은 '+ctx.x(ctx.wp)+'이며, ':''}부가가치세를 포함한 최종 합계 금액은 <span class="won">${ctx.fmtWon(ctx.grand)}</span>입니다.
       </p>
 
