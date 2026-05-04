@@ -584,6 +584,30 @@ body {
   padding: 7px 4px;
 }
 
+/* 항목별 메모 */
+.item-row2 {
+  display: flex; align-items: center; gap: 5px;
+  margin-top: 2px; padding-left: 2px;
+}
+.item-memo-icon {
+  font-size: 9px; color: var(--ink4); flex-shrink: 0;
+  font-weight: 700; letter-spacing: .06em; white-space: nowrap;
+}
+.item-memo {
+  flex: 1; min-width: 0;
+  padding: 4px 6px;
+  background: transparent; border: none;
+  border-bottom: 1px dashed var(--border);
+  color: var(--ink3); font-family: inherit; font-size: 11.5px;
+  letter-spacing: -.005em; outline: none;
+  transition: border-color var(--dur), color var(--dur);
+}
+.item-memo:focus {
+  border-bottom-color: var(--accent);
+  color: var(--ink);
+}
+.item-memo::placeholder { color: var(--ink4); font-style: italic; font-size: 11px; }
+
 /* 수동 편집 가능한 금액 pill */
 .amt-pill {
   padding: 7px 6px;
@@ -2535,7 +2559,7 @@ function buildEditor() {
   // Add btn
   const addBtn = mk('button', 'add-row-btn', '+ 항목 추가');
   addBtn.addEventListener('click', () => {
-    DB[selectedCat].push({ desc:'', qty:'', price:'', note:'' });
+    DB[selectedCat].push({ desc:'', qty:'', price:'', note:'', memo:'' });
     persistDraft();
     buildCatGrid(); buildEditor(); updateHeader(); renderDoc();
     // 새 행의 내용 input에 포커스
@@ -2764,6 +2788,22 @@ function buildEntry(item, idx, code) {
   r1.appendChild(amtEl);
   r1.appendChild(del);
   entry.appendChild(r1);
+
+  // ── 7. 항목 메모 (row2) ──
+  const r2 = mk('div', 'item-row2');
+  r2.appendChild(mk('span', 'item-memo-icon', 'NOTE'));
+  const memoIn = document.createElement('input');
+  memoIn.type = 'text';
+  memoIn.className = 'item-memo';
+  memoIn.placeholder = '항목 비고 (규격, 조건, 특이사항 등)';
+  memoIn.value = item.memo || '';
+  memoIn.addEventListener('input', e => {
+    DB[code][idx].memo = e.target.value;
+    persistDraft();
+    renderDoc();
+  });
+  r2.appendChild(memoIn);
+  entry.appendChild(r2);
 
   return entry;
 }
@@ -3492,8 +3532,12 @@ function renderDetailPages(ctx, design) {
     const tot = ctx.catTotal(cat.code);
     const rows = list.map(it => {
       const a = calcRow(it);
+      const itMemo = (it.memo || '').trim();
       return `<tr>
-        <td class="dp-desc">${ctx.x(it.desc)||'—'}</td>
+        <td class="dp-desc">
+          ${ctx.x(it.desc)||'—'}
+          ${itMemo ? `<div class="dp-item-memo">${ctx.x(itMemo)}</div>` : ''}
+        </td>
         <td class="dp-r dp-price">${it.price?ctx.fmtWon(parseFloat(it.price)):''}</td>
         <td class="dp-c dp-qty">${it.qty||''}</td>
         <td class="dp-c dp-unit">${ctx.x(it.note||'')}</td>
@@ -3556,6 +3600,8 @@ function renderDetailPages(ctx, design) {
       .dp-t-table td.dp-c { text-align:center; color:${t.ink2}; white-space:nowrap; }
       .dp-t-table td.dp-a { font-weight:700; color:${t.ink}; }
       .dp-memo { margin-top:0; padding:7px 10px 8px; background:${t.paperAlt}; border:1px solid ${t.border}; border-top:none; font-family:'Inter','Noto Sans KR',sans-serif; font-size:10px; color:${t.ink2}; line-height:1.7; white-space:pre-wrap; word-break:break-word; }
+      .dp-item-memo { font-size:9px; color:${t.ink3}; margin-top:2px; line-height:1.5; word-break:break-word; }
+      .dp-item-memo::before { content:'∙ '; }
       .sm-memo { font-size:9.5px; color:${t.ink3}; margin-top:3px; line-height:1.55; word-break:break-word; }
       .sm-memo::before { content:'※ '; color:${t.accent}; font-weight:700; }
       .sm-memo-on { color:${t.accent}; font-weight:600; }
@@ -3859,7 +3905,9 @@ window.addEventListener('beforeunload', e => {
 /* ════════════════════════════════════
    SERVER API — 견적서 저장/목록/수정/삭제
 ════════════════════════════════════ */
-const API_BASE = window.location.origin;
+const API_BASE = window.location.protocol === 'file:'
+  ? 'http://localhost:3000'
+  : window.location.origin;
 let currentEstId = null;
 let authToken = localStorage.getItem('sido_token') || null;
 let currentUser = null;
@@ -3872,14 +3920,31 @@ function authHeaders() {
 /* ══════════════════════════════════
    LOGIN / LOGOUT / AUTH
 ════════════════════════════════════ */
+
+// 오프라인 테스트 계정 (서버 없이 동작)
+const LOCAL_TEST_ACCOUNTS = [
+  { username: 'ysnao0923', password: 'edinsoncavani7*', name: '관리자', role: 'admin' },
+];
+
+function tryLocalLogin(username, password) {
+  const acc = LOCAL_TEST_ACCOUNTS.find(a => a.username === username && a.password === password);
+  if (!acc) return null;
+  // 간단한 로컬 토큰 (검증용 아님, 오프라인 세션 유지용)
+  const token = 'local_' + btoa(encodeURIComponent(JSON.stringify({ username: acc.username, name: acc.name, role: acc.role, ts: Date.now() })));
+  return { token, user: { id: 'local', username: acc.username, name: acc.name, role: acc.role } };
+}
+
 async function doLogin() {
   const username = document.getElementById('loginId').value.trim();
   const password = document.getElementById('loginPw').value;
   if (!username || !password) { document.getElementById('loginError').textContent = '아이디와 비밀번호를 입력하세요'; return; }
+
+  // 1. 서버 로그인 시도
   try {
     const res = await fetch(`${API_BASE}/api/auth/login`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password }),
+      signal: AbortSignal.timeout(3000),
     });
     const data = await res.json();
     if (!res.ok) { document.getElementById('loginError').textContent = data.error; return; }
@@ -3887,13 +3952,19 @@ async function doLogin() {
     currentUser = data.user;
     localStorage.setItem('sido_token', authToken);
     showApp();
-    // 로그인 후 drafts 복구
-    if (loadDraft()) {
-      setTimeout(() => showToast('이전 작성 중이던 내용을 복구했습니다'), 300);
-    }
-  } catch (err) {
-    document.getElementById('loginError').textContent = '서버 연결 실패';
-  }
+    if (loadDraft()) setTimeout(() => showToast('이전 작성 중이던 내용을 복구했습니다'), 300);
+    return;
+  } catch (_) { /* 서버 없음 — 로컬 계정으로 폴백 */ }
+
+  // 2. 로컬 테스트 계정 폴백
+  const local = tryLocalLogin(username, password);
+  if (!local) { document.getElementById('loginError').textContent = '아이디 또는 비밀번호가 잘못되었습니다'; return; }
+  authToken = local.token;
+  currentUser = local.user;
+  localStorage.setItem('sido_token', authToken);
+  showApp();
+  showToast('오프라인 모드 — 로컬 계정으로 로그인됨');
+  if (loadDraft()) setTimeout(() => showToast('이전 작성 중이던 내용을 복구했습니다'), 600);
 }
 
 function doLogout() {
@@ -3907,8 +3978,16 @@ function doLogout() {
 
 async function checkAuth() {
   if (!authToken) return false;
+  // 로컬 토큰 처리
+  if (authToken.startsWith('local_')) {
+    try {
+      const payload = JSON.parse(decodeURIComponent(atob(authToken.replace('local_', ''))));
+      currentUser = { id: 'local', username: payload.username, name: payload.name, role: payload.role };
+      return true;
+    } catch { doLogout(); return false; }
+  }
   try {
-    const res = await fetch(`${API_BASE}/api/auth/me`, { headers: authHeaders() });
+    const res = await fetch(`${API_BASE}/api/auth/me`, { headers: authHeaders(), signal: AbortSignal.timeout(3000) });
     if (!res.ok) { doLogout(); return false; }
     currentUser = await res.json();
     return true;
@@ -4038,7 +4117,7 @@ function serializeEstimate() {
       CATS.map(c => [c.code, DB[c.code]
         .filter(i => i.desc || i.price || i.qty || i.note || i.amountOverride != null)
         .map(i => {
-          const out = { desc: i.desc || '', qty: i.qty || '', price: i.price || '', note: i.note || '' };
+          const out = { desc: i.desc || '', qty: i.qty || '', price: i.price || '', note: i.note || '', memo: i.memo || '' };
           if (i.amountOverride != null) out.amountOverride = i.amountOverride;
           return out;
         })
@@ -4081,7 +4160,7 @@ function deserializeEstimate(data) {
   CATS.forEach(c => {
     DB[c.code] = (data.items && data.items[c.code])
       ? data.items[c.code].map(i => {
-          const row = { desc: i.desc || '', qty: i.qty || '', price: i.price || '', note: i.note || '' };
+          const row = { desc: i.desc || '', qty: i.qty || '', price: i.price || '', note: i.note || '', memo: i.memo || '' };
           if (i.amountOverride != null) row.amountOverride = Number(i.amountOverride);
           return row;
         })
