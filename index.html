@@ -2759,7 +2759,7 @@ function renderLedger(ctx) {
     const memo = ctx.getCatMemo(cat.code);
     return `<tr>
       <td class="lg-code">${cat.code}</td>
-      <td>${ctx.x(cat.name)}${memo?`<div class="sm-memo">${ctx.x(memo).replace(/\n/g,'<br>')}</div>`:''}${desc?`<div class="lg-desc">${desc}</div>`:''}</td>
+      <td>${ctx.x(cat.name)}${desc?`<div class="lg-desc">${desc}</div>`:''}${memo?`<div class="sm-memo">${ctx.x(memo).replace(/\n/g,'<br>')}</div>`:''}</td>
       <td class="lg-r">${ctx.getItems(cat.code).length}건</td>
       <td class="lg-r lg-amt">${tot>0?ctx.fmtWonPlain(tot):'—'}</td>
     </tr>`;
@@ -2987,7 +2987,7 @@ function renderMonument(ctx) {
     const memo = ctx.getCatMemo(cat.code);
     return `<div class="mn-ln">
       <span class="mn-n">${romanize(i+1)}</span>
-      <span class="mn-nm">${ctx.x(cat.name)}${memo?`<div class="sm-memo">${ctx.x(memo).replace(/\n/g,'<br>')}</div>`:''}${sub?`<small>${sub}</small>`:''}</span>
+      <span class="mn-nm">${ctx.x(cat.name)}${sub?`<small>${sub}</small>`:''}${memo?`<div class="sm-memo">${ctx.x(memo).replace(/\n/g,'<br>')}</div>`:''}</span>
       <span class="mn-vl">${tot>0?ctx.fmtWonPlain(tot):'—'}</span>
     </div>`;
   }).join('') || '<div style="text-align:center;padding:20px;color:'+t.ink3+';">공사 항목이 없습니다</div>';
@@ -3099,7 +3099,7 @@ function renderChamber(ctx) {
     const memo = ctx.getCatMemo(cat.code);
     return `<tr>
       <td class="cb-c">${cat.code}</td>
-      <td>${ctx.x(cat.name)}${memo?`<div class="sm-memo">${ctx.x(memo).replace(/\n/g,'<br>')}</div>`:''}${desc?`<div style="font-size:10px;color:${t.ink2};margin-top:1px;">${desc}</div>`:''}</td>
+      <td>${ctx.x(cat.name)}${desc?`<div style="font-size:10px;color:${t.ink2};margin-top:1px;">${desc}</div>`:''}${memo?`<div class="sm-memo">${ctx.x(memo).replace(/\n/g,'<br>')}</div>`:''}</td>
       <td class="cb-r">${items.length}건</td>
       <td class="cb-r cb-amt">${tot>0?ctx.fmtWonPlain(tot):'—'}</td>
     </tr>`;
