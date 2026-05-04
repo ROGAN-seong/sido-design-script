@@ -2826,7 +2826,8 @@ function buildRenderCtx() {
         const txt = (m.text||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
         const priceStr = m.price ? ' <span style="font-variant-numeric:tabular-nums;font-family:Inter,sans-serif;">'+(Number(m.price)||0).toLocaleString('ko-KR')+'원</span>' : '';
         const notApplied = (!m.checked && m.price) ? ' <span style="opacity:.5;font-size:8.5px;">(미반영)</span>' : '';
-        return txt || priceStr ? `<div class="sm-memo${m.checked?' sm-memo-on':''}">${txt}${priceStr}${notApplied}</div>` : '';
+        const applied = (m.checked && m.price) ? ' <span style="font-size:8.5px;">(반영)</span>' : '';
+        return txt || priceStr ? `<div class="sm-memo${m.checked?' sm-memo-on':''}">${txt}${priceStr}${notApplied}${applied}</div>` : '';
       }).filter(Boolean).join('');
     },
     catTotal,
