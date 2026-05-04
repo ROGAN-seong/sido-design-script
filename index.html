@@ -653,31 +653,78 @@ body {
   border-top: 1px solid var(--border2);
   background: var(--surface2);
 }
+.cat-memo-hd {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 8px;
+}
 .cat-memo-label {
   font-family: 'Inter', 'Noto Sans KR', sans-serif;
   font-size: 10px; font-weight: 700;
   color: var(--ink4); text-transform: uppercase;
-  letter-spacing: .14em; margin-bottom: 6px;
+  letter-spacing: .14em;
 }
-.cat-memo {
-  width: 100%; min-height: 56px;
-  padding: 8px 10px;
+.cat-memo-add {
+  padding: 3px 10px; border-radius: 4px;
+  background: var(--surface); border: 1px solid var(--border);
+  font-family: inherit; font-size: 11px; font-weight: 600;
+  color: var(--ink3); cursor: pointer;
+  transition: all var(--dur-fast);
+}
+.cat-memo-add:hover { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); }
+.cat-memo-list { display: flex; flex-direction: column; gap: 6px; }
+.cat-memo-entry {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 6px;
-  color: var(--ink2);
-  font-family: inherit; font-size: 12.5px;
-  line-height: 1.65; letter-spacing: -.005em;
-  outline: none; resize: vertical;
-  transition: border-color var(--dur) var(--ease-spring),
-              box-shadow var(--dur) var(--ease-spring);
+  padding: 8px 10px;
+  display: flex; flex-direction: column; gap: 6px;
+  transition: border-color var(--dur);
 }
-.cat-memo:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-dim);
-  background: #fff;
+.cat-memo-entry.is-checked { border-color: var(--accent); background: var(--accent-soft); }
+.cat-memo-entry-row1 { display: flex; align-items: center; gap: 6px; }
+.cat-memo-check {
+  width: 16px; height: 16px; flex-shrink: 0;
+  accent-color: var(--accent); cursor: pointer;
 }
-.cat-memo::placeholder { color: var(--ink4); font-style: italic; }
+.cat-memo-text {
+  flex: 1; min-width: 0;
+  padding: 4px 6px;
+  background: transparent; border: none; border-bottom: 1px solid var(--border);
+  color: var(--ink2); font-family: inherit; font-size: 12.5px;
+  letter-spacing: -.005em; outline: none;
+  transition: border-color var(--dur);
+}
+.cat-memo-text:focus { border-bottom-color: var(--accent); color: var(--ink); }
+.cat-memo-text::placeholder { color: var(--ink4); font-style: italic; }
+.cat-memo-del {
+  width: 22px; height: 22px; flex-shrink: 0;
+  background: transparent; border: 0; border-radius: 3px;
+  color: var(--ink4); font-size: 14px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all var(--dur-fast);
+}
+.cat-memo-del:hover { background: #FDEAEA; color: #C23B30; }
+.cat-memo-entry-row2 { display: flex; align-items: center; gap: 6px; padding-left: 22px; }
+.cat-memo-price-label {
+  font-size: 10.5px; color: var(--ink3); white-space: nowrap;
+}
+.cat-memo-price {
+  flex: 1; min-width: 0;
+  padding: 3px 6px; text-align: right;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 4px; color: var(--ink);
+  font-family: 'Inter', 'Noto Sans KR', sans-serif;
+  font-variant-numeric: tabular-nums; font-size: 12px; font-weight: 600;
+  outline: none;
+  transition: border-color var(--dur), box-shadow var(--dur);
+}
+.cat-memo-price:focus { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-dim); }
+.cat-memo-price::placeholder { font-weight: 400; color: var(--ink4); }
+.cat-memo-check-badge {
+  font-size: 10px; font-weight: 700; letter-spacing: .04em;
+  white-space: nowrap;
+  color: var(--accent);
+}
 
 .no-cat-hint {
   padding: 48px 20px; text-align: center;
@@ -2497,19 +2544,82 @@ function buildEditor() {
   });
   panel.appendChild(addBtn);
 
-  // 카테고리 메모
+  // 카테고리 메모 (다중 항목)
   const memoWrap = mk('div', 'cat-memo-wrap');
-  memoWrap.appendChild(mk('div', 'cat-memo-label', 'MEMO · 비고'));
-  const memoTA = document.createElement('textarea');
-  memoTA.className = 'cat-memo';
-  memoTA.placeholder = '가격 변동 사유, 조건부 내용, 현장 특이사항 등 자유롭게 입력…';
-  memoTA.value = CATNOTES[selectedCat] || '';
-  memoTA.addEventListener('input', e => {
-    CATNOTES[selectedCat] = e.target.value;
-    persistDraft();
-    renderDoc();
+  const memoHd = mk('div', 'cat-memo-hd');
+  memoHd.appendChild(mk('div', 'cat-memo-label', 'MEMO · 비고'));
+  const memoAddBtn = mk('button', 'cat-memo-add', '+ 메모 추가');
+  memoAddBtn.type = 'button';
+  memoAddBtn.addEventListener('click', () => {
+    if (!Array.isArray(CATNOTES[selectedCat])) CATNOTES[selectedCat] = [];
+    CATNOTES[selectedCat].push({ text: '', price: '', checked: false });
+    persistDraft(); buildEditor(); renderDoc();
   });
-  memoWrap.appendChild(memoTA);
+  memoHd.appendChild(memoAddBtn);
+  memoWrap.appendChild(memoHd);
+
+  const memoList = mk('div', 'cat-memo-list');
+  const entries = Array.isArray(CATNOTES[selectedCat]) ? CATNOTES[selectedCat] : [];
+  entries.forEach((m, mi) => {
+    const entry = mk('div', 'cat-memo-entry' + (m.checked ? ' is-checked' : ''));
+
+    // row1: 체크박스 + 텍스트 + 삭제
+    const row1 = mk('div', 'cat-memo-entry-row1');
+    const chk = document.createElement('input');
+    chk.type = 'checkbox'; chk.className = 'cat-memo-check';
+    chk.checked = !!m.checked;
+    chk.addEventListener('change', e => {
+      CATNOTES[selectedCat][mi].checked = e.target.checked;
+      entry.classList.toggle('is-checked', e.target.checked);
+      persistDraft(); buildCatGrid(); updateHeader(); renderDoc();
+    });
+    const textIn = document.createElement('input');
+    textIn.type = 'text'; textIn.className = 'cat-memo-text';
+    textIn.placeholder = '메모 내용…'; textIn.value = m.text || '';
+    textIn.addEventListener('input', e => {
+      CATNOTES[selectedCat][mi].text = e.target.value;
+      persistDraft(); renderDoc();
+    });
+    const delBtn = mk('button', 'cat-memo-del', '×');
+    delBtn.type = 'button';
+    delBtn.addEventListener('click', () => {
+      CATNOTES[selectedCat].splice(mi, 1);
+      persistDraft(); buildEditor(); buildCatGrid(); updateHeader(); renderDoc();
+    });
+    row1.appendChild(chk); row1.appendChild(textIn); row1.appendChild(delBtn);
+    entry.appendChild(row1);
+
+    // row2: 금액 입력
+    const row2 = mk('div', 'cat-memo-entry-row2');
+    row2.appendChild(mk('span', 'cat-memo-price-label', '금액'));
+    const priceIn = document.createElement('input');
+    priceIn.type = 'text'; priceIn.className = 'cat-memo-price';
+    priceIn.inputMode = 'numeric';
+    priceIn.placeholder = '0';
+    priceIn.value = m.price ? Number(m.price).toLocaleString('ko-KR') : '';
+    priceIn.addEventListener('input', e => {
+      const raw = e.target.value.replace(/[^\d]/g, '');
+      CATNOTES[selectedCat][mi].price = raw ? Number(raw) : '';
+      const cursor = e.target.selectionStart;
+      const digitsBefore = e.target.value.slice(0, cursor).replace(/[^\d]/g, '').length;
+      e.target.value = raw ? Number(raw).toLocaleString('ko-KR') : '';
+      // 커서 복원
+      let seen = 0, pos = 0;
+      for (; pos < e.target.value.length; pos++) {
+        if (/\d/.test(e.target.value[pos])) { if (++seen === digitsBefore) { pos++; break; } }
+      }
+      e.target.setSelectionRange(pos, pos);
+      persistDraft(); buildCatGrid(); updateHeader(); renderDoc();
+    });
+    const badge = mk('span', 'cat-memo-check-badge', m.checked ? '견적 반영 중' : '미반영');
+    badge.style.color = m.checked ? 'var(--accent)' : 'var(--ink4)';
+    row2.appendChild(priceIn);
+    row2.appendChild(badge);
+    entry.appendChild(row2);
+
+    memoList.appendChild(entry);
+  });
+  memoWrap.appendChild(memoList);
   panel.appendChild(memoWrap);
 
   document.getElementById('editorWrap').innerHTML = '';
@@ -2708,7 +2818,17 @@ function buildRenderCtx() {
     // 활성 카테고리와 항목 리스트
     activeCats: CATS.filter(c => catTotal(c.code) > 0 || DB[c.code].some(i => i.desc)),
     getItems: (code) => DB[code].filter(it => it.desc || it.price || it.qty),
-    getCatMemo: (code) => (CATNOTES[code] || '').trim(),
+    getCatMemoHtml: (code, t) => {
+      const entries = Array.isArray(CATNOTES[code]) ? CATNOTES[code] : [];
+      if (!entries.length) return '';
+      return entries.map(m => {
+        if (!m.text && !m.price) return '';
+        const txt = (m.text||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+        const priceStr = m.price ? ' <span style="font-variant-numeric:tabular-nums;font-family:Inter,sans-serif;">'+(Number(m.price)||0).toLocaleString('ko-KR')+'원</span>' : '';
+        const notApplied = (!m.checked && m.price) ? ' <span style="opacity:.5;font-size:8.5px;">(미반영)</span>' : '';
+        return txt || priceStr ? `<div class="sm-memo${m.checked?' sm-memo-on':''}">${txt}${priceStr}${notApplied}</div>` : '';
+      }).filter(Boolean).join('');
+    },
     catTotal,
     fmt,
     x,
@@ -2756,10 +2876,10 @@ function renderLedger(ctx) {
   const rows = ctx.activeCats.map(cat => {
     const tot = ctx.catTotal(cat.code);
     const desc = ctx.getItems(cat.code).map(it => ctx.x(it.desc)).filter(Boolean).slice(0,3).join(', ');
-    const memo = ctx.getCatMemo(cat.code);
+    const memoHtml = ctx.getCatMemoHtml(cat.code, t);
     return `<tr>
       <td class="lg-code">${cat.code}</td>
-      <td>${ctx.x(cat.name)}${desc?`<div class="lg-desc">${desc}</div>`:''}${memo?`<div class="sm-memo">${ctx.x(memo).replace(/\n/g,'<br>')}</div>`:''}</td>
+      <td>${ctx.x(cat.name)}${desc?`<div class="lg-desc">${desc}</div>`:''}${memoHtml}</td>
       <td class="lg-r">${ctx.getItems(cat.code).length}건</td>
       <td class="lg-r lg-amt">${tot>0?ctx.fmtWonPlain(tot):'—'}</td>
     </tr>`;
@@ -2805,6 +2925,7 @@ function renderLedger(ctx) {
       .lg-foot .seal { width:50px; height:50px; border:1.5px solid ${t.accent}; border-radius:50%; display:flex; align-items:center; justify-content:center; color:${t.accent}; font-family:'Nanum Myeongjo',serif; font-weight:800; font-size:9px; line-height:1.2; text-align:center; transform:rotate(-6deg); letter-spacing:.1em; }
       .sm-memo { font-size:9.5px; color:${t.ink3}; margin-top:3px; line-height:1.55; word-break:break-word; }
       .sm-memo::before { content:'※ '; color:${t.accent}; font-weight:700; }
+      .sm-memo-on { color:${t.accent}; font-weight:600; }
     </style>
     <div class="doc-ledger">
       <div class="lg-spine"></div>
@@ -2875,10 +2996,10 @@ function renderEssay(ctx) {
   const { t } = ctx;
   const scheduleRows = ctx.activeCats.map((cat, i) => {
     const tot = ctx.catTotal(cat.code);
-    const memo = ctx.getCatMemo(cat.code);
+    const memoHtml = ctx.getCatMemoHtml(cat.code, t);
     return `<div class="es-row">
       <span class="es-n">${romanize(i+1)}</span>
-      <span class="es-name">${ctx.x(cat.name)}${memo?`<div class="sm-memo">${ctx.x(memo).replace(/\n/g,'<br>')}</div>`:''}</span>
+      <span class="es-name">${ctx.x(cat.name)}${memoHtml}</span>
       <span class="es-v">${ctx.fmtWon(tot)}</span>
     </div>`;
   }).join('') || '<div style="text-align:center;padding:16px;color:'+t.ink3+';font-style:italic;">공사 항목이 없습니다</div>';
@@ -2919,6 +3040,7 @@ function renderEssay(ctx) {
       .es-foot .seal { width:52px; height:52px; border:1.5px solid ${t.accent}; border-radius:50%; display:flex; align-items:center; justify-content:center; color:${t.accent}; font-family:'Nanum Myeongjo',serif; font-weight:800; font-size:10px; transform:rotate(6deg); letter-spacing:.1em; }
       .sm-memo { font-size:9.5px; color:${t.ink3}; margin-top:3px; line-height:1.55; word-break:break-word; }
       .sm-memo::before { content:'※ '; color:${t.accent}; font-weight:700; }
+      .sm-memo-on { color:${t.accent}; font-weight:600; }
     </style>
     <div class="doc-essay">
       <div class="es-top">
@@ -2984,10 +3106,10 @@ function renderMonument(ctx) {
     const tot = ctx.catTotal(cat.code);
     const firstItem = ctx.getItems(cat.code)[0];
     const sub = firstItem?.desc ? ctx.x(firstItem.desc) : '';
-    const memo = ctx.getCatMemo(cat.code);
+    const memoHtml = ctx.getCatMemoHtml(cat.code, t);
     return `<div class="mn-ln">
       <span class="mn-n">${romanize(i+1)}</span>
-      <span class="mn-nm">${ctx.x(cat.name)}${sub?`<small>${sub}</small>`:''}${memo?`<div class="sm-memo">${ctx.x(memo).replace(/\n/g,'<br>')}</div>`:''}</span>
+      <span class="mn-nm">${ctx.x(cat.name)}${sub?`<small>${sub}</small>`:''}${memoHtml}</span>
       <span class="mn-vl">${tot>0?ctx.fmtWonPlain(tot):'—'}</span>
     </div>`;
   }).join('') || '<div style="text-align:center;padding:20px;color:'+t.ink3+';">공사 항목이 없습니다</div>';
@@ -3028,6 +3150,7 @@ function renderMonument(ctx) {
       .mn-foot .company { font-weight:700; color:${t.ink}; font-size:12px; margin-bottom:3px; }
       .sm-memo { font-size:9.5px; color:${t.ink3}; margin-top:3px; line-height:1.55; word-break:break-word; }
       .sm-memo::before { content:'※ '; color:${t.accent}; font-weight:700; }
+      .sm-memo-on { color:${t.accent}; font-weight:600; }
     </style>
     <div class="doc-monument">
       <div class="mn-column">
@@ -3096,10 +3219,10 @@ function renderChamber(ctx) {
     const tot = ctx.catTotal(cat.code);
     const items = ctx.getItems(cat.code);
     const desc = items.map(it => ctx.x(it.desc)).filter(Boolean).slice(0,2).join(', ');
-    const memo = ctx.getCatMemo(cat.code);
+    const memoHtml = ctx.getCatMemoHtml(cat.code, t);
     return `<tr>
       <td class="cb-c">${cat.code}</td>
-      <td>${ctx.x(cat.name)}${desc?`<div style="font-size:10px;color:${t.ink2};margin-top:1px;">${desc}</div>`:''}${memo?`<div class="sm-memo">${ctx.x(memo).replace(/\n/g,'<br>')}</div>`:''}</td>
+      <td>${ctx.x(cat.name)}${desc?`<div style="font-size:10px;color:${t.ink2};margin-top:1px;">${desc}</div>`:''}${memoHtml}</td>
       <td class="cb-r">${items.length}건</td>
       <td class="cb-r cb-amt">${tot>0?ctx.fmtWonPlain(tot):'—'}</td>
     </tr>`;
@@ -3149,6 +3272,7 @@ function renderChamber(ctx) {
       .cb-foot .company { font-family:'Nanum Myeongjo',serif; font-weight:700; color:${t.ink}; font-size:12px; margin-bottom:3px; }
       .sm-memo { font-size:9.5px; color:${t.ink3}; margin-top:3px; line-height:1.55; word-break:break-word; }
       .sm-memo::before { content:'※ '; color:${t.accent}; font-weight:700; }
+      .sm-memo-on { color:${t.accent}; font-weight:600; }
     </style>
     <div class="doc-chamber">
       <div class="cb-outer">
@@ -3224,10 +3348,10 @@ function renderScroll(ctx) {
   const { t } = ctx;
   const rows = ctx.activeCats.map((cat, i) => {
     const tot = ctx.catTotal(cat.code);
-    const memo = ctx.getCatMemo(cat.code);
+    const memoHtml = ctx.getCatMemoHtml(cat.code, t);
     return `<tr>
       <td class="sc-n">${romanize(i+1)}.</td>
-      <td>${ctx.x(cat.name)}${memo?`<div class="sm-memo">${ctx.x(memo).replace(/\n/g,'<br>')}</div>`:''}</td>
+      <td>${ctx.x(cat.name)}${memoHtml}</td>
       <td class="sc-r">${ctx.fmtWon(tot)}</td>
     </tr>`;
   }).join('') || '<tr><td colspan="3" style="text-align:center;padding:16px;color:'+t.ink3+';font-style:italic;">공사 항목이 없습니다</td></tr>';
@@ -3272,6 +3396,7 @@ function renderScroll(ctx) {
       .sc-seal-row .r .circle { display:inline-block; width:30px; height:30px; border:1.5px solid ${t.accent}; border-radius:50%; line-height:26px; color:${t.accent}; font-family:'Nanum Myeongjo',serif; font-weight:800; text-align:center; margin-top:5px; font-size:11px; }
       .sm-memo { font-size:9.5px; color:${t.ink3}; margin-top:3px; line-height:1.55; word-break:break-word; }
       .sm-memo::before { content:'※ '; color:${t.accent}; font-weight:700; }
+      .sm-memo-on { color:${t.accent}; font-weight:600; }
     </style>
     <div class="doc-scroll">
       <div class="sc-masthead">
@@ -3352,7 +3477,7 @@ function renderDetailPages(ctx, design) {
         <td class="dp-r dp-a dp-amt">${a?ctx.fmtWon(a):''}</td>
       </tr>`;
     }).join('');
-    const memo = (CATNOTES[cat.code] || '').trim();
+    const memoHtml = ctx.getCatMemoHtml(cat.code, t);
     return `
       <div class="dp-block">
         <div class="dp-h">
@@ -3377,7 +3502,7 @@ function renderDetailPages(ctx, design) {
           </tr></thead>
           <tbody>${rows}</tbody>
         </table>
-        ${memo ? `<div class="dp-memo">${ctx.x(memo).replace(/\n/g, '<br>')}</div>` : ''}
+        ${memoHtml}
       </div>`;
   }).join('');
   if (!pages) return '';
@@ -3408,7 +3533,10 @@ function renderDetailPages(ctx, design) {
       .dp-t-table td.dp-c { text-align:center; color:${t.ink2}; white-space:nowrap; }
       .dp-t-table td.dp-a { font-weight:700; color:${t.ink}; }
       .dp-memo { margin-top:0; padding:7px 10px 8px; background:${t.paperAlt}; border:1px solid ${t.border}; border-top:none; font-family:'Inter','Noto Sans KR',sans-serif; font-size:10px; color:${t.ink2}; line-height:1.7; white-space:pre-wrap; word-break:break-word; }
-      .dp-memo::before { content:'※ '; font-weight:700; color:${t.accent}; }
+      .sm-memo { font-size:9.5px; color:${t.ink3}; margin-top:3px; line-height:1.55; word-break:break-word; }
+      .sm-memo::before { content:'※ '; color:${t.accent}; font-weight:700; }
+      .sm-memo-on { color:${t.accent}; font-weight:600; }
+      .sm-memo-on { color:${t.accent}; font-weight:600; }
     </style>
     <div class="dp-wrap">
       <div class="dp-wrap-title">공사별 세부 내역 · Detailed Breakdown</div>
@@ -3425,7 +3553,12 @@ function calcRow(it) {
   return (parseFloat(it.qty)||0)*(parseFloat(it.price)||0);
 }
 function calcRowFmt(it) { const a = calcRow(it); return a>0?fmt(a):'—'; }
-function catTotal(code) { return DB[code].reduce((s,it)=>s+calcRow(it),0); }
+function catTotal(code) {
+  const itemSum = DB[code].reduce((s,it)=>s+calcRow(it),0);
+  const memoSum = (Array.isArray(CATNOTES[code])?CATNOTES[code]:[])
+    .reduce((s,m) => s + (m.checked && m.price ? Number(m.price) : 0), 0);
+  return itemSum + memoSum;
+}
 function subtotal() { return CATS.reduce((s,c)=>s+catTotal(c.code),0); }
 function discountAmt() {
   const sub = subtotal();
@@ -3563,7 +3696,7 @@ ${st}</style></head><body><div class="doc-wrap">${body}</div></body></html>`;
 ════════════════════════════════════ */
 function resetAll() {
   if (!confirm('전체 초기화할까요?')) return;
-  CATS.forEach(c => { DB[c.code] = []; CATNOTES[c.code] = ''; });
+  CATS.forEach(c => { DB[c.code] = []; CATNOTES[c.code] = []; });
   document.querySelectorAll('input, select').forEach(el => {
     if (el.id === 'clientTitle') el.value = '대표님';
     else if (el.id === 'profitPct') el.value = '10';
@@ -3889,8 +4022,8 @@ function serializeEstimate() {
       ])
     ),
     catNotes:     Object.fromEntries(
-      CATS.map(c => [c.code, CATNOTES[c.code] || ""])
-        .filter(([, v]) => v)
+      CATS.map(c => [c.code, Array.isArray(CATNOTES[c.code]) ? CATNOTES[c.code] : []])
+        .filter(([, v]) => v.length > 0)
     ),
     grandTotal:   grand,
   };
@@ -3930,7 +4063,10 @@ function deserializeEstimate(data) {
           return row;
         })
       : [];
-    CATNOTES[c.code] = (data.catNotes && data.catNotes[c.code]) || '';
+    const raw = data.catNotes && data.catNotes[c.code];
+    if (Array.isArray(raw)) CATNOTES[c.code] = raw;
+    else if (typeof raw === 'string' && raw) CATNOTES[c.code] = [{ text: raw, price: '', checked: false }];
+    else CATNOTES[c.code] = [];
   });
 
   selectedCat = null;
