@@ -1638,13 +1638,14 @@ body {
 }
 
 /* ══════════════════════════════════════════
-   PRINT — 인쇄/PDF 출력 시 커스텀 용지(210×380mm) 강제
+   PRINT — 인쇄/PDF 출력 시 단일 긴 페이지로 출력
+   exportPDF()에서 콘텐츠 실측 높이를 @page size에 동적 주입.
    미리보기의 transform: scale()을 해제하고
-   .doc-wrap을 정확히 210mm × 380mm로 매핑
+   .doc-wrap을 정확히 210mm × [실측높이]mm로 매핑
 ══════════════════════════════════════════ */
 @page {
-  size: 210mm 380mm;
   margin: 0;
+  /* size는 exportPDF()가 콘텐츠 높이 측정 후 동적 주입 */
 }
 @media print {
   /* UI 모두 숨김 */
@@ -1717,11 +1718,7 @@ body {
     page-break-inside: avoid !important;
   }
 
-  /* 상세 페이지 분리 */
-  .dp-wrap {
-    page-break-before: always !important;
-    break-before: page !important;
-  }
+  /* 단일 페이지 출력 — 상세 내역을 강제로 새 페이지로 분리하지 않음 */
   .dp-block {
     break-inside: avoid !important;
     page-break-inside: avoid !important;
@@ -3437,18 +3434,35 @@ function updateRoundPreview() {
 
 /* ════════════════════════════════════
    PDF EXPORT
-   메인 페이지의 @media print CSS가 알아서 210×380mm 매핑하므로
-   여기서는 단순히 window.print() 호출만 하면 됨.
+   콘텐츠 실측 높이를 측정 → @page size 동적 주입 → 단일 긴 PDF 출력
 ════════════════════════════════════ */
 function exportPDF() {
-  // 미리보기가 최신인지 확인
   renderDoc();
 
-  showToast('인쇄 창: 용지 "맞춤 210×380mm" 또는 "대상=PDF로 저장", 여백 "없음", 배경 그래픽 ✓');
+  // transform: scale()은 layout 크기에 영향 없으므로 scrollHeight = 실제 인쇄 높이
+  const docWrap = document.querySelector('.doc-wrap');
+  const heightPx = docWrap.scrollHeight;
+  const heightMm = Math.ceil(heightPx * 25.4 / 96) + 4; // px→mm, +4mm 여유
 
-  // 폰트·이미지 로드 여유를 두고 인쇄 트리거
+  // 기존 동적 스타일 제거 후 새로 주입
+  const STYLE_ID = '__pdf_page_size__';
+  const existing = document.getElementById(STYLE_ID);
+  if (existing) existing.remove();
+
+  const styleEl = document.createElement('style');
+  styleEl.id = STYLE_ID;
+  styleEl.textContent = `@page { size: 210mm ${heightMm}mm; margin: 0; }`;
+  document.head.appendChild(styleEl);
+
+  showToast('PDF 저장: 여백 "없음", 배경 그래픽 ✓ 설정 확인');
+
   setTimeout(() => {
     window.print();
+    // 인쇄 다이얼로그 닫힌 후 정리
+    setTimeout(() => {
+      const s = document.getElementById(STYLE_ID);
+      if (s) s.remove();
+    }, 2000);
   }, 300);
 }
 
