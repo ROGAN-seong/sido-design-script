@@ -647,6 +647,38 @@ body {
 }
 .add-row-btn:hover { background: var(--accent-soft); color: var(--accent); }
 
+/* ── 카테고리 메모 ── */
+.cat-memo-wrap {
+  padding: 10px 12px 14px;
+  border-top: 1px solid var(--border2);
+  background: var(--surface2);
+}
+.cat-memo-label {
+  font-family: 'Inter', 'Noto Sans KR', sans-serif;
+  font-size: 10px; font-weight: 700;
+  color: var(--ink4); text-transform: uppercase;
+  letter-spacing: .14em; margin-bottom: 6px;
+}
+.cat-memo {
+  width: 100%; min-height: 56px;
+  padding: 8px 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--ink2);
+  font-family: inherit; font-size: 12.5px;
+  line-height: 1.65; letter-spacing: -.005em;
+  outline: none; resize: vertical;
+  transition: border-color var(--dur) var(--ease-spring),
+              box-shadow var(--dur) var(--ease-spring);
+}
+.cat-memo:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-dim);
+  background: #fff;
+}
+.cat-memo::placeholder { color: var(--ink4); font-style: italic; }
+
 .no-cat-hint {
   padding: 48px 20px; text-align: center;
   color: var(--ink3); font-size: 13px; line-height: 2;
@@ -2315,6 +2347,7 @@ function bgStyle(bg) { return bg && bg.includes('gradient') ? `background:${bg}`
 ════════════════════════════════════ */
 const DB = {};
 CATS.forEach(c => DB[c.code] = []);
+const CATNOTES = {};   // 카테고리별 메모: { [code]: string }
 let selectedCat = null;
 let discType = 'pct';
 
@@ -2463,6 +2496,21 @@ function buildEditor() {
     }, 50);
   });
   panel.appendChild(addBtn);
+
+  // 카테고리 메모
+  const memoWrap = mk('div', 'cat-memo-wrap');
+  memoWrap.appendChild(mk('div', 'cat-memo-label', 'MEMO · 비고'));
+  const memoTA = document.createElement('textarea');
+  memoTA.className = 'cat-memo';
+  memoTA.placeholder = '가격 변동 사유, 조건부 내용, 현장 특이사항 등 자유롭게 입력…';
+  memoTA.value = CATNOTES[selectedCat] || '';
+  memoTA.addEventListener('input', e => {
+    CATNOTES[selectedCat] = e.target.value;
+    persistDraft();
+    renderDoc();
+  });
+  memoWrap.appendChild(memoTA);
+  panel.appendChild(memoWrap);
 
   document.getElementById('editorWrap').innerHTML = '';
   document.getElementById('editorWrap').appendChild(panel);
@@ -3288,6 +3336,7 @@ function renderDetailPages(ctx, design) {
         <td class="dp-r dp-a dp-amt">${a?ctx.fmtWon(a):''}</td>
       </tr>`;
     }).join('');
+    const memo = (CATNOTES[cat.code] || '').trim();
     return `
       <div class="dp-block">
         <div class="dp-h">
@@ -3312,6 +3361,7 @@ function renderDetailPages(ctx, design) {
           </tr></thead>
           <tbody>${rows}</tbody>
         </table>
+        ${memo ? `<div class="dp-memo">${ctx.x(memo).replace(/\n/g, '<br>')}</div>` : ''}
       </div>`;
   }).join('');
   if (!pages) return '';
@@ -3341,6 +3391,8 @@ function renderDetailPages(ctx, design) {
       .dp-t-table td.dp-r { text-align:right; font-variant-numeric:tabular-nums; font-family:'Inter','Noto Sans KR',sans-serif; white-space:nowrap; }
       .dp-t-table td.dp-c { text-align:center; color:${t.ink2}; white-space:nowrap; }
       .dp-t-table td.dp-a { font-weight:700; color:${t.ink}; }
+      .dp-memo { margin-top:0; padding:7px 10px 8px; background:${t.paperAlt}; border:1px solid ${t.border}; border-top:none; font-family:'Inter','Noto Sans KR',sans-serif; font-size:10px; color:${t.ink2}; line-height:1.7; white-space:pre-wrap; word-break:break-word; }
+      .dp-memo::before { content:'※ '; font-weight:700; color:${t.accent}; }
     </style>
     <div class="dp-wrap">
       <div class="dp-wrap-title">공사별 세부 내역 · Detailed Breakdown</div>
@@ -3495,7 +3547,7 @@ ${st}</style></head><body><div class="doc-wrap">${body}</div></body></html>`;
 ════════════════════════════════════ */
 function resetAll() {
   if (!confirm('전체 초기화할까요?')) return;
-  CATS.forEach(c => DB[c.code] = []);
+  CATS.forEach(c => { DB[c.code] = []; CATNOTES[c.code] = ''; });
   document.querySelectorAll('input, select').forEach(el => {
     if (el.id === 'clientTitle') el.value = '대표님';
     else if (el.id === 'profitPct') el.value = '10';
@@ -3820,6 +3872,10 @@ function serializeEstimate() {
         })
       ])
     ),
+    catNotes:     Object.fromEntries(
+      CATS.map(c => [c.code, CATNOTES[c.code] || ""])
+        .filter(([, v]) => v)
+    ),
     grandTotal:   grand,
   };
 }
@@ -3849,7 +3905,7 @@ function deserializeEstimate(data) {
   // 디자인
   if (data.design && THEMES[data.design]) setDesign(data.design);
 
-  // 공사 항목 복원
+  // 공사 항목 + 메모 복원
   CATS.forEach(c => {
     DB[c.code] = (data.items && data.items[c.code])
       ? data.items[c.code].map(i => {
@@ -3858,6 +3914,7 @@ function deserializeEstimate(data) {
           return row;
         })
       : [];
+    CATNOTES[c.code] = (data.catNotes && data.catNotes[c.code]) || '';
   });
 
   selectedCat = null;
