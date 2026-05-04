@@ -593,6 +593,10 @@ body {
   font-size: 9px; color: var(--ink4); flex-shrink: 0;
   font-weight: 700; letter-spacing: .06em; white-space: nowrap;
 }
+.item-memo-check {
+  width: 14px; height: 14px; flex-shrink: 0;
+  accent-color: var(--accent); cursor: pointer;
+}
 .item-memo {
   flex: 1; min-width: 0;
   padding: 4px 6px;
@@ -606,6 +610,7 @@ body {
   border-bottom-color: var(--accent);
   color: var(--ink);
 }
+.item-memo.checked { color: var(--accent); font-weight: 600; }
 .item-memo::placeholder { color: var(--ink4); font-style: italic; font-size: 11px; }
 
 /* 수동 편집 가능한 금액 pill */
@@ -2559,7 +2564,7 @@ function buildEditor() {
   // Add btn
   const addBtn = mk('button', 'add-row-btn', '+ 항목 추가');
   addBtn.addEventListener('click', () => {
-    DB[selectedCat].push({ desc:'', qty:'', price:'', note:'', memo:'' });
+    DB[selectedCat].push({ desc:'', qty:'', price:'', note:'', memo:'', memoChecked:false });
     persistDraft();
     buildCatGrid(); buildEditor(); updateHeader(); renderDoc();
     // 새 행의 내용 input에 포커스
@@ -2792,16 +2797,32 @@ function buildEntry(item, idx, code) {
   // ── 7. 항목 메모 (row2) ──
   const r2 = mk('div', 'item-row2');
   r2.appendChild(mk('span', 'item-memo-icon', 'NOTE'));
+
+  const memoChk = document.createElement('input');
+  memoChk.type = 'checkbox';
+  memoChk.className = 'item-memo-check';
+  memoChk.title = '체크 시 강조 색상으로 표시됩니다';
+  memoChk.checked = !!item.memoChecked;
+
   const memoIn = document.createElement('input');
   memoIn.type = 'text';
-  memoIn.className = 'item-memo';
+  memoIn.className = 'item-memo' + (item.memoChecked ? ' checked' : '');
   memoIn.placeholder = '항목 비고 (규격, 조건, 특이사항 등)';
   memoIn.value = item.memo || '';
+
+  memoChk.addEventListener('change', e => {
+    DB[code][idx].memoChecked = e.target.checked;
+    memoIn.classList.toggle('checked', e.target.checked);
+    persistDraft();
+    renderDoc();
+  });
   memoIn.addEventListener('input', e => {
     DB[code][idx].memo = e.target.value;
     persistDraft();
     renderDoc();
   });
+
+  r2.appendChild(memoChk);
   r2.appendChild(memoIn);
   entry.appendChild(r2);
 
@@ -3536,7 +3557,7 @@ function renderDetailPages(ctx, design) {
       return `<tr>
         <td class="dp-desc">
           ${ctx.x(it.desc)||'—'}
-          ${itMemo ? `<div class="dp-item-memo">${ctx.x(itMemo)}</div>` : ''}
+          ${itMemo ? `<div class="dp-item-memo${it.memoChecked ? ' dp-item-memo--on' : ''}">${ctx.x(itMemo)}</div>` : ''}
         </td>
         <td class="dp-r dp-price">${it.price?ctx.fmtWon(parseFloat(it.price)):''}</td>
         <td class="dp-c dp-qty">${it.qty||''}</td>
@@ -3578,11 +3599,11 @@ function renderDetailPages(ctx, design) {
     <style>
       .dp-wrap { margin-top:28px; padding-top:14px; border-top:2px solid ${t.ink}; }
       .dp-wrap-title { font-family:'Inter',sans-serif; font-size:9.5px; font-weight:700; letter-spacing:.28em; text-transform:uppercase; color:${t.ink2}; margin-bottom:12px; }
-      .dp-block { margin-bottom:16px; }
-      .dp-h { display:flex; align-items:baseline; justify-content:space-between; padding:9px 11px; background:${t.ink}; color:${t.paper}; }
-      .dp-code { font-family:'JetBrains Mono',monospace; font-size:9.5px; color:${t.accent2}; letter-spacing:.06em; margin-right:10px; }
-      .dp-nm { font-size:11.5px; font-weight:700; letter-spacing:.05em; flex:1; }
-      .dp-t { font-family:'Inter','Noto Sans KR',sans-serif; font-variant-numeric:tabular-nums; font-size:10.5px; font-weight:700; color:${t.accent2}; }
+      .dp-block { margin-bottom:20px; }
+      .dp-h { display:flex; align-items:baseline; justify-content:space-between; padding:9px 14px; border-left:3px solid ${t.accent}; background:${t.paperAlt}; color:${t.ink}; }
+      .dp-code { font-family:'JetBrains Mono','Inter',monospace; font-size:9px; color:${t.accent}; letter-spacing:.1em; margin-right:10px; font-weight:700; }
+      .dp-nm { font-size:12px; font-weight:600; flex:1; color:${t.ink}; }
+      .dp-t { font-family:'Inter','Noto Sans KR',sans-serif; font-variant-numeric:tabular-nums; font-size:10px; font-weight:500; color:${t.ink2}; }
       /* 표 자체: fixed layout + 명시적 컬럼 폭 = 헤더-본문 정렬 보장 */
       .dp-t-table { width:100%; border-collapse:collapse; font-size:10px; table-layout:fixed; }
       /* colgroup 컬럼 폭 — 합계 100% */
@@ -3602,6 +3623,8 @@ function renderDetailPages(ctx, design) {
       .dp-memo { margin-top:0; padding:7px 10px 8px; background:${t.paperAlt}; border:1px solid ${t.border}; border-top:none; font-family:'Inter','Noto Sans KR',sans-serif; font-size:10px; color:${t.ink2}; line-height:1.7; white-space:pre-wrap; word-break:break-word; }
       .dp-item-memo { font-size:9px; color:${t.ink3}; margin-top:2px; line-height:1.5; word-break:break-word; }
       .dp-item-memo::before { content:'∙ '; }
+      .dp-item-memo--on { color:${t.accent}; font-weight:700; }
+      .dp-item-memo--on::before { content:'● '; }
       .sm-memo { font-size:9.5px; color:${t.ink3}; margin-top:3px; line-height:1.55; word-break:break-word; }
       .sm-memo::before { content:'※ '; color:${t.accent}; font-weight:700; }
       .sm-memo-on { color:${t.accent}; font-weight:600; }
@@ -4117,7 +4140,7 @@ function serializeEstimate() {
       CATS.map(c => [c.code, DB[c.code]
         .filter(i => i.desc || i.price || i.qty || i.note || i.amountOverride != null)
         .map(i => {
-          const out = { desc: i.desc || '', qty: i.qty || '', price: i.price || '', note: i.note || '', memo: i.memo || '' };
+          const out = { desc: i.desc || '', qty: i.qty || '', price: i.price || '', note: i.note || '', memo: i.memo || '', memoChecked: !!i.memoChecked };
           if (i.amountOverride != null) out.amountOverride = i.amountOverride;
           return out;
         })
@@ -4160,7 +4183,7 @@ function deserializeEstimate(data) {
   CATS.forEach(c => {
     DB[c.code] = (data.items && data.items[c.code])
       ? data.items[c.code].map(i => {
-          const row = { desc: i.desc || '', qty: i.qty || '', price: i.price || '', note: i.note || '', memo: i.memo || '' };
+          const row = { desc: i.desc || '', qty: i.qty || '', price: i.price || '', note: i.note || '', memo: i.memo || '', memoChecked: !!i.memoChecked };
           if (i.amountOverride != null) row.amountOverride = Number(i.amountOverride);
           return row;
         })
