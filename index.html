@@ -2708,6 +2708,7 @@ function buildRenderCtx() {
     // 활성 카테고리와 항목 리스트
     activeCats: CATS.filter(c => catTotal(c.code) > 0 || DB[c.code].some(i => i.desc)),
     getItems: (code) => DB[code].filter(it => it.desc || it.price || it.qty),
+    getCatMemo: (code) => (CATNOTES[code] || '').trim(),
     catTotal,
     fmt,
     x,
@@ -2755,9 +2756,10 @@ function renderLedger(ctx) {
   const rows = ctx.activeCats.map(cat => {
     const tot = ctx.catTotal(cat.code);
     const desc = ctx.getItems(cat.code).map(it => ctx.x(it.desc)).filter(Boolean).slice(0,3).join(', ');
+    const memo = ctx.getCatMemo(cat.code);
     return `<tr>
       <td class="lg-code">${cat.code}</td>
-      <td>${ctx.x(cat.name)}${desc?`<div class="lg-desc">${desc}</div>`:''}</td>
+      <td>${ctx.x(cat.name)}${desc?`<div class="lg-desc">${desc}</div>`:''}${memo?`<div class="sm-memo">${ctx.x(memo).replace(/\n/g,'<br>')}</div>`:''}</td>
       <td class="lg-r">${ctx.getItems(cat.code).length}건</td>
       <td class="lg-r lg-amt">${tot>0?ctx.fmtWonPlain(tot):'—'}</td>
     </tr>`;
@@ -2801,6 +2803,8 @@ function renderLedger(ctx) {
       .lg-foot { margin-top:14px; padding-top:10px; border-top:1px solid ${t.ink}; display:grid; grid-template-columns:1fr auto; gap:16px; font-size:10px; line-height:1.55; color:${t.ink2}; }
       .lg-foot b { color:${t.ink}; font-weight:700; }
       .lg-foot .seal { width:50px; height:50px; border:1.5px solid ${t.accent}; border-radius:50%; display:flex; align-items:center; justify-content:center; color:${t.accent}; font-family:'Nanum Myeongjo',serif; font-weight:800; font-size:9px; line-height:1.2; text-align:center; transform:rotate(-6deg); letter-spacing:.1em; }
+      .sm-memo { font-size:9.5px; color:${t.ink3}; margin-top:3px; line-height:1.55; word-break:break-word; }
+      .sm-memo::before { content:'※ '; color:${t.accent}; font-weight:700; }
     </style>
     <div class="doc-ledger">
       <div class="lg-spine"></div>
@@ -2871,9 +2875,10 @@ function renderEssay(ctx) {
   const { t } = ctx;
   const scheduleRows = ctx.activeCats.map((cat, i) => {
     const tot = ctx.catTotal(cat.code);
+    const memo = ctx.getCatMemo(cat.code);
     return `<div class="es-row">
       <span class="es-n">${romanize(i+1)}</span>
-      <span class="es-name">${ctx.x(cat.name)}</span>
+      <span class="es-name">${ctx.x(cat.name)}${memo?`<div class="sm-memo">${ctx.x(memo).replace(/\n/g,'<br>')}</div>`:''}</span>
       <span class="es-v">${ctx.fmtWon(tot)}</span>
     </div>`;
   }).join('') || '<div style="text-align:center;padding:16px;color:'+t.ink3+';font-style:italic;">공사 항목이 없습니다</div>';
@@ -2912,6 +2917,8 @@ function renderEssay(ctx) {
       .es-foot { margin-top:24px; padding-top:16px; border-top:1px solid ${t.border}; display:flex; justify-content:space-between; align-items:flex-end; font-family:'Inter',sans-serif; font-size:10px; color:${t.ink2}; line-height:1.6; }
       .es-foot .company { font-family:'Fraunces',serif; font-size:12.5px; font-weight:700; color:${t.ink}; margin-bottom:3px; }
       .es-foot .seal { width:52px; height:52px; border:1.5px solid ${t.accent}; border-radius:50%; display:flex; align-items:center; justify-content:center; color:${t.accent}; font-family:'Nanum Myeongjo',serif; font-weight:800; font-size:10px; transform:rotate(6deg); letter-spacing:.1em; }
+      .sm-memo { font-size:9.5px; color:${t.ink3}; margin-top:3px; line-height:1.55; word-break:break-word; }
+      .sm-memo::before { content:'※ '; color:${t.accent}; font-weight:700; }
     </style>
     <div class="doc-essay">
       <div class="es-top">
@@ -2977,9 +2984,10 @@ function renderMonument(ctx) {
     const tot = ctx.catTotal(cat.code);
     const firstItem = ctx.getItems(cat.code)[0];
     const sub = firstItem?.desc ? ctx.x(firstItem.desc) : '';
+    const memo = ctx.getCatMemo(cat.code);
     return `<div class="mn-ln">
       <span class="mn-n">${romanize(i+1)}</span>
-      <span class="mn-nm">${ctx.x(cat.name)}${sub?`<small>${sub}</small>`:''}</span>
+      <span class="mn-nm">${ctx.x(cat.name)}${sub?`<small>${sub}</small>`:''}${memo?`<div class="sm-memo">${ctx.x(memo).replace(/\n/g,'<br>')}</div>`:''}</span>
       <span class="mn-vl">${tot>0?ctx.fmtWonPlain(tot):'—'}</span>
     </div>`;
   }).join('') || '<div style="text-align:center;padding:20px;color:'+t.ink3+';">공사 항목이 없습니다</div>';
@@ -3018,6 +3026,8 @@ function renderMonument(ctx) {
       .mn-crown .v small { display:block; font-family:'Inter',sans-serif; font-weight:500; font-size:8px; color:${t.ink3}; letter-spacing:.22em; margin-top:3px; word-break:keep-all; }
       .mn-foot { margin-top:22px; padding:14px 0; border-top:1px solid ${t.border}; font-size:10.5px; display:flex; justify-content:space-between; gap:16px; }
       .mn-foot .company { font-weight:700; color:${t.ink}; font-size:12px; margin-bottom:3px; }
+      .sm-memo { font-size:9.5px; color:${t.ink3}; margin-top:3px; line-height:1.55; word-break:break-word; }
+      .sm-memo::before { content:'※ '; color:${t.accent}; font-weight:700; }
     </style>
     <div class="doc-monument">
       <div class="mn-column">
@@ -3086,9 +3096,10 @@ function renderChamber(ctx) {
     const tot = ctx.catTotal(cat.code);
     const items = ctx.getItems(cat.code);
     const desc = items.map(it => ctx.x(it.desc)).filter(Boolean).slice(0,2).join(', ');
+    const memo = ctx.getCatMemo(cat.code);
     return `<tr>
       <td class="cb-c">${cat.code}</td>
-      <td>${ctx.x(cat.name)}${desc?`<div style="font-size:10px;color:${t.ink2};margin-top:1px;">${desc}</div>`:''}</td>
+      <td>${ctx.x(cat.name)}${desc?`<div style="font-size:10px;color:${t.ink2};margin-top:1px;">${desc}</div>`:''}${memo?`<div class="sm-memo">${ctx.x(memo).replace(/\n/g,'<br>')}</div>`:''}</td>
       <td class="cb-r">${items.length}건</td>
       <td class="cb-r cb-amt">${tot>0?ctx.fmtWonPlain(tot):'—'}</td>
     </tr>`;
@@ -3136,6 +3147,8 @@ function renderChamber(ctx) {
       .cb-verdict .v { font-family:'Fraunces',serif; font-weight:800; font-size:clamp(16px, 3.2vw, 26px); color:${t.accent2}; letter-spacing:-.02em; line-height:1; max-width:100%; word-break:break-all; overflow-wrap:anywhere; text-align:right; }
       .cb-foot { margin-top:14px; display:flex; justify-content:space-between; gap:14px; font-family:'Inter',sans-serif; font-size:10px; color:${t.ink2}; line-height:1.6; }
       .cb-foot .company { font-family:'Nanum Myeongjo',serif; font-weight:700; color:${t.ink}; font-size:12px; margin-bottom:3px; }
+      .sm-memo { font-size:9.5px; color:${t.ink3}; margin-top:3px; line-height:1.55; word-break:break-word; }
+      .sm-memo::before { content:'※ '; color:${t.accent}; font-weight:700; }
     </style>
     <div class="doc-chamber">
       <div class="cb-outer">
@@ -3211,9 +3224,10 @@ function renderScroll(ctx) {
   const { t } = ctx;
   const rows = ctx.activeCats.map((cat, i) => {
     const tot = ctx.catTotal(cat.code);
+    const memo = ctx.getCatMemo(cat.code);
     return `<tr>
       <td class="sc-n">${romanize(i+1)}.</td>
-      <td>${ctx.x(cat.name)}</td>
+      <td>${ctx.x(cat.name)}${memo?`<div class="sm-memo">${ctx.x(memo).replace(/\n/g,'<br>')}</div>`:''}</td>
       <td class="sc-r">${ctx.fmtWon(tot)}</td>
     </tr>`;
   }).join('') || '<tr><td colspan="3" style="text-align:center;padding:16px;color:'+t.ink3+';font-style:italic;">공사 항목이 없습니다</td></tr>';
@@ -3256,6 +3270,8 @@ function renderScroll(ctx) {
       .sc-seal-row .v { font-family:'Cormorant Garamond',serif; font-style:italic; font-weight:700; font-size:clamp(20px, 4.6vw, 38px); color:${t.accent}; text-align:center; letter-spacing:-.02em; line-height:1; max-width:100%; word-break:break-all; overflow-wrap:anywhere; }
       .sc-seal-row .r { text-align:right; font-family:'Cormorant Garamond',serif; font-style:italic; font-size:11px; color:${t.ink2}; }
       .sc-seal-row .r .circle { display:inline-block; width:30px; height:30px; border:1.5px solid ${t.accent}; border-radius:50%; line-height:26px; color:${t.accent}; font-family:'Nanum Myeongjo',serif; font-weight:800; text-align:center; margin-top:5px; font-size:11px; }
+      .sm-memo { font-size:9.5px; color:${t.ink3}; margin-top:3px; line-height:1.55; word-break:break-word; }
+      .sm-memo::before { content:'※ '; color:${t.accent}; font-weight:700; }
     </style>
     <div class="doc-scroll">
       <div class="sc-masthead">
