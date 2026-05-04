@@ -2120,18 +2120,20 @@ body {
         </div>
 
         <!-- V7 모뉴먼트 Monument -->
-        <div class="design-card" data-design="monument" onclick="setDesign('monument')" title="모뉴먼트 Monument">
-          <div class="design-card-top" style="background:#0E0C0A;height:55%;position:relative;">
-            <div style="position:absolute;bottom:0;left:0;right:0;height:2px;background:#B94A0A;"></div>
+        <div class="design-card" data-design="monument" onclick="setDesign('monument')" title="클린 Clean">
+          <div class="design-card-top" style="background:#FFFFFF;border-bottom:1px solid #E5E5E5;height:35%;display:flex;align-items:center;padding:0 5px;gap:4px;">
+            <div style="width:12px;height:1px;background:#1A1A1A;"></div>
+            <div style="flex:1;height:1px;background:#E5E5E5;"></div>
           </div>
-          <div class="design-card-body" style="background:#F6F1E4;padding:2px 4px;">
-            <div style="display:flex;flex-direction:column;gap:1px;width:100%;">
-              <div style="height:1px;background:#D8D0B8;width:100%;"></div>
-              <div style="height:1px;background:#D8D0B8;width:100%;"></div>
-              <div style="height:2px;background:#B94A0A;width:40%;margin-top:1px;"></div>
+          <div class="design-card-body" style="background:#FFFFFF;padding:3px 5px;">
+            <div style="display:flex;flex-direction:column;gap:2px;width:100%;">
+              <div style="height:1px;background:#E5E5E5;width:100%;"></div>
+              <div style="height:1px;background:#E5E5E5;width:80%;"></div>
+              <div style="height:1px;background:#E5E5E5;width:90%;"></div>
+              <div style="height:1.5px;background:#B94A0A;width:50%;margin-top:2px;"></div>
             </div>
           </div>
-          <span class="design-card-name">모뉴먼트</span>
+          <span class="design-card-name">클린</span>
         </div>
 
         <!-- V8 챔버 Chamber -->
@@ -2342,15 +2344,15 @@ const THEMES = {
     border: '#E4DDC9',
   },
   monument: {
-    name: '모뉴먼트',
+    name: '클린',
     accent: '#B94A0A',
-    accent2: '#E8985B',
-    ink: '#0E0C0A',
-    ink2: '#6B6B6B',
-    ink3: '#8A8168',
-    paper: '#F6F1E4',
-    paperAlt: '#ECE5D3',
-    border: '#D8D0B8',
+    accent2: '#D06020',
+    ink: '#1A1A1A',
+    ink2: '#555555',
+    ink3: '#999999',
+    paper: '#FFFFFF',
+    paperAlt: '#F7F7F7',
+    border: '#E5E5E5',
   },
   chamber: {
     name: '챔버',
@@ -3098,113 +3100,133 @@ function romanize(n) {
 
 
 /* ══════════════════════════════════════════
-   V7 · MONUMENT (모뉴먼트)
-   블랙 상단 컬럼 + Fraunces 거대 타이틀
+   V7 · CLEAN (클린)
+   Simple & Clean — 순백 배경, 얇은 선, 미니멀 타이포그래피
 ══════════════════════════════════════════ */
 function renderMonument(ctx) {
   const { t } = ctx;
-  const items = ctx.activeCats.map((cat, i) => {
+  const rows = ctx.activeCats.map((cat, i) => {
     const tot = ctx.catTotal(cat.code);
-    const firstItem = ctx.getItems(cat.code)[0];
-    const sub = firstItem?.desc ? ctx.x(firstItem.desc) : '';
+    const desc = ctx.getItems(cat.code).map(it => ctx.x(it.desc)).filter(Boolean).slice(0,3).join(' · ');
     const memoHtml = ctx.getCatMemoHtml(cat.code, t);
-    return `<div class="mn-ln">
-      <span class="mn-n">${romanize(i+1)}</span>
-      <span class="mn-nm">${ctx.x(cat.name)}${sub?`<small>${sub}</small>`:''}${memoHtml}</span>
-      <span class="mn-vl">${tot>0?ctx.fmtWonPlain(tot):'—'}</span>
+    return `<div class="cl-row">
+      <span class="cl-idx">${String(i+1).padStart(2,'0')}</span>
+      <span class="cl-name">
+        <span class="cl-cat">${ctx.x(cat.name)}</span>
+        ${desc?`<span class="cl-desc">${desc}</span>`:''}
+        ${memoHtml}
+      </span>
+      <span class="cl-amt">${tot>0?ctx.fmtWonPlain(tot):'—'}</span>
     </div>`;
-  }).join('') || '<div style="text-align:center;padding:20px;color:'+t.ink3+';">공사 항목이 없습니다</div>';
+  }).join('') || `<div style="text-align:center;padding:24px;color:${t.ink3};font-size:11px;">공사 항목이 없습니다</div>`;
 
   const details = renderDetailPages(ctx, 'monument');
 
   return `
     <style>
-      .doc-monument { background:${t.paper}; color:${t.ink}; font-family:'IBM Plex Sans KR','Noto Sans KR',sans-serif; min-height:100%; width:100%; max-width:100%; box-sizing:border-box; }
-      .mn-column { background:${t.ink}; color:${t.paper}; padding:20px 28px 18px; position:relative; }
-      .mn-column::after { content:''; position:absolute; bottom:0; left:0; right:0; height:4px; background:${t.accent}; }
-      .mn-top-meta { display:flex; justify-content:space-between; align-items:center; font-family:'Inter',sans-serif; font-size:9px; font-weight:700; letter-spacing:.22em; text-transform:uppercase; color:${t.ink3}; padding-bottom:12px; }
-      .mn-top-meta b { color:${t.paper}; }
-      .mn-h1 { font-family:'Fraunces',serif; font-weight:800; font-size:58px; line-height:.88; letter-spacing:-.035em; color:${t.paper}; }
-      .mn-h1 em { font-style:italic; font-weight:400; color:${t.accent2}; }
-      .mn-sub { font-family:'Nanum Myeongjo',serif; font-size:15px; font-weight:700; letter-spacing:.18em; margin-top:6px; color:${t.paper}; }
-      .mn-body { padding:20px 28px 28px; }
-      .mn-info { display:grid; grid-template-columns:repeat(6,1fr); gap:10px 14px; padding:12px 0; border-bottom:2px solid ${t.ink}; font-size:10px; }
-      .mn-info .k { font-family:'Inter',sans-serif; font-size:8px; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:${t.ink3}; margin-bottom:2px; }
-      .mn-info .v { font-weight:600; font-size:10px; color:${t.ink}; letter-spacing:-.005em; word-break:break-word; }
-      .mn-info .c2 { grid-column:span 2; }
-      .mn-info .c3 { grid-column:span 3; }
-      .mn-section-h { font-family:'Inter',sans-serif; font-size:9px; font-weight:700; letter-spacing:.22em; text-transform:uppercase; color:${t.ink2}; margin:18px 0 6px; }
-      .mn-items { display:grid; gap:0; font-size:10.5px; }
-      .mn-ln { display:grid; grid-template-columns:28px 1fr 100px; gap:12px; padding:9px 0; align-items:baseline; border-bottom:1px solid rgba(14,12,10,.15); }
-      .mn-n { font-family:'Fraunces',serif; font-style:italic; font-weight:800; font-size:18px; color:${t.accent}; line-height:1; }
-      .mn-nm { font-weight:600; color:${t.ink}; letter-spacing:-.005em; }
-      .mn-nm small { display:block; font-family:'Inter',sans-serif; font-size:9px; color:${t.ink2}; margin-top:2px; font-weight:400; }
-      .mn-vl { font-family:'Inter','Noto Sans KR',sans-serif; font-variant-numeric:tabular-nums; font-weight:700; font-size:12px; text-align:right; color:${t.ink}; }
-      .mn-calc { margin-top:16px; padding:10px 0; border-top:1px solid ${t.ink}; font-size:10.5px; }
-      .mn-calc .r { display:flex; justify-content:space-between; padding:3px 0; color:${t.ink2}; }
-      .mn-calc .r.b { color:${t.ink}; font-weight:600; }
-      .mn-crown { margin-top:16px; padding-top:14px; border-top:6px solid ${t.ink}; display:grid; grid-template-columns:1fr auto; align-items:baseline; }
-      .mn-crown .l { font-family:'Inter',sans-serif; font-size:9.5px; font-weight:700; letter-spacing:.3em; text-transform:uppercase; color:${t.ink2}; }
-      .mn-crown .v { font-family:'Fraunces',serif; font-weight:800; font-size:clamp(20px, 4.6vw, 38px); color:${t.accent}; letter-spacing:-.03em; line-height:1; text-align:right; max-width:100%; word-break:break-all; overflow-wrap:anywhere; }
-      .mn-crown .v small { display:block; font-family:'Inter',sans-serif; font-weight:500; font-size:8px; color:${t.ink3}; letter-spacing:.22em; margin-top:3px; word-break:keep-all; }
-      .mn-foot { margin-top:22px; padding:14px 0; border-top:1px solid ${t.border}; font-size:10.5px; display:flex; justify-content:space-between; gap:16px; }
-      .mn-foot .company { font-weight:700; color:${t.ink}; font-size:12px; margin-bottom:3px; }
-      .sm-memo { font-size:9.5px; color:${t.ink3}; margin-top:3px; line-height:1.55; word-break:break-word; }
+      .doc-clean { background:${t.paper}; color:${t.ink}; font-family:'Inter','Noto Sans KR','Apple SD Gothic Neo',sans-serif; min-height:100%; width:100%; max-width:100%; box-sizing:border-box; padding:36px 40px 40px; }
+
+      /* 헤더 */
+      .cl-header { display:flex; justify-content:space-between; align-items:flex-start; padding-bottom:20px; border-bottom:2px solid ${t.ink}; margin-bottom:20px; }
+      .cl-brand { font-size:11px; font-weight:800; letter-spacing:.28em; color:${t.ink}; text-transform:uppercase; }
+      .cl-brand span { color:${t.accent}; }
+      .cl-docno { font-size:9.5px; color:${t.ink3}; letter-spacing:.08em; font-family:'Inter',monospace; margin-top:3px; }
+      .cl-title { font-size:28px; font-weight:300; letter-spacing:-.01em; color:${t.ink}; line-height:1; margin-top:4px; }
+      .cl-title strong { font-weight:700; }
+
+      /* 메타 정보 */
+      .cl-meta { display:grid; grid-template-columns:repeat(3,1fr); gap:0; border:1px solid ${t.border}; margin-bottom:24px; }
+      .cl-meta-cell { padding:10px 14px; border-right:1px solid ${t.border}; }
+      .cl-meta-cell:last-child, .cl-meta-cell:nth-child(3) { border-right:none; }
+      .cl-meta-cell:nth-child(4), .cl-meta-cell:nth-child(5), .cl-meta-cell:nth-child(6) { border-top:1px solid ${t.border}; }
+      .cl-mk { font-size:8.5px; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:${t.ink3}; margin-bottom:3px; }
+      .cl-mv { font-size:11px; font-weight:500; color:${t.ink}; letter-spacing:-.005em; word-break:break-word; }
+
+      /* 섹션 헤더 */
+      .cl-section { font-size:8.5px; font-weight:700; letter-spacing:.24em; text-transform:uppercase; color:${t.ink3}; margin-bottom:10px; }
+
+      /* 공사 항목 리스트 */
+      .cl-list { border-top:1px solid ${t.border}; }
+      .cl-row { display:grid; grid-template-columns:28px 1fr auto; gap:14px; padding:11px 0; border-bottom:1px solid ${t.border}; align-items:baseline; }
+      .cl-idx { font-size:9px; font-weight:700; color:${t.ink3}; letter-spacing:.04em; padding-top:1px; }
+      .cl-name { display:flex; flex-direction:column; gap:2px; min-width:0; }
+      .cl-cat { font-size:12px; font-weight:600; color:${t.ink}; letter-spacing:-.01em; }
+      .cl-desc { font-size:9.5px; color:${t.ink3}; line-height:1.4; }
+      .cl-amt { font-size:12px; font-weight:700; font-variant-numeric:tabular-nums; font-family:'Inter','Noto Sans KR',sans-serif; color:${t.ink}; text-align:right; white-space:nowrap; }
+
+      /* 계산 영역 */
+      .cl-calc { margin-top:16px; }
+      .cl-calc-row { display:flex; justify-content:space-between; align-items:baseline; padding:5px 0; font-size:11px; color:${t.ink2}; border-bottom:1px solid ${t.border}; }
+      .cl-calc-row.bold { color:${t.ink}; font-weight:600; }
+      .cl-calc-row .v { font-variant-numeric:tabular-nums; font-family:'Inter','Noto Sans KR',sans-serif; }
+
+      /* 합계 */
+      .cl-total { margin-top:16px; padding:16px 0; border-top:2px solid ${t.ink}; display:flex; justify-content:space-between; align-items:baseline; }
+      .cl-total .l { font-size:10px; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:${t.ink2}; }
+      .cl-total .v { font-size:clamp(22px,4vw,32px); font-weight:800; font-variant-numeric:tabular-nums; font-family:'Inter','Noto Sans KR',sans-serif; color:${t.accent}; letter-spacing:-.02em; line-height:1; word-break:break-all; overflow-wrap:anywhere; }
+      .cl-total .v small { display:block; font-size:8.5px; font-weight:500; color:${t.ink3}; letter-spacing:.18em; margin-top:3px; text-align:right; word-break:keep-all; }
+
+      /* 푸터 */
+      .cl-foot { margin-top:20px; padding-top:16px; border-top:1px solid ${t.border}; display:flex; justify-content:space-between; align-items:flex-end; font-size:10.5px; color:${t.ink2}; line-height:1.7; }
+      .cl-foot .co { font-size:12px; font-weight:700; color:${t.ink}; margin-bottom:2px; }
+      .cl-foot .note { font-size:9.5px; color:${t.ink3}; text-align:right; line-height:1.6; }
+
+      .sm-memo { font-size:9.5px; color:${t.ink3}; margin-top:2px; line-height:1.55; word-break:break-word; }
       .sm-memo::before { content:'※ '; color:${t.accent}; font-weight:700; }
       .sm-memo-on { color:${t.accent}; font-weight:600; }
     </style>
-    <div class="doc-monument">
-      <div class="mn-column">
-        <div class="mn-top-meta">
-          <span>SIDO <b>DESIGN</b> · Interior Design Studio</span>
-          <span>${ctx.docNo}</span>
+    <div class="doc-clean">
+
+      <div class="cl-header">
+        <div>
+          <div class="cl-brand">SIDO <span>DESIGN</span></div>
+          <div class="cl-title"><strong>견적서</strong> Estimate</div>
         </div>
-        <h1 class="mn-h1"><em>Estimate.</em></h1>
-        <div class="mn-sub">견 적 서</div>
+        <div style="text-align:right;">
+          <div class="cl-docno">${ctx.docNo}</div>
+          <div style="font-size:9.5px;color:${t.ink3};margin-top:3px;">${ctx.x(ctx.date||'—')}</div>
+        </div>
       </div>
 
-      <div class="mn-body">
-        <div class="mn-info">
-          <div class="c2"><div class="k">Client</div><div class="v">${ctx.x(ctx.cn)} ${ctx.x(ctx.ct)}</div></div>
-          <div class="c3"><div class="k">Site</div><div class="v">${ctx.x(ctx.addr)}</div></div>
-          <div><div class="k">Area</div><div class="v">${ctx.area?ctx.x(ctx.area)+' 평':'—'}</div></div>
-          <div class="c2"><div class="k">Issued</div><div class="v">${ctx.x(ctx.date||'—')}</div></div>
-          <div class="c3"><div class="k">Period</div><div class="v">${ctx.x(ctx.wp||'—')}</div></div>
-          <div><div class="k">Valid</div><div class="v">${ctx.x(ctx.vd)}일</div></div>
-        </div>
-
-        <div class="mn-section-h">Schedule of Works</div>
-        <div class="mn-items">${items}</div>
-
-        <div class="doc-tail">
-          <div class="mn-calc">
-            ${ctx.dv>0?`<div class="r"><span>할인</span><span style="color:#C23B30">- ${ctx.fmtWon(ctx.disc)}</span></div>`:''}
-            <div class="r"><span>공사비</span><span>${ctx.fmtWon(ctx.workCost)}</span></div>
-            <div class="r"><span>이윤 (+${ctx.pp}%)</span><span>${ctx.fmtWon(ctx.profit)}</span></div>
-            <div class="r b"><span>공사비 합계</span><span>${ctx.fmtWon(ctx.beforeVat)}</span></div>
-            <div class="r"><span>부가가치세 (10%)</span><span>${ctx.fmtWon(ctx.vat)}</span></div>
-            ${ctx.roundDiff!==0?`<div class="r"><span>단수조정</span><span>${ctx.roundDiff>0?'+':''}${ctx.fmt(Math.round(ctx.roundDiff))}</span></div>`:''}
-          </div>
-
-          <div class="mn-crown">
-            <span class="l">Total · VAT Included</span>
-            <span class="v">${ctx.fmtWon(ctx.grand)}<small>KRW · INCL. 10%</small></span>
-          </div>
-        </div>
-
-        ${ctx.comp||ctx.mgr?`
-        <div class="mn-foot">
-          <div>
-            <div class="company">${ctx.comp?ctx.x(ctx.comp):'SIDO DESIGN'}</div>
-            ${ctx.mgr?`담당 ${ctx.x(ctx.mgr)}${ctx.mgrp?' · '+ctx.x(ctx.mgrp):''}`:''}
-          </div>
-          <div style="text-align:right;color:${t.ink2};">
-            유효기간 · 견적일로부터 ${ctx.x(ctx.vd)}일<br>
-            현장 실측 후 확정됩니다
-          </div>
-        </div>`:''}
-        ${details}
+      <div class="cl-meta">
+        <div class="cl-meta-cell"><div class="cl-mk">수신</div><div class="cl-mv">${ctx.x(ctx.cn)} ${ctx.x(ctx.ct)}</div></div>
+        <div class="cl-meta-cell" style="grid-column:span 2"><div class="cl-mk">현장</div><div class="cl-mv">${ctx.x(ctx.addr)}</div></div>
+        <div class="cl-meta-cell"><div class="cl-mk">면적</div><div class="cl-mv">${ctx.area?ctx.x(ctx.area)+' 평':'—'}</div></div>
+        <div class="cl-meta-cell"><div class="cl-mk">공사기간</div><div class="cl-mv">${ctx.x(ctx.wp||'—')}</div></div>
+        <div class="cl-meta-cell"><div class="cl-mk">유효기간</div><div class="cl-mv">${ctx.x(ctx.vd)}일</div></div>
       </div>
+
+      <div class="cl-section">Schedule of Works</div>
+      <div class="cl-list">${rows}</div>
+
+      <div class="doc-tail">
+        <div class="cl-calc">
+          ${ctx.dv>0?`<div class="cl-calc-row"><span>할인</span><span class="v" style="color:#C23B30">- ${ctx.fmtWon(ctx.disc)}</span></div>`:''}
+          <div class="cl-calc-row"><span>공사비 소계</span><span class="v">${ctx.fmtWon(ctx.workCost)}</span></div>
+          <div class="cl-calc-row"><span>이윤 (+${ctx.pp}%)</span><span class="v">${ctx.fmtWon(ctx.profit)}</span></div>
+          <div class="cl-calc-row bold"><span>공사비 합계</span><span class="v">${ctx.fmtWon(ctx.beforeVat)}</span></div>
+          <div class="cl-calc-row"><span>부가가치세 (10%)</span><span class="v">${ctx.fmtWon(ctx.vat)}</span></div>
+          ${ctx.roundDiff!==0?`<div class="cl-calc-row"><span>단수조정</span><span class="v">${ctx.roundDiff>0?'+':''}${ctx.fmt(Math.round(ctx.roundDiff))}</span></div>`:''}
+        </div>
+
+        <div class="cl-total">
+          <span class="l">Total · VAT Included</span>
+          <span class="v">${ctx.fmtWon(ctx.grand)}<small>KRW · INCL. VAT 10%</small></span>
+        </div>
+      </div>
+
+      ${ctx.comp||ctx.mgr?`
+      <div class="cl-foot">
+        <div>
+          <div class="co">${ctx.comp?ctx.x(ctx.comp):'SIDO DESIGN'}</div>
+          ${ctx.mgr?`담당 ${ctx.x(ctx.mgr)}${ctx.mgrp?' · '+ctx.x(ctx.mgrp):''}`:''}
+        </div>
+        <div class="note">
+          본 견적은 현장 실측 후 확정됩니다<br>
+          유효기간 · 견적일로부터 ${ctx.x(ctx.vd)}일
+        </div>
+      </div>`:''}
+      ${details}
     </div>
   `;
 }
