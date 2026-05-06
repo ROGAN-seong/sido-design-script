@@ -4237,7 +4237,7 @@ function serializeEstimate() {
     design:       currentDesign,
     items:        Object.fromEntries(
       CATS.map(c => [c.code, DB[c.code]
-        .filter(i => i.desc || i.price || i.qty || i.note || i.amountOverride != null)
+        .filter(i => i.desc || i.price || i.qty || i.note || i.amountOverride != null || i.memo || i.memoChecked)
         .map(i => {
           const out = { desc: i.desc || '', qty: i.qty || '', price: i.price || '', note: i.note || '', memo: i.memo || '', memoChecked: !!i.memoChecked };
           if (i.amountOverride != null) out.amountOverride = i.amountOverride;
@@ -4247,7 +4247,7 @@ function serializeEstimate() {
     ),
     catNotes:     Object.fromEntries(
       CATS.map(c => [c.code, Array.isArray(CATNOTES[c.code]) ? CATNOTES[c.code] : []])
-        .filter(([, v]) => v.length > 0)
+        .filter(([, v]) => v.some(m => m.text || m.price))
     ),
     grandTotal:   grand,
   };
