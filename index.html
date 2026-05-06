@@ -2136,16 +2136,23 @@ body {
         </div>
 
         <!-- V5 에세이 Essay -->
-        <div class="design-card" data-design="essay" onclick="setDesign('essay')" title="에세이 Essay">
-          <div class="design-card-top" style="background:#FEFCF5;border-bottom:1px solid #1A1710;"></div>
-          <div class="design-card-body" style="background:#FEFCF5;padding:3px 4px;">
-            <div style="display:flex;flex-direction:column;gap:1px;width:100%;justify-content:center;">
-              <div style="height:3px;background:#B94A0A;width:50%;font-style:italic;"></div>
-              <div style="height:1px;background:#E4DDC9;width:85%;margin-top:2px;"></div>
-              <div style="height:1px;background:#E4DDC9;width:80%;"></div>
+        <div class="design-card" data-design="essay" onclick="setDesign('essay')" title="룰드 Ruled">
+          <div class="design-card-top" style="background:#FFFFFF;padding:3px 5px 0;border-bottom:1.5px solid #B94A0A;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-end;padding-bottom:3px;">
+              <div style="font-size:7px;font-weight:700;letter-spacing:.1em;color:#1A1A1A;">SIDO</div>
+              <div style="font-size:6px;color:#aaa;">No.501</div>
             </div>
           </div>
-          <span class="design-card-name">에세이</span>
+          <div class="design-card-body" style="background:#FFFFFF;padding:3px 5px;">
+            <div style="display:flex;flex-direction:column;gap:2px;width:100%;">
+              <div style="height:1px;background:#E5E5E5;width:100%;"></div>
+              <div style="height:1px;background:#E5E5E5;width:75%;"></div>
+              <div style="height:1px;background:#E5E5E5;width:90%;"></div>
+              <div style="height:1.5px;background:#1A1A1A;width:100%;margin-top:2px;"></div>
+              <div style="height:1.5px;background:#B94A0A;width:55%;margin-top:1px;"></div>
+            </div>
+          </div>
+          <span class="design-card-name">룰드</span>
         </div>
 
         <!-- V7 모뉴먼트 Monument -->
@@ -2165,18 +2172,20 @@ body {
           <span class="design-card-name">클린</span>
         </div>
 
-        <!-- V8 챔버 Chamber -->
-        <div class="design-card" data-design="chamber" onclick="setDesign('chamber')" title="챔버 Chamber">
-          <div class="design-card-top" style="background:#FBF8EE;"></div>
-          <div class="design-card-body" style="background:#FBF8EE;padding:2px;position:relative;">
-            <div style="border:1px solid #0E0C0A;flex:1;padding:2px;display:flex;flex-direction:column;gap:1px;justify-content:center;position:relative;">
-              <div style="position:absolute;top:-2px;left:-2px;width:3px;height:3px;background:#B94A0A;border:.5px solid #0E0C0A;"></div>
-              <div style="position:absolute;bottom:-2px;right:-2px;width:3px;height:3px;background:#B94A0A;border:.5px solid #0E0C0A;"></div>
-              <div style="height:1px;background:#0E0C0A;width:70%;"></div>
-              <div style="height:1px;background:#D8D0B8;width:100%;"></div>
+        <!-- V8 시그니처 Signature -->
+        <div class="design-card" data-design="chamber" onclick="setDesign('chamber')" title="시그니처 Signature">
+          <div class="design-card-top" style="background:#fff;border-bottom:0.5px solid #e8e8e8;padding:3px 5px;display:flex;justify-content:space-between;align-items:flex-end;">
+            <div style="font-size:8px;font-weight:800;letter-spacing:.06em;color:#111;">SIDO</div>
+            <div style="font-size:10px;font-weight:800;color:#111;letter-spacing:-.03em;">견적서</div>
+          </div>
+          <div class="design-card-body" style="background:#fff;padding:3px 5px;">
+            <div style="display:flex;flex-direction:column;gap:2px;width:100%;">
+              <div style="height:1px;background:#f0f0f0;width:100%;"></div>
+              <div style="height:1px;background:#f0f0f0;width:80%;"></div>
+              <div style="height:6px;background:#111;width:100%;margin-top:2px;display:flex;align-items:center;padding:0 3px;"><span style="font-size:4px;color:#B94A0A;font-weight:800;">₩ 37,738,139</span></div>
             </div>
           </div>
-          <span class="design-card-name">챔버</span>
+          <span class="design-card-name">시그니처</span>
         </div>
 
         <!-- V9 스크롤 Scroll -->
@@ -2362,15 +2371,15 @@ const THEMES = {
     border: '#E8E2D3',
   },
   essay: {
-    name: '에세이',
+    name: '룰드',
     accent: '#B94A0A',
-    accent2: '#8B3807',
-    ink: '#1A1710',
-    ink2: '#6B6B6B',
-    ink3: '#8a7a55',
-    paper: '#FEFCF5',
-    paperAlt: '#F8F3E4',
-    border: '#E4DDC9',
+    accent2: '#D06020',
+    ink: '#1A1A1A',
+    ink2: '#555555',
+    ink3: '#999999',
+    paper: '#FFFFFF',
+    paperAlt: '#F7F7F7',
+    border: '#E5E5E5',
   },
   monument: {
     name: '클린',
@@ -2384,15 +2393,15 @@ const THEMES = {
     border: '#E5E5E5',
   },
   chamber: {
-    name: '챔버',
+    name: '시그니처',
     accent: '#B94A0A',
-    accent2: '#E8985B',
-    ink: '#0E0C0A',
-    ink2: '#6B6B6B',
-    ink3: '#8A8168',
-    paper: '#FBF8EE',
-    paperAlt: '#F0EADC',
-    border: '#D8D0B8',
+    accent2: '#D06020',
+    ink: '#111111',
+    ink2: '#555555',
+    ink3: '#999999',
+    paper: '#FFFFFF',
+    paperAlt: '#F5F5F3',
+    border: '#E8E8E8',
   },
   scroll: {
     name: '스크롤',
@@ -3053,103 +3062,142 @@ function renderLedger(ctx) {
 
 
 /* ══════════════════════════════════════════
-   V5 · ESSAY (에세이)
-   Instrument Serif 시적 제목 + 문학적 문단
+   V5 · RULED (룰드)
+   C Ruled — 상단 accent 라인 + 표 스타일 항목 나열
 ══════════════════════════════════════════ */
 function renderEssay(ctx) {
   const { t } = ctx;
-  const scheduleRows = ctx.activeCats.map((cat, i) => {
+
+  const rows = ctx.activeCats.map(cat => {
     const tot = ctx.catTotal(cat.code);
     const memoHtml = ctx.getCatMemoHtml(cat.code, t);
-    return `<div class="es-row">
-      <span class="es-n">${romanize(i+1)}</span>
-      <span class="es-name">${ctx.x(cat.name)}${memoHtml}</span>
-      <span class="es-v">${ctx.fmtWon(tot)}</span>
-    </div>`;
-  }).join('') || '<div style="text-align:center;padding:16px;color:'+t.ink3+';font-style:italic;">공사 항목이 없습니다</div>';
+    return `<tr class="rd-row">
+      <td class="rd-code">${cat.code}</td>
+      <td class="rd-name">${ctx.x(cat.name)}${memoHtml}</td>
+      <td class="rd-cnt">${ctx.getItems(cat.code).length}건</td>
+      <td class="rd-amt">${tot>0?ctx.fmtWonPlain(tot):'—'}</td>
+    </tr>`;
+  }).join('') || `<tr><td colspan="4" style="text-align:center;padding:20px;color:${t.ink3};font-style:italic;">공사 항목이 없습니다</td></tr>`;
+
+  const calcRows = [
+    ctx.dv>0 ? `<div class="rd-calc-row"><span>할인</span><span style="color:#C23B30">- ${ctx.fmtWon(ctx.disc)}</span></div>` : '',
+    `<div class="rd-calc-row"><span>공사비 소계</span><span>${ctx.fmtWon(ctx.workCost)}</span></div>`,
+    `<div class="rd-calc-row"><span>이윤 (+${ctx.pp}%)</span><span>${ctx.fmtWon(ctx.profit)}</span></div>`,
+    `<div class="rd-calc-row bold"><span>공사비 합계</span><span>${ctx.fmtWon(ctx.beforeVat)}</span></div>`,
+    `<div class="rd-calc-row"><span>부가가치세 (10%)</span><span>${ctx.fmtWon(ctx.vat)}</span></div>`,
+    ctx.roundDiff!==0 ? `<div class="rd-calc-row"><span>단수조정</span><span>${ctx.roundDiff>0?'+':''}${ctx.fmt(Math.round(ctx.roundDiff))}</span></div>` : '',
+  ].filter(Boolean).join('');
 
   const details = renderDetailPages(ctx, 'essay');
 
   return `
     <style>
-      .doc-essay { background:${t.paper}; color:${t.ink}; font-family:'Fraunces',serif; padding:28px 32px 30px; min-height:100%; width:100%; max-width:100%; box-sizing:border-box; }
-      .es-top { display:grid; grid-template-columns:auto 1fr auto; align-items:baseline; padding-bottom:12px; border-bottom:1px solid ${t.ink}; gap:14px; }
-      .es-brand { font-family:'Inter',sans-serif; font-size:10px; font-weight:800; letter-spacing:.3em; color:${t.ink}; }
-      .es-brand b { color:${t.accent}; }
-      .es-ornament { text-align:center; font-family:'Instrument Serif',serif; font-style:italic; font-size:13px; color:${t.accent}; }
-      .es-no { font-family:'JetBrains Mono',monospace; font-size:9.5px; color:${t.ink2}; letter-spacing:.06em; }
-      .es-kicker { font-family:'Inter',sans-serif; font-size:8.5px; font-weight:700; letter-spacing:.3em; text-transform:uppercase; color:${t.ink2}; margin:18px 0 6px; }
-      .es-meta { display:flex; flex-wrap:wrap; gap:6px 18px; font-family:'Inter','Noto Sans KR',sans-serif; font-size:9.5px; color:${t.ink2}; margin:10px 0 18px; padding:8px 0; border-top:1px solid ${t.border}; border-bottom:1px solid ${t.border}; }
-      .es-meta .k { font-weight:700; letter-spacing:.22em; text-transform:uppercase; color:${t.ink3}; margin-right:6px; font-size:8.5px; }
-      .es-meta .v { font-weight:600; color:${t.ink}; letter-spacing:-.005em; font-size:10px; }
-      .es-h1 { font-family:'Instrument Serif',serif; font-size:58px; font-weight:400; line-height:.92; letter-spacing:-.02em; margin-bottom:4px; color:${t.ink}; }
-      .es-h1 em { font-style:italic; color:${t.accent}; }
-      .es-subtitle { font-family:'Inter','Noto Sans KR',sans-serif; font-size:9.5px; font-weight:700; letter-spacing:.3em; text-transform:uppercase; color:${t.ink2}; margin-bottom:18px; }
-      .es-prose { font-size:12px; line-height:1.8; color:${t.ink}; max-width:96%; margin-bottom:18px; }
-      .es-prose em { font-style:italic; color:${t.accent}; }
-      .es-prose b { font-weight:700; color:${t.ink}; }
-      .es-prose .won { font-family:'Fraunces',serif; font-style:italic; font-weight:800; color:${t.accent}; font-size:14px; letter-spacing:-.01em; }
-      .es-sched { padding:12px 0; border-top:1px solid ${t.ink}; border-bottom:1px solid ${t.ink}; }
-      .es-sched-label { font-family:'Inter',sans-serif; font-size:8.5px; font-weight:700; letter-spacing:.3em; text-transform:uppercase; color:${t.ink2}; margin-bottom:10px; }
-      .es-row { display:grid; grid-template-columns:28px 1fr auto; gap:10px; padding:6px 0; border-bottom:1px dotted rgba(26,23,16,.18); font-family:'Inter','Noto Sans KR',sans-serif; font-size:10.5px; align-items:baseline; }
-      .es-row:last-child { border-bottom:none; }
-      .es-n { font-family:'Fraunces',serif; font-style:italic; font-weight:700; color:${t.accent}; font-size:12px; text-align:center; }
-      .es-name { font-weight:500; color:${t.ink}; letter-spacing:-.005em; }
-      .es-v { font-variant-numeric:tabular-nums; font-weight:700; color:${t.ink}; }
-      .es-tot { margin-top:18px; display:grid; grid-template-columns:1fr auto; align-items:baseline; }
-      .es-tot .l { font-family:'Inter',sans-serif; font-size:9.5px; font-weight:700; letter-spacing:.3em; text-transform:uppercase; color:${t.ink2}; }
-      .es-tot .v { font-family:'Instrument Serif',serif; font-style:italic; font-size:clamp(20px, 5vw, 40px); color:${t.accent}; letter-spacing:-.02em; line-height:1; max-width:100%; word-break:break-all; overflow-wrap:anywhere; }
-      .es-foot { margin-top:24px; padding-top:16px; border-top:1px solid ${t.border}; display:flex; justify-content:space-between; align-items:flex-end; font-family:'Inter',sans-serif; font-size:10px; color:${t.ink2}; line-height:1.6; }
-      .es-foot .company { font-family:'Fraunces',serif; font-size:12.5px; font-weight:700; color:${t.ink}; margin-bottom:3px; }
-      .es-foot .seal { width:52px; height:52px; border:1.5px solid ${t.accent}; border-radius:50%; display:flex; align-items:center; justify-content:center; color:${t.accent}; font-family:'Nanum Myeongjo',serif; font-weight:800; font-size:10px; transform:rotate(6deg); letter-spacing:.1em; }
+      .doc-ruled { background:${t.paper}; color:${t.ink}; font-family:'Inter','Noto Sans KR','Apple SD Gothic Neo',sans-serif; padding:32px 36px 36px; min-height:100%; width:100%; max-width:100%; box-sizing:border-box; }
+
+      /* 상단 accent 라인 */
+      .rd-topline { height:3px; background:${t.accent}; border-radius:1.5px; margin-bottom:22px; }
+
+      /* 헤더 */
+      .rd-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6px; }
+      .rd-kicker { font-size:8.5px; font-weight:700; letter-spacing:.26em; color:${t.accent}; text-transform:uppercase; margin-bottom:5px; }
+      .rd-title { font-size:26px; font-weight:700; letter-spacing:-.02em; color:${t.ink}; line-height:1; }
+      .rd-docno { font-family:'Inter',monospace; font-size:9.5px; color:${t.ink3}; letter-spacing:.06em; margin-top:2px; }
+      .rd-header-r { text-align:right; }
+      .rd-issued-label { font-size:8px; letter-spacing:.14em; color:${t.ink3}; text-transform:uppercase; margin-bottom:2px; }
+      .rd-issued-val { font-size:11px; font-weight:600; color:${t.ink}; }
+      .rd-client { font-size:10px; color:${t.ink2}; margin-top:4px; }
+
+      /* 메타 */
+      .rd-meta { display:flex; gap:0; border:1px solid ${t.border}; border-radius:4px; margin:16px 0; overflow:hidden; }
+      .rd-meta-cell { flex:1; padding:9px 14px; border-right:1px solid ${t.border}; }
+      .rd-meta-cell:last-child { border-right:none; }
+      .rd-mk { font-size:8px; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:${t.ink3}; margin-bottom:2px; }
+      .rd-mv { font-size:11px; font-weight:500; color:${t.ink}; }
+
+      /* 공사 항목 테이블 */
+      .rd-section-label { font-size:8.5px; font-weight:700; letter-spacing:.22em; text-transform:uppercase; color:${t.ink3}; margin-bottom:8px; }
+      .rd-table { width:100%; border-collapse:collapse; }
+      .rd-table thead tr { border-top:1.5px solid ${t.ink}; border-bottom:1.5px solid ${t.ink}; }
+      .rd-table thead th { padding:6px 8px; font-size:8.5px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:${t.ink3}; text-align:left; }
+      .rd-table thead th:last-child { text-align:right; }
+      .rd-row { border-bottom:0.5px solid ${t.border}; }
+      .rd-code { padding:9px 8px; font-size:9px; font-weight:700; color:${t.accent}; letter-spacing:.06em; white-space:nowrap; }
+      .rd-name { padding:9px 8px; font-size:11.5px; font-weight:500; color:${t.ink}; }
+      .rd-cnt { padding:9px 8px; font-size:10.5px; color:${t.ink3}; white-space:nowrap; text-align:center; }
+      .rd-amt { padding:9px 0 9px 8px; font-size:11.5px; font-weight:700; font-variant-numeric:tabular-nums; font-family:'Inter','Noto Sans KR',sans-serif; color:${t.ink}; text-align:right; white-space:nowrap; }
+
+      /* 계산 */
+      .rd-calc { margin-top:14px; padding-top:12px; border-top:0.5px solid ${t.border}; display:flex; flex-direction:column; gap:4px; }
+      .rd-calc-row { display:flex; justify-content:space-between; font-size:10.5px; color:${t.ink2}; font-variant-numeric:tabular-nums; font-family:'Inter','Noto Sans KR',sans-serif; }
+      .rd-calc-row.bold { font-weight:700; color:${t.ink}; }
+
+      /* 합계 */
+      .rd-total { margin-top:14px; padding-top:14px; border-top:2px solid ${t.ink}; display:flex; justify-content:space-between; align-items:baseline; }
+      .rd-total .l { font-size:9px; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:${t.ink2}; }
+      .rd-total .v { font-size:clamp(22px,4vw,32px); font-weight:800; font-variant-numeric:tabular-nums; font-family:'Inter','Noto Sans KR',sans-serif; color:${t.accent}; letter-spacing:-.02em; line-height:1; word-break:break-all; overflow-wrap:anywhere; }
+      .rd-total .v small { display:block; font-size:8.5px; font-weight:500; color:${t.ink3}; letter-spacing:.16em; margin-top:3px; text-align:right; }
+
+      /* 푸터 */
+      .rd-foot { margin-top:20px; padding-top:14px; border-top:1px solid ${t.border}; display:flex; justify-content:space-between; align-items:flex-end; font-size:10.5px; color:${t.ink2}; line-height:1.7; }
+      .rd-foot .co { font-size:12px; font-weight:700; color:${t.ink}; margin-bottom:2px; }
+      .rd-foot .note { font-size:9.5px; color:${t.ink3}; text-align:right; }
+
       .sm-memo { font-size:9.5px; color:${t.ink3}; margin-top:3px; line-height:1.55; word-break:break-word; }
       .sm-memo::before { content:'※ '; color:${t.accent}; font-weight:700; }
       .sm-memo-on { color:${t.accent}; font-weight:600; }
     </style>
-    <div class="doc-essay">
-      <div class="es-top">
-        <span class="es-brand">SIDO <b>DESIGN</b></span>
-        <span class="es-ornament">· &nbsp;✧&nbsp; ·</span>
-        <span class="es-no">${ctx.docNo}</span>
+    <div class="doc-ruled">
+
+      <div class="rd-topline"></div>
+
+      <div class="rd-header">
+        <div>
+          <div class="rd-kicker">Cost Estimate · Interior Design Studio</div>
+          <div class="rd-title">견적서</div>
+          <div class="rd-docno">${ctx.docNo}</div>
+        </div>
+        <div class="rd-header-r">
+          <div class="rd-issued-label">Issued</div>
+          <div class="rd-issued-val">${ctx.x(ctx.date||'—')}</div>
+          <div class="rd-client">${ctx.x(ctx.cn)} ${ctx.x(ctx.ct)}</div>
+        </div>
       </div>
 
-      <div class="es-kicker">Issued · ${ctx.x(ctx.date||'—')}</div>
-      <h1 class="es-h1"><em>Estimate.</em></h1>
-      <div class="es-subtitle">견 적 서 · Interior Design Studio</div>
-
-      <div class="es-meta">
-        <span><span class="k">Site</span><span class="v">${ctx.x(ctx.addr)}</span></span>
-        <span><span class="k">Area</span><span class="v">${ctx.area?ctx.x(ctx.area)+' 평':'—'}</span></span>
-        <span><span class="k">Period</span><span class="v">${ctx.x(ctx.wp||'—')}</span></span>
+      <div class="rd-meta">
+        <div class="rd-meta-cell"><div class="rd-mk">Site</div><div class="rd-mv">${ctx.x(ctx.addr)||'—'}</div></div>
+        <div class="rd-meta-cell"><div class="rd-mk">Area</div><div class="rd-mv">${ctx.area?ctx.x(ctx.area)+' 평':'—'}</div></div>
+        <div class="rd-meta-cell"><div class="rd-mk">Period</div><div class="rd-mv">${ctx.x(ctx.wp||'—')}</div></div>
+        <div class="rd-meta-cell"><div class="rd-mk">Valid</div><div class="rd-mv">${ctx.x(ctx.vd)}일</div></div>
       </div>
 
-      <p class="es-prose">
-        ${ctx.x(ctx.cn)} <b>${ctx.x(ctx.ct)}</b>께 ${ctx.area?'전용 '+ctx.x(ctx.area)+'평 ':''}리모델링 공사에 대한 견적을 제출합니다.
-        ${ctx.wp?'공사 기간은 <em>'+ctx.x(ctx.wp)+'</em>이며, ':''}부가가치세를 포함한 합계 금액은 <span class="won">${ctx.fmtWon(ctx.grand)}</span>입니다.
-      </p>
+      <div class="rd-section-label">Schedule of Works</div>
+      <table class="rd-table">
+        <thead><tr>
+          <th>코드</th><th>공사 항목</th><th style="text-align:center;">건수</th><th style="text-align:right;">금액(원)</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
 
-      <div class="es-sched">
-        <div class="es-sched-label">Schedule of Works</div>
-        ${scheduleRows}
-      </div>
-
-      <div class="es-tot">
-        <span class="l">Total · VAT Included</span>
-        <span class="v">${ctx.fmtWon(ctx.grand)}</span>
+      <div class="doc-tail">
+        <div class="rd-calc">${calcRows}</div>
+        <div class="rd-total">
+          <span class="l">Total · VAT Included</span>
+          <span class="v">${ctx.fmtWon(ctx.grand)}<small>KRW · INCL. VAT 10%</small></span>
+        </div>
       </div>
 
       ${ctx.comp||ctx.mgr?`
-      <div class="es-foot">
+      <div class="rd-foot">
         <div>
-          <div class="company">${ctx.comp?ctx.x(ctx.comp):'SIDO DESIGN'}</div>
-          ${ctx.mgr?`담당 ${ctx.x(ctx.mgr)}${ctx.mgrp?' · '+ctx.x(ctx.mgrp):''}<br>`:''}
-          유효기간: 견적일로부터 ${ctx.x(ctx.vd)}일
+          <div class="co">${ctx.comp?ctx.x(ctx.comp):'SIDO DESIGN'}</div>
+          ${ctx.mgr?`담당 ${ctx.x(ctx.mgr)}${ctx.mgrp?' · '+ctx.x(ctx.mgrp):''}`:''}
         </div>
-        <div class="es-seal-wrap" style="display:flex;flex-direction:column;align-items:center;gap:6px;">
-          <div class="es-seal seal">印</div>
-          <div style="font-family:'Inter',sans-serif;font-size:8.5px;font-weight:700;letter-spacing:.2em;color:${t.ink2};">AUTHORIZED</div>
+        <div class="note">
+          본 견적은 현장 실측 후 확정됩니다<br>
+          유효기간 · 견적일로부터 ${ctx.x(ctx.vd)}일
         </div>
       </div>`:''}
+
       ${details}
     </div>
   `;
@@ -3294,135 +3342,186 @@ function renderMonument(ctx) {
 
 
 /* ══════════════════════════════════════════
-   V8 · CHAMBER (챔버)
-   외곽 블랙 테두리 + 모서리 앰버 스탬프 + 낙관
+   V8 · SIGNATURE (시그니처)
+   대형 타이포 앵커 + 단일 폰트 + 블랙 TOTAL 블록 + 풋터 명함
 ══════════════════════════════════════════ */
 function renderChamber(ctx) {
   const { t } = ctx;
+
   const rows = ctx.activeCats.map(cat => {
     const tot = ctx.catTotal(cat.code);
     const items = ctx.getItems(cat.code);
     const desc = items.map(it => ctx.x(it.desc)).filter(Boolean).slice(0,2).join(', ');
     const memoHtml = ctx.getCatMemoHtml(cat.code, t);
-    return `<tr>
-      <td class="cb-c">${cat.code}</td>
-      <td>${ctx.x(cat.name)}${desc?`<div style="font-size:10px;color:${t.ink2};margin-top:1px;">${desc}</div>`:''}${memoHtml}</td>
-      <td class="cb-r">${items.length}건</td>
-      <td class="cb-r cb-amt">${tot>0?ctx.fmtWonPlain(tot):'—'}</td>
+    return `<tr class="sg-row">
+      <td class="sg-code">${cat.code}</td>
+      <td class="sg-name">${ctx.x(cat.name)}${desc?`<div class="sg-desc">${desc}</div>`:''}${memoHtml}</td>
+      <td class="sg-cnt">${items.length}건</td>
+      <td class="sg-amt">${tot>0?ctx.fmtWonPlain(tot):'—'}</td>
     </tr>`;
-  }).join('') || '<tr><td colspan="4" style="text-align:center;padding:20px;color:'+t.ink3+'">공사 항목이 없습니다</td></tr>';
+  }).join('') || `<tr><td colspan="4" style="text-align:center;padding:20px;color:${t.ink3};font-style:italic;">공사 항목이 없습니다</td></tr>`;
+
+  const calcRows = [
+    ctx.dv>0 ? `<div class="sg-cr"><span>할인</span><span style="color:#C23B30">- ${ctx.fmtWon(ctx.disc)}</span></div>` : '',
+    `<div class="sg-cr"><span>공사비 소계</span><span>${ctx.fmtWon(ctx.workCost)}</span></div>`,
+    `<div class="sg-cr"><span>이윤 (+${ctx.pp}%)</span><span>${ctx.fmtWon(ctx.profit)}</span></div>`,
+    `<div class="sg-cr bold"><span>공사비 합계</span><span>${ctx.fmtWon(ctx.beforeVat)}</span></div>`,
+    `<div class="sg-cr"><span>부가가치세 (10%)</span><span>${ctx.fmtWon(ctx.vat)}</span></div>`,
+    ctx.roundDiff!==0 ? `<div class="sg-cr"><span>단수조정</span><span>${ctx.roundDiff>0?'+':''}${ctx.fmt(Math.round(ctx.roundDiff))}</span></div>` : '',
+  ].filter(Boolean).join('');
 
   const details = renderDetailPages(ctx, 'chamber');
 
   return `
     <style>
-      .doc-chamber { background:${t.paper}; color:${t.ink}; font-family:'IBM Plex Sans KR','Noto Sans KR',sans-serif; padding:14px; position:relative; min-height:100%; width:100%; max-width:100%; box-sizing:border-box; }
-      .cb-outer { border:1.5px solid ${t.ink}; padding:14px 22px 20px; position:relative; min-height:calc(100% - 28px); }
-      .cb-outer::before, .cb-outer::after { content:''; position:absolute; width:11px; height:11px; border:1.5px solid ${t.ink}; background:${t.accent}; }
-      .cb-outer::before { top:-6px; left:-6px; }
-      .cb-outer::after { bottom:-6px; right:-6px; }
-      .cb-seal { position:absolute; top:36px; right:-7px; background:${t.accent}; color:${t.paper}; padding:4px 12px; font-family:'Inter',sans-serif; font-size:8.5px; font-weight:800; letter-spacing:.3em; text-transform:uppercase; box-shadow:3px 3px 0 ${t.ink}; z-index:1; }
-      .cb-head { display:flex; justify-content:space-between; align-items:baseline; padding-bottom:7px; border-bottom:1px solid ${t.ink}; font-family:'Inter',sans-serif; font-size:9px; font-weight:700; letter-spacing:.22em; text-transform:uppercase; }
-      .cb-head .l b { color:${t.accent}; }
-      .cb-head .r { font-family:'JetBrains Mono',monospace; color:${t.ink2}; font-weight:500; text-transform:none; font-size:9.5px; letter-spacing:.06em; }
-      .cb-title { text-align:center; padding:20px 0 12px; border-bottom:3px double ${t.ink}; }
-      .cb-title .kr { font-family:'Nanum Myeongjo',serif; font-weight:800; font-size:46px; letter-spacing:.14em; line-height:1; color:${t.ink}; }
-      .cb-title .en { font-family:'Fraunces',serif; font-style:italic; font-size:13px; color:${t.accent}; letter-spacing:.22em; margin-top:7px; text-transform:uppercase; }
-      .cb-folio { margin-top:12px; display:grid; grid-template-columns:1fr 1fr; gap:3px 20px; padding:10px 2px; font-size:10.5px; border-bottom:1px solid ${t.ink}; }
-      .cb-folio .row { display:grid; grid-template-columns:70px 1fr; align-items:baseline; padding:3px 0; border-bottom:1px dotted rgba(14,12,10,.22); }
-      .cb-folio .row:nth-last-child(-n+2) { border-bottom:none; }
-      .cb-folio .k { font-family:'Inter',sans-serif; font-size:8.5px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:${t.ink3}; }
-      .cb-folio .v { font-weight:600; font-size:10.5px; }
-      .cb-section-h { font-family:'Inter',sans-serif; font-size:9px; font-weight:800; letter-spacing:.22em; text-transform:uppercase; color:${t.ink2}; margin:14px 0 0; padding:6px 0 5px; }
-      .cb-ledger { width:100%; border-collapse:collapse; font-size:10.5px; table-layout:fixed; }
-      .cb-ledger .cb-col-code { width:50px; }
-      .cb-ledger .cb-col-name { width:auto; }
-      .cb-ledger .cb-col-cnt  { width:55px; }
-      .cb-ledger .cb-col-amt  { width:130px; }
-      .cb-ledger thead th { font-family:'Inter',sans-serif; font-size:8.5px; font-weight:800; letter-spacing:.05em; text-transform:uppercase; color:${t.ink}; text-align:left; padding:7px 8px; background:${t.paperAlt}; border-top:1.5px solid ${t.ink}; border-bottom:1.5px solid ${t.ink}; white-space:nowrap; }
-      .cb-ledger thead th.cb-r { text-align:right; }
-      .cb-ledger tbody td { padding:7px 8px; border-bottom:1px solid rgba(14,12,10,.14); vertical-align:top; word-break:break-word; }
-      .cb-ledger td.cb-c { font-family:'JetBrains Mono',monospace; color:${t.accent}; font-size:10px; letter-spacing:.04em; font-weight:600; }
-      .cb-ledger td.cb-r { text-align:right; font-variant-numeric:tabular-nums; font-family:'Inter','Noto Sans KR',sans-serif; font-weight:500; white-space:nowrap; font-size:10px; }
-      .cb-ledger td.cb-amt { font-weight:700; color:${t.ink}; }
-      .cb-calc { margin-top:10px; font-size:10.5px; padding:7px 0; border-bottom:1px solid ${t.ink}; }
-      .cb-calc .r { display:flex; justify-content:space-between; padding:3px 0; color:${t.ink2}; }
-      .cb-calc .r.b { color:${t.ink}; font-weight:700; }
-      .cb-verdict { margin-top:12px; background:${t.ink}; color:${t.paper}; padding:14px 18px; display:grid; grid-template-columns:1fr auto auto; align-items:center; gap:14px; }
-      .cb-verdict .l { font-family:'Inter',sans-serif; font-size:9.5px; font-weight:700; letter-spacing:.28em; text-transform:uppercase; color:${t.ink3}; }
-      .cb-verdict .stamp { font-family:'Nanum Myeongjo',serif; font-weight:800; font-size:13px; color:${t.accent2}; letter-spacing:.22em; padding:3px 9px; border:1.5px solid ${t.accent2}; border-radius:2px; }
-      .cb-verdict .v { font-family:'Fraunces',serif; font-weight:800; font-size:clamp(16px, 3.2vw, 26px); color:${t.accent2}; letter-spacing:-.02em; line-height:1; max-width:100%; word-break:break-all; overflow-wrap:anywhere; text-align:right; }
-      .cb-foot { margin-top:14px; display:flex; justify-content:space-between; gap:14px; font-family:'Inter',sans-serif; font-size:10px; color:${t.ink2}; line-height:1.6; }
-      .cb-foot .company { font-family:'Nanum Myeongjo',serif; font-weight:700; color:${t.ink}; font-size:12px; margin-bottom:3px; }
+      .doc-sig { background:${t.paper}; color:${t.ink}; font-family:'Inter','Noto Sans KR','Apple SD Gothic Neo',sans-serif; padding:0; min-height:100%; width:100%; max-width:100%; box-sizing:border-box; }
+
+      /* 헤더 */
+      .sg-header { padding:24px 32px 18px; display:flex; justify-content:space-between; align-items:flex-start; border-bottom:0.5px solid ${t.border}; }
+      .sg-brand { font-size:22px; font-weight:800; letter-spacing:-.02em; color:${t.ink}; line-height:1; }
+      .sg-brand-sub { font-size:9.5px; font-weight:400; letter-spacing:.24em; color:${t.ink3}; margin-top:2px; }
+      .sg-title-wrap { text-align:right; }
+      .sg-title { font-size:34px; font-weight:800; letter-spacing:-.03em; color:${t.ink}; line-height:1; }
+      .sg-docno { font-size:9.5px; color:${t.ink3}; margin-top:4px; letter-spacing:.06em; }
+
+      /* 수신 + 메타 */
+      .sg-meta { padding:16px 32px; display:grid; grid-template-columns:1fr 1fr; gap:16px; border-bottom:0.5px solid ${t.border}; }
+      .sg-issued-label { font-size:8px; font-weight:700; letter-spacing:.22em; color:${t.ink3}; margin-bottom:5px; }
+      .sg-client { font-size:13px; font-weight:700; color:${t.ink}; }
+      .sg-addr { font-size:10px; color:${t.ink2}; margin-top:2px; line-height:1.6; }
+      .sg-kpis { display:grid; grid-template-columns:1fr 1fr; gap:10px; align-content:start; }
+      .sg-kpi { }
+      .sg-kpi-k { font-size:8px; letter-spacing:.16em; color:${t.ink3}; margin-bottom:2px; }
+      .sg-kpi-v { font-size:11px; font-weight:600; color:${t.ink}; }
+
+      /* 공사 항목 */
+      .sg-works { padding:14px 32px 0; }
+      .sg-works-label { font-size:8px; font-weight:700; letter-spacing:.22em; color:${t.ink3}; margin-bottom:10px; }
+      .sg-table { width:100%; border-collapse:collapse; }
+      .sg-table thead tr { border-top:1.5px solid ${t.ink}; border-bottom:1.5px solid ${t.ink}; }
+      .sg-table thead th { padding:6px 0; font-size:8px; font-weight:700; letter-spacing:.14em; color:${t.ink3}; text-align:left; }
+      .sg-table thead th:first-child { width:40px; }
+      .sg-table thead th:nth-child(3) { width:40px; text-align:center; }
+      .sg-table thead th:last-child { text-align:right; width:130px; }
+      .sg-row { border-bottom:0.5px solid ${t.border}; }
+      .sg-code { padding:9px 0; font-size:9px; font-weight:700; color:${t.accent}; letter-spacing:.06em; }
+      .sg-name { padding:9px 10px; font-size:11.5px; font-weight:500; color:${t.ink}; }
+      .sg-desc { font-size:9.5px; color:${t.ink3}; margin-top:2px; line-height:1.4; }
+      .sg-cnt { padding:9px 0; font-size:10px; color:${t.ink3}; text-align:center; }
+      .sg-amt { padding:9px 0; font-size:11.5px; font-weight:700; font-variant-numeric:tabular-nums; font-family:'Inter','Noto Sans KR',sans-serif; color:${t.ink}; text-align:right; white-space:nowrap; }
+
+      /* 계산 */
+      .sg-calc { padding:12px 32px 0; }
+      .sg-calc-inner { padding-bottom:12px; border-bottom:0.5px solid ${t.border}; display:flex; flex-direction:column; gap:3px; }
+      .sg-cr { display:flex; justify-content:space-between; font-size:10.5px; color:${t.ink2}; font-variant-numeric:tabular-nums; font-family:'Inter','Noto Sans KR',sans-serif; }
+      .sg-cr.bold { font-weight:700; color:${t.ink}; }
+
+      /* TOTAL 강조 블록 (Image 2 inspired) */
+      .sg-total { background:${t.ink}; padding:16px 32px; display:flex; justify-content:space-between; align-items:center; }
+      .sg-total-l { }
+      .sg-total-label { font-size:8px; font-weight:700; letter-spacing:.22em; color:#555; }
+      .sg-total-sub { font-size:9px; color:#444; margin-top:2px; }
+      .sg-total-v { font-size:clamp(22px,3.8vw,30px); font-weight:800; font-variant-numeric:tabular-nums; font-family:'Inter','Noto Sans KR',sans-serif; color:${t.accent}; letter-spacing:-.02em; line-height:1; text-align:right; word-break:break-all; overflow-wrap:anywhere; }
+
+      /* 풋터 정보 블록 (Image 3 + 명함 역할) */
+      .sg-foot { background:${t.paperAlt}; padding:18px 32px; }
+      .sg-foot-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+      .sg-foot-label { font-size:8px; font-weight:700; letter-spacing:.2em; color:${t.ink3}; margin-bottom:6px; }
+      .sg-foot-info { font-size:10px; color:${t.ink2}; line-height:1.8; }
+      .sg-slogan { margin-top:8px; font-size:9px; font-style:italic; color:${t.ink3}; line-height:1.5; }
+      .sg-foot-notice { font-size:10px; color:${t.ink3}; line-height:1.8; text-align:right; }
+      .sg-foot-bottom { margin-top:14px; padding-top:12px; border-top:0.5px solid ${t.border}; display:flex; justify-content:space-between; }
+      .sg-foot-link { font-size:8.5px; color:${t.ink3}; letter-spacing:.1em; }
+
       .sm-memo { font-size:9.5px; color:${t.ink3}; margin-top:3px; line-height:1.55; word-break:break-word; }
       .sm-memo::before { content:'※ '; color:${t.accent}; font-weight:700; }
       .sm-memo-on { color:${t.accent}; font-weight:600; }
     </style>
-    <div class="doc-chamber">
-      <div class="cb-outer">
-        <div class="cb-seal">Official · ${ctx.docNo}</div>
-        <div class="cb-head">
-          <span class="l">SIDO <b>DESIGN</b> · Interior Design Studio</span>
-          <span class="r">${ctx.docNo} · ${ctx.x(ctx.date||'—')}</span>
-        </div>
+    <div class="doc-sig">
 
-        <div class="cb-title">
-          <div class="kr">견 적 서</div>
-          <div class="en">Construction Estimate</div>
+      <!-- ① 헤더: 브랜드 워드마크 + 대형 타이포 앵커 -->
+      <div class="sg-header">
+        <div>
+          <div class="sg-brand">SIDO</div>
+          <div class="sg-brand-sub">DESIGN STUDIO</div>
         </div>
-
-        <div class="cb-folio">
-          <div class="row"><span class="k">수 신</span><span class="v">${ctx.x(ctx.cn)} ${ctx.x(ctx.ct)}</span></div>
-          <div class="row"><span class="k">견적일</span><span class="v">${ctx.x(ctx.date||'—')}</span></div>
-          <div class="row"><span class="k">현 장</span><span class="v">${ctx.x(ctx.addr)}</span></div>
-          <div class="row"><span class="k">공사기간</span><span class="v">${ctx.x(ctx.wp||'—')}</span></div>
-          <div class="row"><span class="k">면 적</span><span class="v">${ctx.area?ctx.x(ctx.area)+' 평':'—'}</span></div>
-          <div class="row"><span class="k">유효기간</span><span class="v">견적일로부터 ${ctx.x(ctx.vd)}일</span></div>
+        <div class="sg-title-wrap">
+          <div class="sg-title">견적서</div>
+          <div class="sg-docno">${ctx.docNo} &nbsp;·&nbsp; ${ctx.x(ctx.date||'—')}</div>
         </div>
+      </div>
 
-        <div class="cb-section-h">Schedule of Works</div>
-        <table class="cb-ledger">
-          <colgroup>
-            <col class="cb-col-code">
-            <col class="cb-col-name">
-            <col class="cb-col-cnt">
-            <col class="cb-col-amt">
-          </colgroup>
-          <thead><tr><th>코드</th><th>공사 항목</th><th class="cb-r">건수</th><th class="cb-r">금액(원)</th></tr></thead>
+      <!-- ② 수신 + 메타 KPI -->
+      <div class="sg-meta">
+        <div>
+          <div class="sg-issued-label">ISSUED TO</div>
+          <div class="sg-client">${ctx.x(ctx.cn)} ${ctx.x(ctx.ct)}</div>
+          <div class="sg-addr">${ctx.x(ctx.addr)}</div>
+        </div>
+        <div class="sg-kpis">
+          <div class="sg-kpi"><div class="sg-kpi-k">AREA</div><div class="sg-kpi-v">${ctx.area?ctx.x(ctx.area)+' 평':'—'}</div></div>
+          <div class="sg-kpi"><div class="sg-kpi-k">PERIOD</div><div class="sg-kpi-v">${ctx.x(ctx.wp||'—')}</div></div>
+          <div class="sg-kpi"><div class="sg-kpi-k">VALID</div><div class="sg-kpi-v">${ctx.x(ctx.vd)}일</div></div>
+          <div class="sg-kpi"><div class="sg-kpi-k">ITEMS</div><div class="sg-kpi-v">${ctx.activeCats.length}공종</div></div>
+        </div>
+      </div>
+
+      <!-- ③ 공사 항목 -->
+      <div class="sg-works">
+        <div class="sg-works-label">SCHEDULE OF WORKS</div>
+        <table class="sg-table">
+          <thead><tr>
+            <th>코드</th><th>공사 항목</th><th style="text-align:center;">건수</th><th style="text-align:right;">금액(원)</th>
+          </tr></thead>
           <tbody>${rows}</tbody>
         </table>
+      </div>
 
-        <div class="doc-tail">
-          <div class="cb-calc">
-            ${ctx.dv>0?`<div class="r"><span>할인</span><span style="color:#C23B30">- ${ctx.fmtWon(ctx.disc)}</span></div>`:''}
-            <div class="r"><span>공사비</span><span>${ctx.fmtWon(ctx.workCost)}</span></div>
-            <div class="r"><span>이윤 (+${ctx.pp}%)</span><span>${ctx.fmtWon(ctx.profit)}</span></div>
-            <div class="r b"><span>공사비 합계</span><span>${ctx.fmtWon(ctx.beforeVat)}</span></div>
-            <div class="r"><span>부가가치세 (10%)</span><span>${ctx.fmtWon(ctx.vat)}</span></div>
-            ${ctx.roundDiff!==0?`<div class="r"><span>단수조정</span><span>${ctx.roundDiff>0?'+':''}${ctx.fmt(Math.round(ctx.roundDiff))}</span></div>`:''}
+      <!-- ④ 계산 -->
+      <div class="sg-calc doc-tail">
+        <div class="sg-calc-inner">${calcRows}</div>
+      </div>
+
+      <!-- ⑤ TOTAL 강조 블록 -->
+      <div class="sg-total">
+        <div class="sg-total-l">
+          <div class="sg-total-label">TOTAL · VAT INCLUDED</div>
+          <div class="sg-total-sub">KRW · INCL. VAT 10%</div>
+        </div>
+        <div class="sg-total-v">${ctx.fmtWon(ctx.grand)}</div>
+      </div>
+
+      <!-- ⑥ 풋터 정보 블록 + 명함 역할 -->
+      <div class="sg-foot">
+        <div class="sg-foot-grid">
+          <div>
+            <div class="sg-foot-label">SIDO DESIGN</div>
+            <div class="sg-foot-info">
+              ${ctx.mgr?`담당 · ${ctx.x(ctx.mgr)}<br>`:''}
+              ${ctx.mgrp?`${ctx.x(ctx.mgrp)}<br>`:''}
+              ${ctx.comp?ctx.x(ctx.comp):''}
+            </div>
+            <div class="sg-slogan">"공간이 바뀌면 삶이 바뀝니다"</div>
           </div>
-
-          <div class="cb-verdict">
-            <span class="l">Total · VAT Included</span>
-            <span class="stamp">印</span>
-            <span class="v">${ctx.fmtWon(ctx.grand)}</span>
+          <div>
+            <div class="sg-foot-label">NOTICE</div>
+            <div class="sg-foot-notice">
+              본 견적은 현장 실측 후 확정됩니다<br>
+              유효기간 · 견적일로부터 ${ctx.x(ctx.vd)}일<br>
+              부가가치세 포함 금액 기준
+            </div>
           </div>
         </div>
-
-        ${ctx.comp||ctx.mgr?`
-        <div class="cb-foot">
-          <div>
-            <div class="company">${ctx.comp?ctx.x(ctx.comp):'SIDO DESIGN'}</div>
-            ${ctx.mgr?`담당 ${ctx.x(ctx.mgr)}${ctx.mgrp?' · '+ctx.x(ctx.mgrp):''}`:''}
-          </div>
-          <div style="text-align:right;">본 견적은 현장 실측 후 확정됩니다</div>
-        </div>`:''}
-        ${details}
+        <div class="sg-foot-bottom">
+          <div class="sg-foot-link">WWW.SIDO-DESIGN.KR</div>
+          <div class="sg-foot-link">INSTAGRAM · @SIDO_DESIGN</div>
+        </div>
       </div>
+
+      ${details}
     </div>
   `;
 }
-
 
 /* ══════════════════════════════════════════
    V9 · SCROLL (스크롤)
