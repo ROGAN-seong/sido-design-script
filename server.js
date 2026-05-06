@@ -59,8 +59,9 @@ const estimateSchema = new mongoose.Schema({
   roundManualVal:{ type: String, default: '0' },
   design:        { type: String, default: 'classic' },
   items:         { type: mongoose.Schema.Types.Mixed, default: {} },
+  catNotes:      { type: mongoose.Schema.Types.Mixed, default: {} },
   grandTotal:    { type: Number, default: 0 },
-}, { timestamps: true });
+}, { timestamps: true, strict: false });
 
 const Estimate = mongoose.model('Estimate', estimateSchema);
 
