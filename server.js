@@ -65,6 +65,35 @@ const estimateSchema = new mongoose.Schema({
 
 const Estimate = mongoose.model('Estimate', estimateSchema);
 
+// PublicEstimate — 새 에디터 페이지(/editor) 전용. 로그인 없이 저장/조회.
+// 기존 Estimate 컬렉션과 완전히 분리되어 서로 영향 없음.
+const publicEstimateSchema = new mongoose.Schema({
+  title:        { type: String, default: '' },
+  code:         { type: String, default: '' },
+  subtitle:     { type: String, default: '' },
+  client:       { type: String, default: '' },
+  scale:        { type: String, default: '' },
+  site:         { type: String, default: '' },
+  company:      { type: String, default: '' },
+  manager:      { type: String, default: '' },
+  phone:        { type: String, default: '' },
+  estDate:      { type: String, default: '' },
+  valid:        { type: String, default: '' },
+  overview:     { type: String, default: '' },
+  mgmtRate:     { type: mongoose.Schema.Types.Mixed, default: 4 },
+  profitRate:   { type: mongoose.Schema.Types.Mixed, default: 10 },
+  mgmtOverride: { type: mongoose.Schema.Types.Mixed, default: '' },
+  mgmtNote:     { type: String, default: '' },
+  vatRate:      { type: mongoose.Schema.Types.Mixed, default: 10 },
+  rounding:     { type: mongoose.Schema.Types.Mixed, default: 0 },
+  groups:       { type: mongoose.Schema.Types.Mixed, default: [] },
+  notes:        { type: mongoose.Schema.Types.Mixed, default: [] },
+  grandTotal:   { type: Number, default: 0 },
+  editKey:      { type: String, default: '' }, // 작성자 식별용(선택)
+}, { timestamps: true, strict: false });
+
+const PublicEstimate = mongoose.model('PublicEstimate', publicEstimateSchema);
+
 // ══════════════════════════════════
 //  Middleware
 // ══════════════════════════════════
@@ -243,8 +272,72 @@ app.delete('/api/estimates/:id', auth, async (req, res) => {
 });
 
 // ══════════════════════════════════
+//  Public Estimate API — 새 에디터 페이지 전용 (인증 불필요)
+// ══════════════════════════════════
+
+// 목록 (간단 필드만)
+app.get('/api/public-estimates', async (req, res) => {
+  try {
+    const list = await PublicEstimate.find({}, {
+      title: 1, site: 1, client: 1, estDate: 1, grandTotal: 1, updatedAt: 1,
+    }).sort({ updatedAt: -1 }).limit(200);
+    res.json(list);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 단건 조회
+app.get('/api/public-estimates/:id', async (req, res) => {
+  try {
+    const doc = await PublicEstimate.findById(req.params.id);
+    if (!doc) return res.status(404).json({ error: 'Not found' });
+    res.json(doc);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 새로 저장
+app.post('/api/public-estimates', async (req, res) => {
+  try {
+    const doc = await PublicEstimate.create(req.body);
+    res.status(201).json(doc);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 수정
+app.put('/api/public-estimates/:id', async (req, res) => {
+  try {
+    const updated = await PublicEstimate.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!updated) return res.status(404).json({ error: 'Not found' });
+    res.json(updated);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 삭제
+app.delete('/api/public-estimates/:id', async (req, res) => {
+  try {
+    await PublicEstimate.findByIdAndDelete(req.params.id);
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ══════════════════════════════════
 //  SPA Fallback
 // ══════════════════════════════════
+
+// 새 에디터 페이지 — 깔끔한 URL(/editor) 지원
+app.get(['/editor', '/editor.html'], (req, res) => {
+  res.sendFile(path.join(__dirname, 'editor.html'));
+});
+
 app.get('*', (req, res) => {
   const pubPath = path.join(__dirname, 'public', 'index.html');
   const rootPath = path.join(__dirname, 'index.html');
