@@ -638,12 +638,21 @@ function buildNotes(){
 }
 
 // ---------- Mutations ----------
-function upd(gi,li,k,v){ data.groups[gi].lines[li][k] = (k==='qty'||k==='price')?Number(v):v; refreshAmts(gi,li); render(); }
-function updG(gi,k,v){ data.groups[gi][k]=v; render(); if(k==='code'||k==='name') {} }
-function refreshAmts(gi,li){
-  // light update of amount cells without full rebuild (keeps focus)
-  buildGroups();
+// 입력 중에는 DOM을 재생성하지 않고 숫자만 갱신해 포커스를 유지한다.
+function upd(gi,li,k,v){
+  data.groups[gi].lines[li][k] = (k==='qty'||k==='price')?Number(v):v;
+  const grpEls = document.querySelectorAll('#groups .grp-ed');
+  const gEl = grpEls[gi];
+  if(gEl){
+    // 해당 라인 금액 셀 갱신
+    const lineEls = gEl.querySelectorAll('.line');
+    if(lineEls[li]){ const amt=lineEls[li].querySelector('.l-amt'); if(amt) amt.textContent=won(lineAmt(data.groups[gi].lines[li])); }
+    // 공정 소계 갱신
+    const gsum=gEl.querySelector('.gsum'); if(gsum) gsum.textContent=won(groupTotal(data.groups[gi]));
+  }
+  render();
 }
+function updG(gi,k,v){ data.groups[gi][k]=v; render(); }
 function addLine(gi){ data.groups[gi].lines.push({name:"새 항목",desc:"",qty:1,unit:"식",price:0}); buildGroups(); render(); }
 function delLine(gi,li){ data.groups[gi].lines.splice(li,1); buildGroups(); render(); }
 function addGroup(){ data.groups.push({code:"",name:"새 공정",desc:"",note:"",lines:[{name:"새 항목",desc:"",qty:1,unit:"식",price:0}]}); buildGroups(); render(); toast("공정이 추가되었습니다"); }
